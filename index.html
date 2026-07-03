@@ -1,1030 +1,1043 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="es-MX">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexFitness - Programa de Entrenamiento</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>FORJA · Entrenamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FORJA — App de entrenamiento
+   © Christian Rojas. Todos los derechos reservados.
+   ============================================================ */
+
+/* ---------- CONFIG editable rápido (busca CONFIG en el JS también) ---------- */
+
+:root{
+  --bg:#0A0A0C;
+  --surface:#141418;
+  --surface-2:#1B1B22;
+  --line:#26262F;
+  --text:#F5F5F0;
+  --muted:#8A8A92;
+  --muted-2:#5E5E68;
+  --orange:#FF5A1F;
+  --magenta:#FF2D78;
+  --amber:#FFD166;
+  --green:#2FD07A;
+  --molten:linear-gradient(120deg,#FF5A1F 0%,#FF2D78 100%);
+  --molten-soft:linear-gradient(120deg,rgba(255,90,31,.16),rgba(255,45,120,.16));
+  --glow:0 0 40px rgba(255,90,31,.35);
+  --radius:18px;
+  --radius-sm:12px;
+  --nav-w:248px;
+  --maxw:1180px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+body::before{ /* atmósfera molten de fondo */
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(600px 400px at 78% -5%, rgba(255,45,120,.14), transparent 60%),
+    radial-gradient(700px 500px at 8% 8%, rgba(255,90,31,.12), transparent 55%);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit}
+h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line-height:.98;text-transform:uppercase}
+.tabnum{font-variant-numeric:tabular-nums}
+
+/* ---------- Layout base ---------- */
+.app{position:relative;z-index:1;display:flex;min-height:100dvh}
+
+/* Sidebar (PC) */
+.sidebar{
+  width:var(--nav-w);flex-shrink:0;position:sticky;top:0;height:100dvh;
+  border-right:1px solid var(--line);background:rgba(10,10,12,.7);backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;padding:26px 18px;gap:6px;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:22px;box-shadow:var(--glow)}
+.brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
+.brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
+
+.nav-btn{
+  display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:var(--radius-sm);
+  color:var(--muted);font-weight:600;font-size:14.5px;transition:.18s;position:relative;text-align:left;width:100%;
+}
+.nav-btn svg{width:20px;height:20px;flex-shrink:0}
+.nav-btn:hover{color:var(--text);background:var(--surface)}
+.nav-btn.active{color:var(--text);background:var(--surface)}
+.nav-btn.active::before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:3px;background:var(--molten)}
+.nav-plan{margin-top:auto;padding:14px;border-radius:var(--radius-sm);background:var(--molten-soft);border:1px solid var(--line)}
+.nav-plan .lbl{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.nav-plan .val{font-family:'Anton';font-size:19px;margin-top:2px}
+.nav-plan button{margin-top:10px;width:100%;font-size:12.5px;font-weight:700;padding:9px;border-radius:9px;background:var(--molten);color:#fff}
+
+/* Main */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  display:none;align-items:center;justify-content:space-between;padding:14px 18px;
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;background:rgba(10,10,12,.85);backdrop-filter:blur(10px)
+}
+.topbar .brand-name{font-size:20px}
+.content{padding:34px clamp(18px,4vw,46px) 120px;max-width:var(--maxw);width:100%;margin:0 auto;flex:1}
+
+/* Bottom nav (móvil) */
+.bottomnav{display:none}
+
+/* ---------- Utilidades ---------- */
+.eyebrow{font-size:11px;letter-spacing:3.5px;text-transform:uppercase;color:var(--orange);font-weight:700}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+.section-head h2{font-size:clamp(30px,5vw,46px)}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;transition:.18s}
+.btn-molten{background:var(--molten);color:#fff;box-shadow:var(--glow)}
+.btn-molten:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.btn-ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--muted-2)}
+.grid{display:grid;gap:16px}
+
+.view{display:none;animation:fade .4s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+
+/* ---------- INICIO ---------- */
+.hero{
+  position:relative;border-radius:24px;overflow:hidden;padding:clamp(26px,5vw,48px);
+  background:
+    radial-gradient(700px 300px at 90% 0%, rgba(255,45,120,.28), transparent 62%),
+    radial-gradient(600px 340px at 0% 100%, rgba(255,90,31,.24), transparent 60%),
+    #101014;
+  border:1px solid var(--line);
+}
+.hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:34px;align-items:center}
+.hero h1{font-size:clamp(44px,7.5vw,84px);margin:14px 0 12px}
+.hero h1 em{font-style:normal;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:44ch;font-size:15.5px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+
+/* Anillo de progreso */
+.ring-wrap{display:grid;place-items:center;position:relative}
+.ring{--pct:0;width:230px;height:230px;border-radius:50%;
+  background:conic-gradient(#FF2D78 calc(var(--pct)*1%), #202027 0);
+  display:grid;place-items:center;transition:background 1s ease;box-shadow:var(--glow)}
+.ring::before{content:"";position:absolute;width:176px;height:176px;border-radius:50%;background:#101014;border:1px solid var(--line)}
+.ring-inner{position:relative;text-align:center}
+.ring-inner .big{font-family:'Anton';font-size:52px;line-height:1}
+.ring-inner .lbl{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:4px}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
+.stat .n{font-family:'Anton';font-size:30px}
+.stat .n span{font-size:15px;color:var(--muted)}
+.stat .l{font-size:11.5px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+.home-2col{display:grid;grid-template-columns:1.3fr .8fr;gap:16px;margin-top:16px}
+.playlist{
+  background:
+    radial-gradient(400px 200px at 100% 0%, rgba(255,45,120,.3), transparent 60%),
+    linear-gradient(180deg,#17171d,#111116);
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-height:180px
+}
+.yt-badge{width:44px;height:44px;border-radius:12px;background:#FF0000;display:grid;place-items:center}
+.yt-badge svg{width:24px;height:24px;fill:#fff}
+.day-list{display:flex;flex-direction:column;gap:10px}
+.day-item{display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line);transition:.16s}
+.day-item:hover{border-color:var(--orange)}
+.day-item .idx{font-family:'Anton';font-size:20px;color:var(--orange);width:26px}
+.day-item .nm{font-weight:600;flex:1}
+.day-item .rp{font-size:12px;color:var(--muted)}
+
+/* ---------- RUTINAS ---------- */
+.muscle-tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px}
+.muscle-tab{padding:10px 18px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:13.5px;color:var(--muted);transition:.16s}
+.muscle-tab:hover{color:var(--text)}
+.muscle-tab.active{background:var(--molten);color:#fff;border-color:transparent;box-shadow:var(--glow)}
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
+.ex-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:14px;transition:.18s}
+.ex-card:hover{border-color:var(--muted-2);transform:translateY(-2px)}
+.ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ex-name{font-weight:700;font-size:16px}
+.ex-num{font-family:'Anton';font-size:26px;color:var(--line)}
+.ex-meta{display:flex;gap:10px}
+.ex-meta .m{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.ex-meta .m .v{font-family:'Anton';font-size:22px}
+.ex-meta .m .k{font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.ex-actions{display:flex;gap:9px;margin-top:auto}
+.ex-actions a,.ex-actions button{flex:1;font-size:12.5px;font-weight:700;padding:10px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px}
+.ex-video{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+.ex-video:hover{border-color:#FF0000;color:#fff}
+.ex-video svg{width:15px;height:15px;fill:#FF0000}
+.ex-done{background:var(--molten-soft);border:1px solid var(--line);color:var(--text)}
+.ex-done.is-done{background:var(--green);color:#04120a;border-color:transparent}
+.ex-pr{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 14px;border-radius:12px;background:var(--molten-soft);border:1px solid var(--line);transition:.16s}
+.ex-pr:hover{border-color:var(--amber)}
+.ex-pr .pr-k{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+.ex-pr .pr-v{font-family:'Anton';font-size:20px;color:var(--amber);letter-spacing:.5px}
+
+/* ---------- PROGRESO ---------- */
+.prog-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:start}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
+.field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14.5px;transition:.16s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,90,31,.15)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding:12px 4px 0;border-bottom:1px solid var(--line)}
+.bar{flex:1;min-width:14px;background:var(--molten);border-radius:8px 8px 0 0;position:relative;transition:height .5s ease;min-height:4px}
+.bar:hover::after{content:attr(data-v);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line);font-size:11px;padding:3px 7px;border-radius:6px;white-space:nowrap}
+.chart-x{display:flex;gap:10px;margin-top:8px}
+.chart-x span{flex:1;text-align:center;font-size:10.5px;color:var(--muted)}
+.log-list{display:flex;flex-direction:column;gap:9px;max-height:340px;overflow-y:auto;margin-top:16px}
+.log-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;font-size:13.5px}
+.log-row .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.log-row .ex{font-weight:600;flex:1}
+.log-row .stat2{color:var(--muted);font-size:12.5px}
+.empty{text-align:center;color:var(--muted-2);padding:34px 10px;font-size:14px}
+
+/* ---------- CALORÍAS ---------- */
+.cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(255,45,120,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
+.cal-big{font-family:'Anton';font-size:clamp(56px,10vw,88px);line-height:.9;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cal-big-lbl{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.macro{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.macro .mv{font-family:'Anton';font-size:26px}
+.macro .mk{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.macro.p{border-top:3px solid var(--orange)}
+.macro.c{border-top:3px solid var(--amber)}
+.macro.g{border-top:3px solid var(--magenta)}
+.tdee-mini{display:flex;justify-content:space-between;gap:10px;margin-top:16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+/* ---------- DIETA ---------- */
+.diet-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.meal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.meal-top{padding:16px 18px;background:var(--molten-soft);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.meal-top .t{font-family:'Anton';font-size:20px}
+.meal-top .kc{font-size:12px;color:var(--orange);font-weight:700}
+.meal ul{list-style:none;padding:16px 18px;display:flex;flex-direction:column;gap:9px}
+.meal li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--text)}
+.meal li span{color:var(--muted);font-size:12px}
+
+/* ---------- COACHES / CHAT ---------- */
+.coach-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+.coach-list{display:flex;flex-direction:column;gap:10px}
+.coach-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);transition:.16s;width:100%;text-align:left}
+.coach-card:hover{border-color:var(--muted-2)}
+.coach-card.active{border-color:var(--orange);background:var(--molten-soft)}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:19px;flex-shrink:0;position:relative}
+.avatar .on{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--surface)}
+.coach-card .nm{font-weight:700;font-size:14.5px}
+.coach-card .sp{font-size:11.5px;color:var(--muted)}
+.chat-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;height:520px;overflow:hidden}
+.chat-top{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.chat-top .who{display:flex;align-items:center;gap:11px}
+.chat-top .nm{font-weight:700}
+.chat-top .st{font-size:11.5px;color:var(--green)}
+.call-btns{display:flex;gap:8px}
+.call-btns button{width:40px;height:40px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;transition:.16s}
+.call-btns button:hover{border-color:var(--orange)}
+.call-btns svg{width:18px;height:18px;fill:var(--text)}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:11px}
+.msg{max-width:78%;padding:11px 15px;border-radius:15px;font-size:14px;line-height:1.45}
+.msg.them{background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
+.msg.me{background:var(--molten);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.chat-input{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}
+.chat-input input{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:var(--text);font-size:14px}
+.chat-input input:focus{outline:none;border-color:var(--orange)}
+.chat-input button{width:46px;border-radius:12px;background:var(--molten);display:grid;place-items:center}
+.chat-input button svg{width:19px;height:19px;fill:#fff}
+.lock-note{font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px;margin-top:10px}
+.join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(255,45,120,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
+.join-ic{font-size:30px;line-height:1}
+.join-tx{flex:1;min-width:190px}
+.join-t{font-family:'Anton';font-size:21px;letter-spacing:.5px}
+.join-d{color:var(--muted);font-size:13px;margin-top:3px}
+.join-cta{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;padding:12px 20px;border-radius:12px;background:var(--molten);color:#fff;box-shadow:var(--glow);letter-spacing:.5px}
+.join-cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.join-by{width:100%;text-align:right;font-size:12.5px;color:var(--amber);font-weight:700}
+
+/* ---------- SUSCRIPCIÓN ---------- */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:flex;flex-direction:column}
+.plan.pro{background:radial-gradient(500px 300px at 100% 0%,rgba(255,45,120,.22),transparent 60%),#121218;border-color:var(--orange);position:relative}
+.plan.pro::after{content:"MÁS POPULAR";position:absolute;top:18px;right:18px;font-size:10px;font-weight:800;letter-spacing:2px;background:var(--molten);color:#fff;padding:5px 11px;border-radius:99px}
+.plan .pn{font-family:'Anton';font-size:26px}
+.plan .price{font-family:'Anton';font-size:clamp(40px,6vw,58px);margin:10px 0 2px}
+.plan .price span{font-size:16px;color:var(--muted);font-family:'Inter';font-weight:600}
+.plan .pd{color:var(--muted);font-size:13.5px;margin-bottom:20px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:24px;flex:1}
+.plan li{display:flex;align-items:flex-start;gap:10px;font-size:14px}
+.plan li svg{width:18px;height:18px;flex-shrink:0;margin-top:1px}
+.plan li.no{color:var(--muted-2)}
+.check{fill:var(--green)}
+.cross{fill:var(--muted-2)}
+.plan .btn{width:100%}
+
+/* ---------- Modal videollamada ---------- */
+.modal-bg{position:fixed;inset:0;z-index:100;background:rgba(5,5,7,.82);backdrop-filter:blur(8px);display:none;place-items:center;padding:20px}
+.modal-bg.open{display:grid}
+.call-modal{width:min(440px,100%);background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:34px;text-align:center;animation:pop .3s ease}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.call-avatar{width:104px;height:104px;border-radius:50%;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:44px;margin:0 auto 18px;box-shadow:var(--glow);position:relative}
+.call-avatar::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--orange);opacity:.5;animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.6}to{transform:scale(1.25);opacity:0}}
+.call-name{font-family:'Anton';font-size:28px}
+.call-status{color:var(--muted);font-size:13px;margin:4px 0 26px}
+.call-timer{font-variant-numeric:tabular-nums;color:var(--green);font-weight:700}
+.call-controls{display:flex;justify-content:center;gap:16px}
+.call-controls button{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;transition:.16s}
+.call-controls button svg{width:24px;height:24px;fill:#fff}
+.c-mute{background:var(--surface-2);border:1px solid var(--line)}
+.c-end{background:#E5342B}
+.c-end:hover{filter:brightness(1.1)}
+
+/* ---------- Footer ---------- */
+.foot{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,46px);color:var(--muted-2);font-size:12.5px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;max-width:var(--maxw);margin:0 auto;width:100%}
+.foot .r{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .ring-wrap{order:-1}
+  .home-2col,.prog-grid,.cal-grid,.coach-grid,.plans{grid-template-columns:1fr}
+  .chat-box{height:460px}
+}
+@media (max-width:760px){
+  .sidebar{display:none}
+  .topbar{display:flex}
+  .content{padding:20px 16px 96px}
+  .bottomnav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:50;
+    background:rgba(10,10,12,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));justify-content:space-around
+  }
+  .bn-btn{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted-2);font-size:9.5px;font-weight:700;letter-spacing:.3px;padding:5px 8px;flex:1}
+  .bn-btn svg{width:22px;height:22px}
+  .bn-btn.active{color:var(--orange)}
+  .stat-row{grid-template-columns:1fr}
+  .macros{grid-template-columns:1fr}
+  .foot{flex-direction:column;text-align:center}
+}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar / Menú Lateral -->
-        <aside class="sidebar">
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h2"></path>
-                        <path d="M18 18h2a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-2"></path>
-                        <line x1="6" y1="14" x2="18" y2="14"></line>
-                        <rect x="6" y="11" width="12" height="6" rx="1"></rect>
-                        <path d="M6.5 11V9a2.5 2.5 0 0 1 5 0v2"></path>
-                        <path d="M12.5 11V9a2.5 2.5 0 0 1 5 0v2"></path>
-                    </svg>
-                </div>
-                <div class="logo-text">
-                    <span class="logo-title">ALEX<span class="logo-highlight">FITNESS</span></span>
-                    <span class="logo-subtitle">Programa de Fuerza</span>
-                </div>
-            </div>
+<div class="app">
 
-            <nav class="nav-menu">
-                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
-                    </svg>
-                    <span>Dashboard</span>
-                </button>
-                <button class="nav-item" data-tab="rutinas" id="btn-tab-rutinas">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6.5 2h11M6.5 22h11M12 2v20M6.5 7h11M6.5 17h11"></path>
-                        <rect x="3" y="7" width="3.5" height="10" rx="1"></rect>
-                        <rect x="17.5" y="7" width="3.5" height="10" rx="1"></rect>
-                    </svg>
-                    <span>Rutinas</span>
-                </button>
-                <button class="nav-item" data-tab="nutricion" id="btn-tab-nutricion">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                    <span>Nutrición</span>
-                </button>
-                <button class="nav-item" data-tab="progreso" id="btn-tab-progreso">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 3v18h18"></path>
-                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-                    </svg>
-                    <span>Progreso</span>
-                </button>
-                <button class="nav-item" data-tab="calendario" id="btn-tab-calendario">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    <span>Calendario</span>
-                </button>
-            </nav>
+  <!-- ===================== SIDEBAR (PC) ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">F</div>
+      <div>
+        <div class="brand-name">FOR<span>JA</span></div>
+        <div class="brand-sub">Training System</div>
+      </div>
+    </div>
+    <button class="nav-btn active" data-go="inicio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg> Inicio
+    </button>
+    <button class="nav-btn" data-go="rutinas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11M3 8l1-1M20 17l1-1M7 3l1 1M16 20l1 1"/><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/></svg> Rutinas
+    </button>
+    <button class="nav-btn" data-go="progreso">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg> Progreso
+    </button>
+    <button class="nav-btn" data-go="calorias">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C9 6 8 9 12 12c4-3 3-6 0-10z" fill="currentColor" stroke="none"/><path d="M12 12c-4 3-3 8 0 10 3-2 4-7 0-10z"/></svg> Calorías
+    </button>
+    <button class="nav-btn" data-go="dieta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v8a3 3 0 006 0V3M8 3v18M19 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg> Dieta
+    </button>
+    <button class="nav-btn" data-go="coaches">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Coaches
+    </button>
+    <button class="nav-btn" data-go="suscripcion">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg> Suscripción
+    </button>
+    <div class="nav-plan">
+      <div class="lbl">Tu plan</div>
+      <div class="val" id="planLabel">Gratis</div>
+      <button data-go="suscripcion">Mejorar a PRO</button>
+    </div>
+  </aside>
 
-            <div class="user-card-small">
-                <div class="user-avatar" id="sidebar-avatar">C</div>
-                <div class="user-info">
-                    <div class="user-name-small" id="sidebar-user-name">Christian</div>
-                    <div class="user-status-small">En volumen 💪</div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Header superior -->
-            <header class="top-header">
-                <div class="header-welcome">
-                    <h1 id="welcome-title">¡Bienvenido, Christian! <span class="emoji">💪</span></h1>
-                    <p class="header-subtitle">Sigue tu progreso y alcanza tu mejor versión.</p>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="btn-open-metrics-modal">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path>
-                        </svg>
-                        <span>Actualizar Métricas</span>
-                    </button>
-                </div>
-            </header>
-
-            <!-- SECCIÓN: DASHBOARD -->
-            <section id="tab-dashboard" class="tab-content active">
-                <!-- Métricas Rápidas Grid -->
-                <div class="metrics-grid">
-                    <!-- Peso Actual -->
-                    <div class="metric-card glass-card">
-                        <div class="metric-header">
-                            <span class="metric-title">Peso Actual</span>
-                            <span class="metric-icon weight">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <circle cx="12" cy="12" r="6"></circle>
-                                    <circle cx="12" cy="12" r="2"></circle>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="metric-value"><span id="val-peso-actual">83.5</span> <span class="unit">kg</span></div>
-                        <div class="metric-trend positive" id="peso-diff-status">
-                            Gana masa muscular
-                        </div>
-                    </div>
-
-                    <!-- Meta -->
-                    <div class="metric-card glass-card">
-                        <div class="metric-header">
-                            <span class="metric-title">Meta de Peso</span>
-                            <span class="metric-icon goal">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                                    <path d="M2 12h20"></path>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="metric-value"><span id="val-peso-meta">95</span> <span class="unit">kg</span></div>
-                        <div class="metric-subtext" id="peso-restante">Faltan 11.5 kg</div>
-                    </div>
-
-                    <!-- Brazo Izq -->
-                    <div class="metric-card glass-card">
-                        <div class="metric-header">
-                            <span class="metric-title">Brazo Izq.</span>
-                            <span class="metric-icon arm-l">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M18 14h-4.5c-1.5 0-3-1.5-3-3s1.5-3 3-3H18"></path>
-                                    <rect x="18" y="5" width="4" height="14" rx="1"></rect>
-                                    <path d="M10.5 11c0-2-1.5-3.5-3.5-3.5S3.5 9 3.5 11"></path>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="metric-value"><span id="val-brazo-izq">37</span> <span class="unit">cm</span></div>
-                        <div class="metric-subtext">Medida de contracción</div>
-                    </div>
-
-                    <!-- Brazo Der -->
-                    <div class="metric-card glass-card">
-                        <div class="metric-header">
-                            <span class="metric-title">Brazo Der.</span>
-                            <span class="metric-icon arm-r">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 14h4.5c1.5 0 3-1.5 3-3s-1.5-3-3-3H6"></path>
-                                    <rect x="2" y="5" width="4" height="14" rx="1"></rect>
-                                    <path d="M13.5 11c0-2 1.5-3.5 3.5-3.5S20.5 9 20.5 11"></path>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="metric-value"><span id="val-brazo-der">39</span> <span class="unit">cm</span></div>
-                        <div class="metric-subtext">Asimetría detectada: +2 cm</div>
-                    </div>
-                </div>
-
-                <!-- Tarjeta de Progreso Principal -->
-                <div class="progress-section-card glass-card">
-                    <div class="progress-info-header">
-                        <div>
-                            <h3>Progreso hacia tu meta de <span id="progress-goal-txt">95</span> kg</h3>
-                            <p class="text-secondary" id="progress-desc-txt">Llevas completado el 87.9% de tu peso objetivo.</p>
-                        </div>
-                        <div class="progress-percentage-large" id="val-progress-percent">87.9%</div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="val-progress-bar" style="width: 87.9%;"></div>
-                    </div>
-                </div>
-
-                <!-- Resumen de Rutinas y Accesos Rápidos -->
-                <div class="dashboard-bottom-grid">
-                    <div class="dashboard-routines-preview">
-                        <div class="section-title-row">
-                            <h3>Tus Rutinas de Fuerza</h3>
-                            <button class="btn btn-text" onclick="switchTab('rutinas')">Ver detalles →</button>
-                        </div>
-                        <div class="routines-grid-mini">
-                            <!-- Tarjeta Pecho -->
-                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
-                                <div class="routine-mini-header">
-                                    <div class="routine-icon color-pecho">💥</div>
-                                    <h4>Pecho</h4>
-                                </div>
-                                <p class="routine-desc">Press con ladrillos, aperturas y lagartijas inclinadas.</p>
-                                <span class="exercise-count">3 Ejercicios</span>
-                            </div>
-
-                            <!-- Tarjeta Brazo -->
-                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
-                                <div class="routine-mini-header">
-                                    <div class="routine-icon color-brazo">💪</div>
-                                    <h4>Brazo</h4>
-                                </div>
-                                <p class="routine-desc">Curl, martillo y concentrado.</p>
-                                <span class="exercise-count">3 Ejercicios</span>
-                            </div>
-
-                            <!-- Tarjeta Espalda -->
-                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
-                                <div class="routine-mini-header">
-                                    <div class="routine-icon color-espalda">🏋️</div>
-                                    <h4>Espalda</h4>
-                                </div>
-                                <p class="routine-desc">Remo con mochila y peso corporal.</p>
-                                <span class="exercise-count">2 Ejercicios</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta Nutrición Rápida -->
-                    <div class="dashboard-nutrition-preview glass-card">
-                        <div class="section-title-row">
-                            <h3>Nutrición de Hoy</h3>
-                            <button class="btn btn-text" onclick="switchTab('nutricion')">Registrar comida →</button>
-                        </div>
-                        <div class="nutrition-donut-container">
-                            <div class="kcal-display">
-                                <span class="kcal-number" id="kcal-value-main">1850</span>
-                                <span class="kcal-label">kcal consumidas</span>
-                                <span class="kcal-goal-label">de <span id="kcal-goal-txt">2500</span> kcal</span>
-                            </div>
-                            <svg class="progress-ring-main" width="160" height="160">
-                                <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
-                                <circle class="progress-ring-circle" id="kcal-ring-main" stroke="url(#blue-grad)" stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" stroke-dasharray="439.8" stroke-dashoffset="114.3"/>
-                                <defs>
-                                    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#3b82f6" />
-                                        <stop offset="100%" stop-color="#06b6d4" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </div>
-                        <div class="macro-bars-grid">
-                            <div class="macro-bar-item">
-                                <div class="macro-info">
-                                    <span>Proteína 🥩</span>
-                                    <span><span id="p-val-main">120</span>g / 160g</span>
-                                </div>
-                                <div class="macro-track">
-                                    <div class="macro-fill bg-protein" id="p-bar-main" style="width: 75%;"></div>
-                                </div>
-                            </div>
-                            <div class="macro-bar-item">
-                                <div class="macro-info">
-                                    <span>Carbohidratos 🌾</span>
-                                    <span><span id="c-val-main">210</span>g / 300g</span>
-                                </div>
-                                <div class="macro-track">
-                                    <div class="macro-fill bg-carbs" id="c-bar-main" style="width: 70%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN: RUTINAS -->
-            <section id="tab-rutinas" class="tab-content">
-                <div class="routines-header">
-                    <h2>Tus Rutinas de Fuerza</h2>
-                    <p class="text-secondary">Selecciona un grupo muscular para ver los ejercicios y registrar tus series.</p>
-                    
-                    <div class="routine-tabs">
-                        <button class="routine-tab-btn active" data-routine="pecho">💥 Pecho</button>
-                        <button class="routine-tab-btn" data-routine="brazo">💪 Brazo</button>
-                        <button class="routine-tab-btn" data-routine="espalda">🏋️ Espalda</button>
-                    </div>
-                </div>
-
-                <div class="routine-layout-grid">
-                    <!-- Ejercicios Container -->
-                    <div class="exercises-container">
-                        <!-- Pecho -->
-                        <div class="routine-group active" id="routine-pecho">
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Press con ladrillos</h3>
-                                    <p class="text-secondary">Simulación de press de banca con peso improvisado. Centrado en el pectoral mayor.</p>
-                                    <div class="exercise-meta">
-                                        <span>4 Series</span>
-                                        <span>12-15 Reps</span>
-                                        <span>Descanso: 90s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="15" class="input-log-rep">
-                                        <input type="number" value="12" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="12" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="12" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>4</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="12" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Aperturas (Chest Flyes)</h3>
-                                    <p class="text-secondary">Movimiento de abducción horizontal de hombro para aislar el pectoral.</p>
-                                    <div class="exercise-meta">
-                                        <span>3 Series</span>
-                                        <span>12 Reps</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Lagartijas inclinadas (Push-ups)</h3>
-                                    <p class="text-secondary">Manos elevadas en una superficie estable. Enfoque en la porción inferior del pectoral.</p>
-                                    <div class="exercise-meta">
-                                        <span>3 Series</span>
-                                        <span>Al fallo</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="18" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="15" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Brazo -->
-                        <div class="routine-group" id="routine-brazo">
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Curl de Bíceps</h3>
-                                    <p class="text-secondary">Flexión clásica de codo para desarrollar el bíceps braquial.</p>
-                                    <div class="exercise-meta">
-                                        <span>4 Series</span>
-                                        <span>12 Reps</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>4</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Curl Martillo</h3>
-                                    <p class="text-secondary">Agarre neutro. Trabaja el supinador largo y el braquiorradial (grosor del brazo).</p>
-                                    <div class="exercise-meta">
-                                        <span>3 Series</span>
-                                        <span>12 Reps</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="10" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Curl Concentrado</h3>
-                                    <p class="text-secondary">Sentado, codo apoyado en la cara interna del muslo para el pico del bíceps.</p>
-                                    <div class="exercise-meta">
-                                        <span>3 Series</span>
-                                        <span>10 Reps</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="8" class="input-log-rep">
-                                        <input type="number" value="8" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Espalda -->
-                        <div class="routine-group" id="routine-espalda">
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Remo con mochila</h3>
-                                    <p class="text-secondary">Tracción con mochila cargada con libros u otros elementos pesados. Enfocado en dorsales y trapecio.</p>
-                                    <div class="exercise-meta">
-                                        <span>4 Series</span>
-                                        <span>12 Reps</span>
-                                        <span>Descanso: 90s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="16" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="16" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <input type="number" value="16" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>4</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <input type="number" value="16" class="input-log-weight">
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="exercise-card glass-card">
-                                <div class="exercise-info">
-                                    <h3>Remo invertido (Peso corporal)</h3>
-                                    <p class="text-secondary">Tracción horizontal debajo de una mesa resistente o barra baja utilizando el propio peso.</p>
-                                    <div class="exercise-meta">
-                                        <span>3 Series</span>
-                                        <span>10-12 Reps</span>
-                                        <span>Descanso: 60s</span>
-                                    </div>
-                                </div>
-                                <div class="exercise-log">
-                                    <div class="log-row-header">
-                                        <span>Serie</span>
-                                        <span>Repeticiones</span>
-                                        <span>Peso (kg)</span>
-                                        <span>Hecho</span>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>1</span>
-                                        <input type="number" value="12" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>2</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="log-row">
-                                        <span>3</span>
-                                        <input type="number" value="10" class="input-log-rep">
-                                        <span class="log-label-body">Body</span>
-                                        <label class="checkbox-container">
-                                            <input type="checkbox">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Temporizador lateral -->
-                    <div class="timer-sidebar glass-card">
-                        <h3>Cronómetro de Descanso</h3>
-                        <div class="timer-display" id="timer-display-time">01:30</div>
-                        
-                        <div class="timer-controls">
-                            <button class="btn btn-secondary btn-icon" id="btn-timer-reset" title="Reiniciar">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
-                                </svg>
-                            </button>
-                            <button class="btn btn-primary btn-large btn-icon" id="btn-timer-play" title="Iniciar">
-                                <svg id="play-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                </svg>
-                                <svg id="pause-icon" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="6" y="4" width="4" height="16"></rect>
-                                    <rect x="14" y="4" width="4" height="16"></rect>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="timer-quick-select">
-                            <button class="btn btn-small btn-chip active" data-time="90">90s</button>
-                            <button class="btn btn-small btn-chip" data-time="60">60s</button>
-                            <button class="btn btn-small btn-chip" data-time="45">45s</button>
-                            <button class="btn btn-small btn-chip" data-time="30">30s</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN: NUTRICIÓN -->
-            <section id="tab-nutricion" class="tab-content">
-                <div class="section-title-row">
-                    <div>
-                        <h2>Seguimiento de Nutrición</h2>
-                        <p class="text-secondary">Controla tus calorías y macronutrientes diarios para optimizar tu ganancia muscular.</p>
-                    </div>
-                    <button class="btn btn-primary" id="btn-open-food-modal">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        <span>Agregar Comida</span>
-                    </button>
-                </div>
-
-                <!-- Anillos de Nutrición -->
-                <div class="nutrition-dashboard-grid">
-                    <!-- Calorías Principales -->
-                    <div class="nutrition-card glass-card calorie-center">
-                        <h3>Consumo de Calorías</h3>
-                        <div class="calorie-donut-large">
-                            <div class="kcal-number-large" id="kcal-consumed">1850</div>
-                            <div class="kcal-label-large">kcal de <span id="kcal-goal-nut">2500</span></div>
-                            <div class="kcal-remaining-large" id="kcal-remaining-txt">Faltan 650 kcal</div>
-                        </div>
-                        <div class="progress-bar-container macro-track-large">
-                            <div class="progress-bar-fill" id="kcal-bar-nut" style="width: 74%;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Macronutrientes Anillos -->
-                    <div class="nutrition-card glass-card macros-summary-card">
-                        <h3>Distribución de Macros</h3>
-                        <div class="macro-rings-row">
-                            <!-- Proteínas -->
-                            <div class="macro-ring-container">
-                                <svg class="progress-ring" width="90" height="90">
-                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
-                                    <circle class="progress-ring-circle" id="ring-protein" stroke="#f43f5e" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="56.5"/>
-                                </svg>
-                                <div class="macro-ring-label">
-                                    <span class="macro-name">Prot (🥩)</span>
-                                    <span class="macro-val"><span id="nut-p-val">120</span>g / 160g</span>
-                                    <span class="macro-percent" id="nut-p-pct">75%</span>
-                                </div>
-                            </div>
-                            <!-- Carbohidratos -->
-                            <div class="macro-ring-container">
-                                <svg class="progress-ring" width="90" height="90">
-                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
-                                    <circle class="progress-ring-circle" id="ring-carbs" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="67.8"/>
-                                </svg>
-                                <div class="macro-ring-label">
-                                    <span class="macro-name">Carb (🌾)</span>
-                                    <span class="macro-val"><span id="nut-c-val">210</span>g / 300g</span>
-                                    <span class="macro-percent" id="nut-c-pct">70%</span>
-                                </div>
-                            </div>
-                            <!-- Grasas -->
-                            <div class="macro-ring-container">
-                                <svg class="progress-ring" width="90" height="90">
-                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
-                                    <circle class="progress-ring-circle" id="ring-fats" stroke="#eab308" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="90.5"/>
-                                </svg>
-                                <div class="macro-ring-label">
-                                    <span class="macro-name">Grasas (🥑)</span>
-                                    <span class="macro-val"><span id="nut-f-val">50</span>g / 70g</span>
-                                    <span class="macro-percent" id="nut-f-pct">71%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Historial de comidas -->
-                <div class="food-log-section glass-card">
-                    <div class="section-title-row">
-                        <h3>Comidas Registradas Hoy</h3>
-                        <button class="btn btn-secondary btn-small" id="btn-clear-food">Limpiar Día</button>
-                    </div>
-                    
-                    <div class="food-table-container">
-                        <table class="food-table">
-                            <thead>
-                                <tr>
-                                    <th>Comida / Alimento</th>
-                                    <th>Calorías</th>
-                                    <th>Proteínas</th>
-                                    <th>Carbohidratos</th>
-                                    <th>Grasas</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="food-log-body">
-                                <!-- Se llenará dinámicamente con JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN: PROGRESO -->
-            <section id="tab-progreso" class="tab-content">
-                <div class="progreso-header">
-                    <h2>Evolución de Peso e Historial</h2>
-                    <p class="text-secondary">Visualiza tu camino hacia tu meta de 95 kg. Registra tus pesos semanales para ver la tendencia.</p>
-                </div>
-
-                <div class="progress-charts-grid">
-                    <!-- Gráfico SVG Dinámico -->
-                    <div class="chart-container-card glass-card">
-                        <div class="chart-header">
-                            <h3>Gráfico de Peso (Semanal)</h3>
-                            <span class="chart-legend">83.5 kg -> 95 kg</span>
-                        </div>
-                        <div class="chart-wrapper">
-                            <!-- Gráfico SVG que se dibujará con JS -->
-                            <svg id="weight-svg-chart" viewBox="0 0 600 300" width="100%" height="100%">
-                                <!-- Ejes, rejilla y líneas dinámicas -->
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Registrar nuevo peso -->
-                    <div class="log-weight-card glass-card">
-                        <h3>Registrar Peso</h3>
-                        <p class="text-secondary">Añade un nuevo punto de peso en el historial.</p>
-                        
-                        <form id="form-add-weight" class="weight-form">
-                            <div class="form-group">
-                                <label for="weight-input">Peso Actual (kg)</label>
-                                <input type="number" id="weight-input" step="0.1" value="83.5" required min="40" max="200" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label for="weight-date-input">Fecha</label>
-                                <input type="date" id="weight-date-input" required class="form-input">
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-full">Registrar Peso</button>
-                        </form>
-
-                        <div class="history-list-container">
-                            <h4>Historial Reciente</h4>
-                            <ul class="weight-history-list" id="weight-history-list">
-                                <!-- Rellenado por JS -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN: CALENDARIO -->
-            <section id="tab-calendario" class="tab-content">
-                <div class="calendar-header-row">
-                    <div>
-                        <h2>Calendario de Entrenamiento</h2>
-                        <p class="text-secondary">Haz clic en los días para programar o registrar tus sesiones de entrenamiento.</p>
-                    </div>
-                    <div class="calendar-nav">
-                        <button class="btn btn-secondary btn-icon" id="btn-calendar-prev">←</button>
-                        <h3 id="calendar-month-year">Junio 2026</h3>
-                        <button class="btn btn-secondary btn-icon" id="btn-calendar-next">→</button>
-                    </div>
-                </div>
-
-                <div class="calendar-layout-grid">
-                    <!-- Calendario Grid -->
-                    <div class="calendar-container glass-card">
-                        <div class="calendar-weekdays">
-                            <div>Dom</div>
-                            <div>Lun</div>
-                            <div>Mar</div>
-                            <div>Mié</div>
-                            <div>Jue</div>
-                            <div>Vie</div>
-                            <div>Sáb</div>
-                        </div>
-                        <div class="calendar-days-grid" id="calendar-days">
-                            <!-- Los días se generarán dinámicamente con JS -->
-                        </div>
-                    </div>
-
-                    <!-- Estadísticas del Calendario -->
-                    <div class="calendar-stats-card glass-card">
-                        <h3>Resumen del Mes</h3>
-                        
-                        <div class="stat-circle-container">
-                            <div class="stat-number" id="cal-completed-count">12</div>
-                            <div class="stat-label">Días Entrenados</div>
-                        </div>
-
-                        <div class="calendar-legend-box">
-                            <h4>Referencias</h4>
-                            <div class="legend-item">
-                                <span class="legend-dot completed"></span>
-                                <span>Entrenamiento Completado</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot planned"></span>
-                                <span>Sesión Programada</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot rest"></span>
-                                <span>Día de Descanso</span>
-                            </div>
-                        </div>
-
-                        <div class="calendar-actions-list">
-                            <h4>Acción Rápida</h4>
-                            <button class="btn btn-primary btn-full" id="btn-mark-today-complete">Marcar Hoy Completado</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <div class="topbar">
+      <div class="brand" style="padding:0;border:none">
+        <div class="brand-mark" style="width:32px;height:32px;font-size:18px">F</div>
+        <div class="brand-name">FOR<span>JA</span></div>
+      </div>
+      <span class="pill" id="planPillTop">Gratis</span>
     </div>
 
-    <!-- MODAL: ACTUALIZAR MÉTRICAS -->
-    <div class="modal-overlay" id="metrics-modal">
-        <div class="modal-content glass-card">
-            <div class="modal-header">
-                <h2>Actualizar Métricas Corporales</h2>
-                <button class="btn-close" id="btn-close-metrics-modal">&times;</button>
+    <main class="content">
+
+      <!-- ============ INICIO ============ -->
+      <section class="view active" id="view-inicio">
+        <div class="hero">
+          <div class="hero-grid">
+            <div>
+              <span class="eyebrow">Bienvenido de vuelta, guerrero</span>
+              <h1>FORJA TU <em>MEJOR VERSIÓN</em></h1>
+              <p>Tu sistema de entrenamiento completo: rutinas guiadas, control de progreso, calorías y dieta. Todo en un solo lugar, sin excusas.</p>
+              <div class="hero-cta">
+                <button class="btn btn-molten" data-go="rutinas">Empezar entrenamiento →</button>
+                <a class="btn btn-ghost" id="playlistBtnHero" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#FF0000"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
+                  Playlist
+                </a>
+              </div>
             </div>
-            <form id="form-metrics" class="modal-form">
-                <div class="form-group">
-                    <label for="input-name">Nombre</label>
-                    <input type="text" id="input-name" value="Christian" required class="form-input">
+            <div class="ring-wrap">
+              <div class="ring" id="ring">
+                <div class="ring-inner">
+                  <div class="big"><span id="ringPct">0</span>%</div>
+                  <div class="lbl">Rutina de hoy</div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="input-weight">Peso Actual (kg)</label>
-                        <input type="number" id="input-weight" step="0.1" value="83.5" required class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="input-goal">Peso Objetivo (kg)</label>
-                        <input type="number" id="input-goal" step="0.1" value="95.0" required class="form-input">
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="input-arm-l">Brazo Izquierdo (cm)</label>
-                        <input type="number" id="input-arm-l" step="0.5" value="37.0" required class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="input-arm-r">Brazo Derecho (cm)</label>
-                        <input type="number" id="input-arm-r" step="0.5" value="39.0" required class="form-input">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Guardar Cambios</button>
-            </form>
+              </div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><div class="n" id="stSessions">0</div><div class="l">Sesiones registradas</div></div>
+            <div class="stat"><div class="n tabnum" id="stVolume">0 <span>kg</span></div><div class="l">Volumen total movido</div></div>
+            <div class="stat"><div class="n" id="stStreak">0 <span>días</span></div><div class="l">Racha activa</div></div>
+          </div>
         </div>
-    </div>
 
-    <!-- MODAL: AGREGAR COMIDA -->
-    <div class="modal-overlay" id="food-modal">
-        <div class="modal-content glass-card">
-            <div class="modal-header">
-                <h2>Agregar Alimento / Comida</h2>
-                <button class="btn-close" id="btn-close-food-modal">&times;</button>
+        <div class="home-2col">
+          <div class="card">
+            <span class="eyebrow">Split semanal</span>
+            <h2 style="font-size:26px;margin:8px 0 16px">Tu semana</h2>
+            <div class="day-list" id="weekList"></div>
+          </div>
+          <div class="playlist">
+            <div>
+              <div class="yt-badge">
+                <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
+              </div>
+              <h2 style="font-size:24px;margin:14px 0 6px">Beast Mode</h2>
+              <p class="muted" style="font-size:13.5px">Dale play a la playlist oficial de FORJA y entra en modo bestia. Directo en YouTube.</p>
             </div>
-            <form id="form-add-food" class="modal-form">
-                <div class="form-group">
-                    <label for="food-name">Nombre del Alimento</label>
-                    <input type="text" id="food-name" placeholder="Ej: Pollo con arroz, Avena..." required class="form-input">
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="food-kcal">Calorías (kcal)</label>
-                        <input type="number" id="food-kcal" min="0" required class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="food-protein">Proteínas (g)</label>
-                        <input type="number" id="food-protein" min="0" required class="form-input">
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="food-carbs">Carbohidratos (g)</label>
-                        <input type="number" id="food-carbs" min="0" required class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="food-fats">Grasas (g)</label>
-                        <input type="number" id="food-fats" min="0" required class="form-input">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Registrar Alimento</button>
-            </form>
+            <a class="btn btn-molten" id="playlistBtnHome" target="_blank" rel="noopener" style="margin-top:14px">▶ Abrir playlist</a>
+          </div>
         </div>
-    </div>
+      </section>
 
-    <script src="app.js"></script>
+      <!-- ============ RUTINAS ============ -->
+      <section class="view" id="view-rutinas">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Entrenamiento guiado</span>
+            <h2>Rutinas</h2>
+          </div>
+          <span class="pill" id="exCountPill">0 ejercicios</span>
+        </div>
+        <div class="muscle-tabs" id="muscleTabs"></div>
+        <div class="ex-grid" id="exGrid"></div>
+      </section>
+
+      <!-- ============ PROGRESO ============ -->
+      <section class="view" id="view-progreso">
+        <div class="section-head">
+          <div><span class="eyebrow">Sin registro no hay avance</span><h2>Progreso</h2></div>
+        </div>
+        <div class="prog-grid">
+          <div class="card">
+            <h3 style="font-size:22px;margin-bottom:16px">Registrar serie</h3>
+            <div class="field">
+              <label>Grupo muscular</label>
+              <select id="pMuscle"></select>
+            </div>
+            <div class="field">
+              <label>Ejercicio</label>
+              <select id="pExercise"></select>
+            </div>
+            <div class="two">
+              <div class="field"><label>Peso (kg)</label><input type="number" id="pWeight" min="0" placeholder="40"></div>
+              <div class="field"><label>Reps</label><input type="number" id="pReps" min="0" placeholder="12"></div>
+            </div>
+            <div class="field"><label>Notas (opcional)</label><input type="text" id="pNotes" placeholder="Me sentí fuerte 💪"></div>
+            <button class="btn btn-molten" id="pSave" style="width:100%">Guardar registro</button>
+          </div>
+          <div class="card">
+            <h3 style="font-size:22px;margin-bottom:6px">Volumen por sesión</h3>
+            <p class="muted" style="font-size:12.5px;margin-bottom:14px">Peso × reps de tus últimos registros</p>
+            <div class="chart" id="chart"></div>
+            <div class="chart-x" id="chartX"></div>
+            <div class="log-list" id="logList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CALORÍAS ============ -->
+      <section class="view" id="view-calorias">
+        <div class="section-head">
+          <div><span class="eyebrow">Combustible correcto</span><h2>Calculadora de calorías</h2></div>
+        </div>
+        <div class="cal-grid">
+          <div class="card">
+            <div class="field"><label>Sexo</label>
+              <select id="cSex"><option value="h">Hombre</option><option value="m">Mujer</option></select>
+            </div>
+            <div class="two">
+              <div class="field"><label>Edad</label><input type="number" id="cAge" value="25" min="12" max="90"></div>
+              <div class="field"><label>Peso (kg)</label><input type="number" id="cWeight" value="70" min="30"></div>
+            </div>
+            <div class="field"><label>Estatura (cm)</label><input type="number" id="cHeight" value="170" min="120"></div>
+            <div class="field"><label>Nivel de actividad</label>
+              <select id="cAct">
+                <option value="1.2">Sedentario (oficina, poco ejercicio)</option>
+                <option value="1.375">Ligero (1-3 días/semana)</option>
+                <option value="1.55" selected>Moderado (3-5 días/semana)</option>
+                <option value="1.725">Intenso (6-7 días/semana)</option>
+                <option value="1.9">Atleta (2x al día)</option>
+              </select>
+            </div>
+            <div class="field"><label>Objetivo</label>
+              <select id="cGoal">
+                <option value="-0.2">Bajar grasa (déficit -20%)</option>
+                <option value="0" selected>Mantener</option>
+                <option value="0.15">Ganar músculo (superávit +15%)</option>
+              </select>
+            </div>
+            <button class="btn btn-molten" id="cCalc" style="width:100%">Calcular</button>
+          </div>
+          <div class="cal-result">
+            <div class="cal-big-lbl">Tu meta diaria</div>
+            <div class="cal-big"><span id="calKcal">—</span></div>
+            <div class="cal-big-lbl">kcal / día</div>
+            <div class="macros">
+              <div class="macro p"><div class="mv"><span id="mProt">0</span>g</div><div class="mk">Proteína</div></div>
+              <div class="macro c"><div class="mv"><span id="mCarb">0</span>g</div><div class="mk">Carbohidr.</div></div>
+              <div class="macro g"><div class="mv"><span id="mFat">0</span>g</div><div class="mk">Grasas</div></div>
+            </div>
+            <div class="tdee-mini">
+              <span>Metabolismo basal (BMR): <b id="bmrOut" style="color:var(--text)">—</b></span>
+              <span>Gasto total (TDEE): <b id="tdeeOut" style="color:var(--text)">—</b></span>
+            </div>
+            <button class="btn btn-ghost" id="applyDiet" style="width:100%;margin-top:16px">Generar dieta con estas calorías →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DIETA ============ -->
+      <section class="view" id="view-dieta">
+        <div class="section-head">
+          <div><span class="eyebrow">Plan de alimentación</span><h2>Dieta</h2></div>
+        </div>
+        <div class="diet-head card" style="padding:18px 22px">
+          <div>
+            <div class="muted" style="font-size:12px;letter-spacing:1px;text-transform:uppercase">Objetivo diario</div>
+            <div style="font-family:'Anton';font-size:30px"><span id="dietKcal">2000</span> kcal</div>
+          </div>
+          <div class="pill">Distribuido en 5 comidas</div>
+        </div>
+        <div class="meal-grid" id="mealGrid"></div>
+      </section>
+
+      <!-- ============ COACHES ============ -->
+      <section class="view" id="view-coaches">
+        <div class="section-head">
+          <div><span class="eyebrow">No entrenas solo</span><h2>Coaches</h2></div>
+        </div>
+        <div class="join-banner">
+          <div class="join-ic">🚀</div>
+          <div class="join-tx">
+            <div class="join-t">¿Te interesa ingresar a este proyecto?</div>
+            <div class="join-d">Comunícate conmigo y forma parte del equipo de coaches FORJA.</div>
+          </div>
+          <a class="join-cta" href="tel:5646463204">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M20 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6l1.8-1.8a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4a1 1 0 00-1 1A17 17 0 0020 21a1 1 0 001-1v-3.5a1 1 0 00-1-1z"/></svg>
+            56 4646 3204
+          </a>
+          <div class="join-by">— Christian Rojas</div>
+        </div>
+        <div class="coach-grid">
+          <div class="coach-list" id="coachList"></div>
+          <div>
+            <div class="chat-box">
+              <div class="chat-top">
+                <div class="who">
+                  <div class="avatar" id="chatAvatar">C<span class="on"></span></div>
+                  <div>
+                    <div class="nm" id="chatName">Coach</div>
+                    <div class="st">● En línea</div>
+                  </div>
+                </div>
+                <div class="call-btns">
+                  <button id="btnVoice" title="Llamada de voz"><svg viewBox="0 0 24 24"><path d="M20 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6l1.8-1.8a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4a1 1 0 00-1 1A17 17 0 0020 21a1 1 0 001-1v-3.5a1 1 0 00-1-1z"/></svg></button>
+                  <button id="btnVideo" title="Videollamada"><svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11z"/></svg></button>
+                </div>
+              </div>
+              <div class="chat-msgs" id="chatMsgs"></div>
+              <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Escribe a tu coach...">
+                <button id="chatSend"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+              </div>
+            </div>
+            <div class="lock-note" id="callLock">
+              <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--amber)"><path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm3 8H9V7a3 3 0 016 0z"/></svg>
+              Las videollamadas y llamadas de voz son exclusivas del plan PRO.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SUSCRIPCIÓN ============ -->
+      <section class="view" id="view-suscripcion">
+        <div class="section-head">
+          <div><span class="eyebrow">Elige tu nivel</span><h2>Suscripción</h2></div>
+        </div>
+        <div class="plans">
+          <div class="plan">
+            <div class="pn">GRATIS</div>
+            <div class="price">$0<span>/mes</span></div>
+            <div class="pd">Para empezar a moverte hoy mismo.</div>
+            <ul>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Rutinas de los 5 grupos musculares</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Registro de progreso básico</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Calculadora de calorías</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Chat de texto con coach</li>
+              <li class="no"><svg class="cross" viewBox="0 0 24 24"><path d="M19 6.4L17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg> Videollamadas con coach</li>
+              <li class="no"><svg class="cross" viewBox="0 0 24 24"><path d="M19 6.4L17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg> Dieta personalizada por coach</li>
+            </ul>
+            <button class="btn btn-ghost" id="btnFree">Plan actual</button>
+          </div>
+          <div class="plan pro">
+            <div class="pn">FORJA PRO</div>
+            <div class="price">$199<span>/mes MXN</span></div>
+            <div class="pd">Todo desbloqueado. Resultados en serio.</div>
+            <ul>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Todo lo del plan Gratis</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> <b>Videollamadas y llamadas</b> con coaches</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Dieta personalizada y ajustada</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Analítica avanzada de progreso</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Rutinas premium exclusivas</li>
+              <li><svg class="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Soporte prioritario</li>
+            </ul>
+            <button class="btn btn-molten" id="btnPro">Suscribirme a PRO</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="foot">
+      <span>FORJA · Sistema de entrenamiento físico</span>
+      <span class="r">© 2026 Christian Rojas · Todos los derechos reservados</span>
+    </footer>
+  </div>
+
+  <!-- Bottom nav (móvil) -->
+  <nav class="bottomnav">
+    <button class="bn-btn active" data-go="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Inicio</button>
+    <button class="bn-btn" data-go="rutinas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><path d="M6 12h12"/></svg>Rutinas</button>
+    <button class="bn-btn" data-go="progreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>Progreso</button>
+    <button class="bn-btn" data-go="calorias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C9 6 8 9 12 12c4-3 3-6 0-10z"/></svg>Calorías</button>
+    <button class="bn-btn" data-go="coaches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Coaches</button>
+  </nav>
+</div>
+
+<!-- Modal videollamada -->
+<div class="modal-bg" id="callModal">
+  <div class="call-modal">
+    <div class="call-avatar" id="callAvatar">C</div>
+    <div class="call-name" id="callName">Coach</div>
+    <div class="call-status"><span id="callStatus">Conectando…</span> <span class="call-timer" id="callTimer"></span></div>
+    <div class="call-controls">
+      <button class="c-mute" id="cMute" title="Silenciar"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.9V21h2v-3.1A7 7 0 0019 11z"/></svg></button>
+      <button class="c-end" id="cEnd" title="Colgar"><svg viewBox="0 0 24 24"><path d="M21 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6L9.4 8.5a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4.5C3.5 2.5 2.5 3 3 4a17 17 0 0017 17c1 .5 1.5-.5 1.5-1.5V16.5a1 1 0 00-.5-1z" transform="rotate(135 12 12)"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   FORJA — Lógica
+   © Christian Rojas. Todos los derechos reservados.
+   ============================================================ */
+
+/* ----------- CONFIG: cambia esto por lo tuyo ----------- */
+const CONFIG = {
+  // 👇 Pega aquí el enlace de TU playlist de YouTube
+  YOUTUBE_PLAYLIST: "https://www.youtube.com/results?search_query=gym+workout+music+playlist+2026",
+  PRECIO_PRO: 199 // MXN / mes
+};
+
+/* ----------- Almacenamiento con respaldo (funciona aquí y al publicarla) ----------- */
+const _mem = {};
+const store = {
+  get(k){ try{ const v=localStorage.getItem(k); return v!==null?v:(_mem[k]??null);}catch(e){ return _mem[k]??null; } },
+  set(k,v){ try{ localStorage.setItem(k,v);}catch(e){} _mem[k]=v; }
+};
+const load=(k,def)=>{ const v=store.get(k); if(v===null) return def; try{return JSON.parse(v);}catch(e){return def;} };
+const save=(k,v)=>store.set(k,JSON.stringify(v));
+
+/* ----------- Estado ----------- */
+let logs = load('forja_logs', []);
+let plan = load('forja_plan', 'free');           // 'free' | 'pro'
+let doneToday = load('forja_done', {});          // {ejercicio:true}
+let dietTarget = load('forja_diet', 2000);
+let prs = load('forja_prs', {});                 // {ejercicio: kg récord}
+
+/* ----------- Datos: rutinas ----------- */
+const ROUTINES = {
+  brazo:   { label:'Brazo', ex:[
+    {n:'Curl de bíceps con barra', s:4, r:'8-10', max:'12'},
+    {n:'Curl martillo con mancuernas', s:3, r:'12', max:'15'},
+    {n:'Press francés (tríceps)', s:4, r:'10', max:'12'},
+    {n:'Extensión de tríceps en polea', s:3, r:'12-15', max:'18'},
+    {n:'Curl concentrado', s:3, r:'12', max:'15'},
+    {n:'Fondos entre bancas', s:3, r:'al fallo', max:'20'},
+  ]},
+  pierna:  { label:'Pierna', ex:[
+    {n:'Sentadilla con barra', s:4, r:'8', max:'10'},
+    {n:'Prensa de pierna', s:4, r:'10-12', max:'15'},
+    {n:'Peso muerto rumano', s:3, r:'10', max:'12'},
+    {n:'Zancadas con mancuernas', s:3, r:'12 c/pierna', max:'15'},
+    {n:'Extensión de cuádriceps', s:3, r:'15', max:'20'},
+    {n:'Elevación de pantorrilla', s:4, r:'20', max:'25'},
+  ]},
+  hombro:  { label:'Hombro', ex:[
+    {n:'Press militar con barra', s:4, r:'8-10', max:'12'},
+    {n:'Elevaciones laterales', s:4, r:'15', max:'20'},
+    {n:'Elevaciones frontales', s:3, r:'12', max:'15'},
+    {n:'Pájaros (deltoide posterior)', s:3, r:'15', max:'20'},
+    {n:'Press Arnold', s:3, r:'10', max:'12'},
+    {n:'Face pull en polea', s:3, r:'15', max:'20'},
+  ]},
+  espalda: { label:'Espalda', ex:[
+    {n:'Dominadas', s:4, r:'al fallo', max:'15'},
+    {n:'Remo con barra', s:4, r:'8-10', max:'12'},
+    {n:'Jalón al pecho en polea', s:3, r:'12', max:'15'},
+    {n:'Remo en polea baja', s:3, r:'12', max:'15'},
+    {n:'Pullover con mancuerna', s:3, r:'15', max:'18'},
+    {n:'Peso muerto convencional', s:3, r:'6-8', max:'10'},
+  ]},
+  abs:     { label:'Abdomen', ex:[
+    {n:'Plancha (plank)', s:4, r:'45 seg', max:'90 seg'},
+    {n:'Crunch abdominal', s:4, r:'20', max:'30'},
+    {n:'Elevación de piernas colgado', s:3, r:'12', max:'18'},
+    {n:'Russian twist', s:3, r:'20', max:'30'},
+    {n:'Rueda abdominal (ab wheel)', s:3, r:'10', max:'15'},
+    {n:'Mountain climbers', s:3, r:'30 seg', max:'60 seg'},
+  ]},
+};
+const WEEK = [
+  ['LUN','Pecho + Bíceps','8 ejercicios'],
+  ['MAR','Espalda + Tríceps','7 ejercicios'],
+  ['MIÉ','Pierna completa','6 ejercicios'],
+  ['JUE','Hombro + Abs','8 ejercicios'],
+  ['VIE','Full body / cardio','5 ejercicios'],
+  ['SÁB','Descanso activo','Movilidad'],
+];
+const COACHES = [
+  {id:'c1', n:'Coach Kari', sp:'Fuerza & hipertrofia', a:'K', reply:'¡Vamos con todo! Cuéntame cómo te fue con la última rutina y ajustamos cargas. 💪'},
+  {id:'c2', n:'Coach Beto', sp:'Pérdida de grasa', a:'B', reply:'Buena. Recuerda mantener el déficit y no saltarte la proteína. ¿Cómo va tu energía en los entrenos?'},
+  {id:'c3', n:'Coach Naomi', sp:'Nutrición deportiva', a:'N', reply:'Perfecto. Si me pasas tus calorías objetivo te armo el ajuste de macros para esta semana. 🥗'},
+];
+
+/* ----------- Navegación ----------- */
+const views = document.querySelectorAll('.view');
+function go(id){
+  views.forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
+  document.querySelectorAll('[data-go]').forEach(b=>{
+    if(b.classList.contains('nav-btn')||b.classList.contains('bn-btn'))
+      b.classList.toggle('active', b.dataset.go===id);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+
+/* ----------- Playlist ----------- */
+document.getElementById('playlistBtnHero').href=CONFIG.YOUTUBE_PLAYLIST;
+document.getElementById('playlistBtnHome').href=CONFIG.YOUTUBE_PLAYLIST;
+
+/* ----------- YouTube "cómo se hace" ----------- */
+const howTo = name => 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' técnica correcta ejercicio');
+
+/* ----------- INICIO ----------- */
+function renderHome(){
+  const wl=document.getElementById('weekList'); wl.innerHTML='';
+  WEEK.forEach((d,i)=>{
+    const el=document.createElement('div');el.className='day-item';
+    el.innerHTML=`<span class="idx">${d[0]}</span><span class="nm">${d[1]}</span><span class="rp">${d[2]}</span>`;
+    wl.appendChild(el);
+  });
+  // stats
+  document.getElementById('stSessions').textContent=logs.length;
+  const vol=logs.reduce((a,l)=>a+(l.weight*l.reps||0),0);
+  document.getElementById('stVolume').innerHTML=vol.toLocaleString('es-MX')+' <span>kg</span>';
+  const days=new Set(logs.map(l=>l.date)).size;
+  document.getElementById('stStreak').innerHTML=days+' <span>días</span>';
+  // ring = % rutina de hoy completada (sobre brazo por defecto = grupo demo)
+  const total=ROUTINES.brazo.ex.length;
+  const done=ROUTINES.brazo.ex.filter(e=>doneToday[e.n]).length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('ring').style.setProperty('--pct',pct);
+  document.getElementById('ringPct').textContent=pct;
+}
+
+/* ----------- RUTINAS ----------- */
+let currentMuscle='brazo';
+function renderMuscleTabs(){
+  const t=document.getElementById('muscleTabs'); t.innerHTML='';
+  Object.keys(ROUTINES).forEach(k=>{
+    const b=document.createElement('button');
+    b.className='muscle-tab'+(k===currentMuscle?' active':'');
+    b.textContent=ROUTINES[k].label;
+    b.onclick=()=>{currentMuscle=k;renderMuscleTabs();renderExercises();};
+    t.appendChild(b);
+  });
+}
+function renderExercises(){
+  const g=document.getElementById('exGrid'); g.innerHTML='';
+  const ex=ROUTINES[currentMuscle].ex;
+  document.getElementById('exCountPill').textContent=ex.length+' ejercicios';
+  ex.forEach((e,i)=>{
+    const isDone=!!doneToday[e.n];
+    const c=document.createElement('div');c.className='ex-card';
+    c.innerHTML=`
+      <div class="ex-top">
+        <div class="ex-name">${e.n}</div>
+        <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
+      </div>
+      <div class="ex-meta">
+        <div class="m"><div class="v">${e.s}</div><div class="k">Series</div></div>
+        <div class="m"><div class="v" style="font-size:18px">${e.r}</div><div class="k">Reps</div></div>
+        <div class="m"><div class="v" style="font-size:18px">${e.max}</div><div class="k">Máx reps</div></div>
+      </div>
+      <button class="ex-pr" data-pr="${e.n}">
+        <span class="pr-k">🏆 Récord personal (PR)</span>
+        <span class="pr-v">${prs[e.n]?prs[e.n]+' kg':'Registrar'}</span>
+      </button>
+      <div class="ex-actions">
+        <a class="ex-video" href="${howTo(e.n)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
+          Cómo se hace
+        </a>
+        <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
+      </div>`;
+    g.appendChild(c);
+  });
+  g.querySelectorAll('.ex-done').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.ex; doneToday[k]=!doneToday[k]; save('forja_done',doneToday);
+    renderExercises(); renderHome();
+  });
+  g.querySelectorAll('.ex-pr').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.pr; const cur=prs[k]||'';
+    const val=prompt('Tu récord personal (PR) en "'+k+'"\n\nPeso máximo levantado (kg):', cur);
+    if(val===null) return;
+    if(val.trim()===''){ delete prs[k]; save('forja_prs',prs); renderExercises(); return; }
+    const num=parseFloat(val);
+    if(isNaN(num)||num<0){ alert('Pon un número válido en kg 💪'); return; }
+    prs[k]=num; save('forja_prs',prs); renderExercises();
+  });
+}
+
+/* ----------- PROGRESO ----------- */
+function fillProgSelects(){
+  const ms=document.getElementById('pMuscle');
+  ms.innerHTML=Object.keys(ROUTINES).map(k=>`<option value="${k}">${ROUTINES[k].label}</option>`).join('');
+  ms.onchange=fillExerciseSelect; fillExerciseSelect();
+}
+function fillExerciseSelect(){
+  const k=document.getElementById('pMuscle').value;
+  document.getElementById('pExercise').innerHTML=ROUTINES[k].ex.map(e=>`<option>${e.n}</option>`).join('');
+}
+document.getElementById('pSave').onclick=()=>{
+  const w=+document.getElementById('pWeight').value||0;
+  const r=+document.getElementById('pReps').value||0;
+  if(!r){alert('Pon al menos las repeticiones 💪');return;}
+  logs.push({date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'}),
+    muscle:document.getElementById('pMuscle').value,
+    exercise:document.getElementById('pExercise').value,
+    weight:w, reps:r, notes:document.getElementById('pNotes').value});
+  save('forja_logs',logs);
+  document.getElementById('pWeight').value='';document.getElementById('pReps').value='';document.getElementById('pNotes').value='';
+  renderProgress(); renderHome();
+};
+function renderProgress(){
+  const last=logs.slice(-8);
+  const chart=document.getElementById('chart'), cx=document.getElementById('chartX');
+  chart.innerHTML=''; cx.innerHTML='';
+  if(!last.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. ¡Guarda tu primera serie!</div>'; }
+  else{
+    const vols=last.map(l=>l.weight*l.reps||l.reps);
+    const max=Math.max(...vols,1);
+    last.forEach((l,i)=>{
+      const bar=document.createElement('div');bar.className='bar';
+      bar.style.height=Math.max(vols[i]/max*100,4)+'%';
+      bar.dataset.v=vols[i]+' kg·rep';
+      chart.appendChild(bar);
+      const s=document.createElement('span');s.textContent=l.date;cx.appendChild(s);
+    });
+  }
+  const ll=document.getElementById('logList'); ll.innerHTML='';
+  if(!logs.length){ll.innerHTML='<div class="empty">Tu historial aparecerá aquí.</div>';return;}
+  [...logs].reverse().slice(0,20).forEach(l=>{
+    const row=document.createElement('div');row.className='log-row';
+    row.innerHTML=`<span class="dot"></span><span class="ex">${l.exercise}</span>
+      <span class="stat2">${l.weight?l.weight+'kg × ':''}${l.reps} reps</span>
+      <span class="stat2" style="opacity:.6">${l.date}</span>`;
+    ll.appendChild(row);
+  });
+}
+
+/* ----------- CALORÍAS (Mifflin-St Jeor) ----------- */
+function calc(){
+  const sex=document.getElementById('cSex').value;
+  const age=+document.getElementById('cAge').value;
+  const w=+document.getElementById('cWeight').value;
+  const h=+document.getElementById('cHeight').value;
+  const act=+document.getElementById('cAct').value;
+  const goal=+document.getElementById('cGoal').value;
+  let bmr=10*w+6.25*h-5*age+(sex==='h'?5:-161);
+  const tdee=bmr*act;
+  const target=Math.round(tdee*(1+goal));
+  document.getElementById('calKcal').textContent=target.toLocaleString('es-MX');
+  document.getElementById('bmrOut').textContent=Math.round(bmr)+' kcal';
+  document.getElementById('tdeeOut').textContent=Math.round(tdee)+' kcal';
+  // macros: proteína 2g/kg, grasa 25% kcal, resto carbos
+  const prot=Math.round(w*2);
+  const fat=Math.round(target*0.25/9);
+  const carb=Math.round((target-(prot*4+fat*9))/4);
+  document.getElementById('mProt').textContent=prot;
+  document.getElementById('mFat').textContent=fat;
+  document.getElementById('mCarb').textContent=Math.max(carb,0);
+  dietTarget=target; save('forja_diet',target);
+  return target;
+}
+document.getElementById('cCalc').onclick=calc;
+document.getElementById('applyDiet').onclick=()=>{ calc(); renderDiet(); go('dieta'); };
+
+/* ----------- DIETA ----------- */
+function renderDiet(){
+  const t=dietTarget||2000;
+  document.getElementById('dietKcal').textContent=t.toLocaleString('es-MX');
+  // reparto por comida
+  const meals=[
+    {t:'Desayuno', p:.25, items:[['Avena con fruta','60g avena + plátano'],['Claras de huevo','4 claras + 1 entero'],['Café negro','sin azúcar']]},
+    {t:'Snack AM', p:.12, items:[['Yogur griego','200g natural'],['Almendras','20g'],['Miel','1 cdita']]},
+    {t:'Comida', p:.32, items:[['Pechuga de pollo','180g a la plancha'],['Arroz integral','80g cocido'],['Ensalada verde','libre + aceite oliva']]},
+    {t:'Snack PM', p:.11, items:[['Batido de proteína','1 scoop + agua'],['Manzana','1 pieza']]},
+    {t:'Cena', p:.20, items:[['Salmón o atún','160g'],['Verduras al vapor','brócoli + calabaza'],['Aguacate','1/2 pieza']]},
+  ];
+  const g=document.getElementById('mealGrid'); g.innerHTML='';
+  meals.forEach(m=>{
+    const kc=Math.round(t*m.p);
+    const el=document.createElement('div');el.className='meal';
+    el.innerHTML=`<div class="meal-top"><div class="t">${m.t}</div><div class="kc">${kc} kcal</div></div>
+      <ul>${m.items.map(i=>`<li>${i[0]}<span>${i[1]}</span></li>`).join('')}</ul>`;
+    g.appendChild(el);
+  });
+}
+
+/* ----------- COACHES / CHAT ----------- */
+let currentCoach=COACHES[0];
+let chats=load('forja_chats',{});
+function renderCoachList(){
+  const cl=document.getElementById('coachList'); cl.innerHTML='';
+  COACHES.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='coach-card'+(c.id===currentCoach.id?' active':'');
+    b.innerHTML=`<div class="avatar">${c.a}<span class="on"></span></div>
+      <div><div class="nm">${c.n}</div><div class="sp">${c.sp}</div></div>`;
+    b.onclick=()=>{currentCoach=c;renderCoachList();openChat();};
+    cl.appendChild(b);
+  });
+}
+function openChat(){
+  document.getElementById('chatName').textContent=currentCoach.n;
+  document.getElementById('chatAvatar').innerHTML=currentCoach.a+'<span class="on"></span>';
+  if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, tu ${currentCoach.sp.toLowerCase()}. ¿En qué te apoyo hoy?`}];
+  renderMsgs();
+}
+function renderMsgs(){
+  const box=document.getElementById('chatMsgs'); box.innerHTML='';
+  chats[currentCoach.id].forEach(m=>{
+    const d=document.createElement('div');d.className='msg '+m.who;d.textContent=m.t;box.appendChild(d);
+  });
+  box.scrollTop=box.scrollHeight;
+}
+function sendMsg(){
+  const inp=document.getElementById('chatInput'); const v=inp.value.trim(); if(!v)return;
+  chats[currentCoach.id].push({who:'me',t:v}); inp.value=''; renderMsgs();
+  setTimeout(()=>{
+    chats[currentCoach.id].push({who:'them',t:currentCoach.reply});
+    save('forja_chats',chats); renderMsgs();
+  },900);
+}
+document.getElementById('chatSend').onclick=sendMsg;
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+
+/* ----------- Videollamada / llamada ----------- */
+let callTimer=null, callSecs=0;
+function startCall(video){
+  if(plan!=='pro'){
+    if(confirm('📞 Las llamadas con coach son parte del plan FORJA PRO.\n\n¿Quieres ver los planes?')) go('suscripcion');
+    return;
+  }
+  document.getElementById('callName').textContent=currentCoach.n;
+  document.getElementById('callAvatar').textContent=currentCoach.a;
+  document.getElementById('callStatus').textContent=video?'Videollamada':'Llamada de voz';
+  document.getElementById('callModal').classList.add('open');
+  callSecs=0; document.getElementById('callTimer').textContent='00:00';
+  clearInterval(callTimer);
+  callTimer=setInterval(()=>{
+    callSecs++;
+    const m=String(Math.floor(callSecs/60)).padStart(2,'0');
+    const s=String(callSecs%60).padStart(2,'0');
+    document.getElementById('callTimer').textContent=m+':'+s;
+  },1000);
+}
+function endCall(){ clearInterval(callTimer); document.getElementById('callModal').classList.remove('open'); }
+document.getElementById('btnVideo').onclick=()=>startCall(true);
+document.getElementById('btnVoice').onclick=()=>startCall(false);
+document.getElementById('cEnd').onclick=endCall;
+document.getElementById('cMute').onclick=function(){this.style.background=this.style.background?'':'var(--orange)';};
+
+/* ----------- Suscripción ----------- */
+function applyPlan(){
+  const label = plan==='pro'?'FORJA PRO':'Gratis';
+  document.getElementById('planLabel').textContent=label;
+  document.getElementById('planPillTop').textContent=label;
+  document.getElementById('callLock').style.display = plan==='pro'?'none':'flex';
+  document.getElementById('btnFree').textContent = plan==='free'?'Plan actual':'Cambiar a Gratis';
+  document.getElementById('btnPro').textContent = plan==='pro'?'✓ Ya eres PRO':'Suscribirme a PRO';
+}
+document.getElementById('btnPro').onclick=()=>{
+  if(plan==='pro'){alert('¡Ya tienes FORJA PRO activo! 🔥');return;}
+  if(confirm(`Activar FORJA PRO por $${CONFIG.PRECIO_PRO} MXN/mes.\n\n(Demo: aquí conectarías tu pasarela de pago, ej. Stripe/Mercado Pago.)`)){
+    plan='pro'; save('forja_plan',plan); applyPlan();
+    alert('🔥 ¡Bienvenido a FORJA PRO! Ya puedes hacer videollamadas con tus coaches.');
+  }
+};
+document.getElementById('btnFree').onclick=()=>{ plan='free'; save('forja_plan',plan); applyPlan(); };
+
+/* ----------- Init ----------- */
+renderHome(); renderMuscleTabs(); renderExercises();
+fillProgSelects(); renderProgress();
+calc(); renderDiet();
+renderCoachList(); openChat();
+applyPlan();
+</script>
 </body>
 </html>
