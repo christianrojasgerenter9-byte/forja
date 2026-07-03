@@ -308,6 +308,44 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .c-end{background:#E5342B}
 .c-end:hover{filter:brightness(1.1)}
 
+/* ---------- Auth (login / registro) ---------- */
+.auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;
+  background:radial-gradient(700px 400px at 80% 0%,rgba(255,45,120,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(255,90,31,.18),transparent 60%),var(--bg)}
+.auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
+.auth-brand .brand-mark{width:44px;height:44px;font-size:24px}
+.auth-brand .brand-name{font-size:30px}
+.auth-title{text-align:center;color:var(--muted);font-size:13px;margin-bottom:22px}
+.auth-tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:20px}
+.auth-tab{flex:1;padding:11px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted);transition:.16s}
+.auth-tab.active{background:var(--molten);color:#fff;box-shadow:var(--glow)}
+.auth-err{color:#FF6B6B;font-size:13px;min-height:18px;margin:2px 0 6px}
+.auth-note{text-align:center;color:var(--muted-2);font-size:11.5px;margin-top:16px;line-height:1.5}
+.auth-form .btn{width:100%;margin-top:8px}
+.auth-swap{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+.auth-swap b{color:var(--orange);cursor:pointer}
+
+/* ---------- Modal PRO (paquete de pago) ---------- */
+.pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(255,45,120,.3),transparent 62%),#121218;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
+.pro-close{position:absolute;top:14px;right:16px;font-size:18px;color:var(--muted);width:34px;height:34px;border-radius:9px}
+.pro-close:hover{color:var(--text);background:var(--surface-2)}
+.pro-badge{display:inline-block;font-family:'Anton';font-size:24px;letter-spacing:1.5px;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pro-tagline{color:var(--muted);font-size:13px;margin-top:2px}
+.pro-price{font-family:'Anton';font-size:56px;margin:14px 0 2px;line-height:.9}
+.pro-price span{font-size:16px;color:var(--muted);font-family:'Inter';font-weight:600}
+.pro-benefits{list-style:none;text-align:left;display:flex;flex-direction:column;gap:11px;margin:24px 0}
+.pro-benefits li{display:flex;gap:10px;font-size:14px;align-items:flex-start}
+.pro-benefits svg{width:18px;height:18px;fill:var(--green);flex-shrink:0;margin-top:1px}
+.pro-modal .btn{width:100%}
+.pro-skip{margin-top:14px;color:var(--muted);font-size:13px;text-decoration:underline;width:100%}
+.pro-skip:hover{color:var(--text)}
+.nav-plan .logout{margin-top:8px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.nav-plan .logout:hover{color:var(--text);border-color:var(--muted-2)}
+.topbar .tb-right{display:flex;align-items:center;gap:8px}
+.tb-logout{width:38px;height:38px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center}
+.tb-logout svg{width:18px;height:18px;fill:var(--muted)}
+.tb-logout:hover svg{fill:var(--text)}
+
 /* ---------- Footer ---------- */
 .foot{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,46px);color:var(--muted-2);font-size:12.5px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;max-width:var(--maxw);margin:0 auto;width:100%}
 .foot .r{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
@@ -338,6 +376,42 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 </style>
 </head>
 <body>
+
+<!-- ===================== LOGIN / REGISTRO ===================== -->
+<div class="auth-gate" id="authGate">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">F</div>
+      <div class="brand-name">FOR<span style="background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent">JA</span></div>
+    </div>
+    <div class="auth-title">Tu sistema de entrenamiento</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth="login">Ingresar</button>
+      <button class="auth-tab" data-auth="register">Crear cuenta</button>
+    </div>
+
+    <div class="auth-form" id="formLogin">
+      <div class="field"><label>Correo</label><input type="email" id="logEmail" placeholder="tucorreo@mail.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="logPass" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="auth-err" id="logErr"></div>
+      <button class="btn btn-molten" id="doLogin">Ingresar</button>
+      <div class="auth-swap">¿No tienes cuenta? <b data-auth="register">Crea una aquí</b></div>
+    </div>
+
+    <div class="auth-form" id="formRegister" style="display:none">
+      <div class="field"><label>Nombre</label><input type="text" id="regName" placeholder="Christian" autocomplete="name"></div>
+      <div class="field"><label>Correo</label><input type="email" id="regEmail" placeholder="tucorreo@mail.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <div class="field"><label>Confirmar contraseña</label><input type="password" id="regPass2" placeholder="Repite tu contraseña" autocomplete="new-password"></div>
+      <div class="auth-err" id="regErr"></div>
+      <button class="btn btn-molten" id="doRegister">Crear cuenta</button>
+      <div class="auth-swap">¿Ya tienes cuenta? <b data-auth="login">Ingresa aquí</b></div>
+    </div>
+
+    <p class="auth-note">🔒 Demo: tus datos se guardan solo en este dispositivo.<br>Para una app real se conecta a un servicio de autenticación (Firebase, Supabase, etc.).</p>
+  </div>
+</div>
+
 <div class="app">
 
   <!-- ===================== SIDEBAR (PC) ===================== -->
@@ -371,9 +445,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg> Suscripción
     </button>
     <div class="nav-plan">
-      <div class="lbl">Tu plan</div>
+      <div class="lbl">Sesión iniciada</div>
+      <div class="val" id="userName" style="font-size:16px">—</div>
+      <div class="lbl" style="margin-top:12px">Tu plan</div>
       <div class="val" id="planLabel">Gratis</div>
       <button data-go="suscripcion">Mejorar a PRO</button>
+      <button class="logout" id="logoutBtn">Cerrar sesión</button>
     </div>
   </aside>
 
@@ -384,7 +461,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="brand-mark" style="width:32px;height:32px;font-size:18px">F</div>
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
-      <span class="pill" id="planPillTop">Gratis</span>
+      <div class="tb-right">
+        <span class="pill" id="planPillTop">Gratis</span>
+        <button class="tb-logout" id="logoutBtnTop" title="Cerrar sesión"><svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5v3H9v4h7v3zM4 5h8V3H4a2 2 0 00-2 2v14a2 2 0 002 2h8v-2H4z"/></svg></button>
+      </div>
     </div>
 
     <main class="content">
@@ -668,6 +748,25 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   </div>
 </div>
 
+<!-- Modal PRO (paquete de pago) -->
+<div class="modal-bg" id="proModal">
+  <div class="pro-modal">
+    <button class="pro-close" id="proClose">✕</button>
+    <div class="pro-badge">FORJA PRO</div>
+    <div class="pro-tagline">Desbloquea todo tu potencial</div>
+    <div class="pro-price" id="proPrice">$199 <span>MXN/mes</span></div>
+    <ul class="pro-benefits">
+      <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Videollamadas y llamadas con coaches</li>
+      <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Dieta personalizada por tu coach</li>
+      <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Analítica avanzada de progreso</li>
+      <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Rutinas premium exclusivas</li>
+      <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Soporte prioritario</li>
+    </ul>
+    <button class="btn btn-molten" id="proActivate">Activar FORJA PRO</button>
+    <button class="pro-skip" id="proSkip">Seguir con el plan gratis por ahora</button>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    FORJA — Lógica
@@ -696,6 +795,8 @@ let plan = load('forja_plan', 'free');           // 'free' | 'pro'
 let doneToday = load('forja_done', {});          // {ejercicio:true}
 let dietTarget = load('forja_diet', 2000);
 let prs = load('forja_prs', {});                 // {ejercicio: kg récord}
+let users = load('forja_users', {});             // {correo:{name,pass}}
+let session = load('forja_session', null);       // correo activo
 
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
@@ -992,7 +1093,7 @@ document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='
 let callTimer=null, callSecs=0;
 function startCall(video){
   if(plan!=='pro'){
-    if(confirm('📞 Las llamadas con coach son parte del plan FORJA PRO.\n\n¿Quieres ver los planes?')) go('suscripcion');
+    openPro();
     return;
   }
   document.getElementById('callName').textContent=currentCoach.n;
@@ -1023,14 +1124,87 @@ function applyPlan(){
   document.getElementById('btnFree').textContent = plan==='free'?'Plan actual':'Cambiar a Gratis';
   document.getElementById('btnPro').textContent = plan==='pro'?'✓ Ya eres PRO':'Suscribirme a PRO';
 }
+/* Abrir el paquete de pago (modal PRO) */
+function openPro(){
+  const pp=document.getElementById('proPrice');
+  if(pp) pp.innerHTML=`$${CONFIG.PRECIO_PRO} <span>MXN/mes</span>`;
+  document.getElementById('proModal').classList.add('open');
+}
+function closePro(){ document.getElementById('proModal').classList.remove('open'); }
+
 document.getElementById('btnPro').onclick=()=>{
   if(plan==='pro'){alert('¡Ya tienes FORJA PRO activo! 🔥');return;}
-  if(confirm(`Activar FORJA PRO por $${CONFIG.PRECIO_PRO} MXN/mes.\n\n(Demo: aquí conectarías tu pasarela de pago, ej. Stripe/Mercado Pago.)`)){
-    plan='pro'; save('forja_plan',plan); applyPlan();
-    alert('🔥 ¡Bienvenido a FORJA PRO! Ya puedes hacer videollamadas con tus coaches.');
-  }
+  openPro();
 };
-document.getElementById('btnFree').onclick=()=>{ plan='free'; save('forja_plan',plan); applyPlan(); };
+/* Al dar clic en "Gratis" se abre el paquete de pago (upsell) */
+document.getElementById('btnFree').onclick=openPro;
+
+document.getElementById('proActivate').onclick=()=>{
+  plan='pro'; save('forja_plan',plan); applyPlan(); closePro();
+  alert('🔥 ¡Bienvenido a FORJA PRO! Ya puedes hacer videollamadas con tus coaches.\n\n(Demo: aquí conectarías tu pasarela de pago, ej. Stripe / Mercado Pago.)');
+};
+document.getElementById('proSkip').onclick=()=>{ plan='free'; save('forja_plan',plan); applyPlan(); closePro(); };
+document.getElementById('proClose').onclick=closePro;
+document.getElementById('proModal').addEventListener('click',e=>{ if(e.target.id==='proModal') closePro(); });
+
+/* ----------- Login / Registro ----------- */
+async function hashPass(str){
+  try{
+    const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }catch(e){ let h=0; for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;} return 'h'+h; }
+}
+const validEmail=e=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+
+function switchAuth(mode){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.auth===mode));
+  document.getElementById('formLogin').style.display    = mode==='login'?'block':'none';
+  document.getElementById('formRegister').style.display = mode==='register'?'block':'none';
+  document.getElementById('logErr').textContent=''; document.getElementById('regErr').textContent='';
+}
+document.querySelectorAll('[data-auth]').forEach(el=>el.addEventListener('click',()=>switchAuth(el.dataset.auth)));
+
+function enterApp(){
+  const u=users[session];
+  document.getElementById('authGate').style.display='none';
+  document.querySelector('.app').style.display='flex';
+  if(u) document.getElementById('userName').textContent=u.name;
+}
+function showGate(){
+  document.getElementById('authGate').style.display='grid';
+  document.querySelector('.app').style.display='none';
+}
+
+document.getElementById('doRegister').onclick=async()=>{
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim().toLowerCase();
+  const p=document.getElementById('regPass').value, p2=document.getElementById('regPass2').value;
+  const err=document.getElementById('regErr');
+  if(!name||!email||!p){err.textContent='Llena todos los campos.';return;}
+  if(!validEmail(email)){err.textContent='Escribe un correo válido.';return;}
+  if(p.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
+  if(p!==p2){err.textContent='Las contraseñas no coinciden.';return;}
+  if(users[email]){err.textContent='Ya existe una cuenta con ese correo.';return;}
+  users[email]={name, pass:await hashPass(p)}; save('forja_users',users);
+  session=email; save('forja_session',session); enterApp();
+};
+document.getElementById('doLogin').onclick=async()=>{
+  const email=document.getElementById('logEmail').value.trim().toLowerCase();
+  const p=document.getElementById('logPass').value;
+  const err=document.getElementById('logErr');
+  const u=users[email];
+  if(!u || u.pass!==await hashPass(p)){err.textContent='Correo o contraseña incorrectos.';return;}
+  session=email; save('forja_session',session); enterApp();
+};
+function logout(){
+  session=null; save('forja_session',null);
+  document.getElementById('logEmail').value=''; document.getElementById('logPass').value='';
+  switchAuth('login'); showGate();
+}
+document.getElementById('logoutBtn').onclick=logout;
+document.getElementById('logoutBtnTop').onclick=logout;
+document.getElementById('logPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('doLogin').click();});
+document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('doRegister').click();});
 
 /* ----------- Init ----------- */
 renderHome(); renderMuscleTabs(); renderExercises();
@@ -1038,6 +1212,7 @@ fillProgSelects(); renderProgress();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
+if(session && users[session]) enterApp(); else showGate();
 </script>
 </body>
 </html>
