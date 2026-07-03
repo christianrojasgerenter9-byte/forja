@@ -2,8 +2,7 @@
 
 App web de entrenamiento físico que funciona en **PC y celular** desde un solo archivo, sin instalar nada. Rutinas guiadas, control de progreso, calorías, dieta y comunicación con coaches — con una estética *molten* de alto impacto (negro obsidiana + degradado naranja→magenta).
 
-> **Demo en vivo:** una vez publicado con GitHub Pages, tu app estará en `https://TU-USUARIO.github.io/forja/`
-
+> **Demo en vivo:** 👉 https://christianrojasgerenter9-byte.github.io/forja/
 ---
 
 ## ✨ Características
