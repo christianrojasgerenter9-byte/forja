@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexFitness - Programa de Entrenamiento</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menú Lateral -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h2"></path>
+                        <path d="M18 18h2a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-2"></path>
+                        <line x1="6" y1="14" x2="18" y2="14"></line>
+                        <rect x="6" y="11" width="12" height="6" rx="1"></rect>
+                        <path d="M6.5 11V9a2.5 2.5 0 0 1 5 0v2"></path>
+                        <path d="M12.5 11V9a2.5 2.5 0 0 1 5 0v2"></path>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">ALEX<span class="logo-highlight">FITNESS</span></span>
+                    <span class="logo-subtitle">Programa de Fuerza</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="rutinas" id="btn-tab-rutinas">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.5 2h11M6.5 22h11M12 2v20M6.5 7h11M6.5 17h11"></path>
+                        <rect x="3" y="7" width="3.5" height="10" rx="1"></rect>
+                        <rect x="17.5" y="7" width="3.5" height="10" rx="1"></rect>
+                    </svg>
+                    <span>Rutinas</span>
+                </button>
+                <button class="nav-item" data-tab="nutricion" id="btn-tab-nutricion">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span>Nutrición</span>
+                </button>
+                <button class="nav-item" data-tab="progreso" id="btn-tab-progreso">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"></path>
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                    </svg>
+                    <span>Progreso</span>
+                </button>
+                <button class="nav-item" data-tab="calendario" id="btn-tab-calendario">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>Calendario</span>
+                </button>
+            </nav>
+
+            <div class="user-card-small">
+                <div class="user-avatar" id="sidebar-avatar">C</div>
+                <div class="user-info">
+                    <div class="user-name-small" id="sidebar-user-name">Christian</div>
+                    <div class="user-status-small">En volumen 💪</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header superior -->
+            <header class="top-header">
+                <div class="header-welcome">
+                    <h1 id="welcome-title">¡Bienvenido, Christian! <span class="emoji">💪</span></h1>
+                    <p class="header-subtitle">Sigue tu progreso y alcanza tu mejor versión.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btn-open-metrics-modal">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path>
+                        </svg>
+                        <span>Actualizar Métricas</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SECCIÓN: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content active">
+                <!-- Métricas Rápidas Grid -->
+                <div class="metrics-grid">
+                    <!-- Peso Actual -->
+                    <div class="metric-card glass-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Peso Actual</span>
+                            <span class="metric-icon weight">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="6"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="metric-value"><span id="val-peso-actual">83.5</span> <span class="unit">kg</span></div>
+                        <div class="metric-trend positive" id="peso-diff-status">
+                            Gana masa muscular
+                        </div>
+                    </div>
+
+                    <!-- Meta -->
+                    <div class="metric-card glass-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Meta de Peso</span>
+                            <span class="metric-icon goal">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                    <path d="M2 12h20"></path>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="metric-value"><span id="val-peso-meta">95</span> <span class="unit">kg</span></div>
+                        <div class="metric-subtext" id="peso-restante">Faltan 11.5 kg</div>
+                    </div>
+
+                    <!-- Brazo Izq -->
+                    <div class="metric-card glass-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Brazo Izq.</span>
+                            <span class="metric-icon arm-l">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 14h-4.5c-1.5 0-3-1.5-3-3s1.5-3 3-3H18"></path>
+                                    <rect x="18" y="5" width="4" height="14" rx="1"></rect>
+                                    <path d="M10.5 11c0-2-1.5-3.5-3.5-3.5S3.5 9 3.5 11"></path>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="metric-value"><span id="val-brazo-izq">37</span> <span class="unit">cm</span></div>
+                        <div class="metric-subtext">Medida de contracción</div>
+                    </div>
+
+                    <!-- Brazo Der -->
+                    <div class="metric-card glass-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Brazo Der.</span>
+                            <span class="metric-icon arm-r">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 14h4.5c1.5 0 3-1.5 3-3s-1.5-3-3-3H6"></path>
+                                    <rect x="2" y="5" width="4" height="14" rx="1"></rect>
+                                    <path d="M13.5 11c0-2 1.5-3.5 3.5-3.5S20.5 9 20.5 11"></path>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="metric-value"><span id="val-brazo-der">39</span> <span class="unit">cm</span></div>
+                        <div class="metric-subtext">Asimetría detectada: +2 cm</div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Progreso Principal -->
+                <div class="progress-section-card glass-card">
+                    <div class="progress-info-header">
+                        <div>
+                            <h3>Progreso hacia tu meta de <span id="progress-goal-txt">95</span> kg</h3>
+                            <p class="text-secondary" id="progress-desc-txt">Llevas completado el 87.9% de tu peso objetivo.</p>
+                        </div>
+                        <div class="progress-percentage-large" id="val-progress-percent">87.9%</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="val-progress-bar" style="width: 87.9%;"></div>
+                    </div>
+                </div>
+
+                <!-- Resumen de Rutinas y Accesos Rápidos -->
+                <div class="dashboard-bottom-grid">
+                    <div class="dashboard-routines-preview">
+                        <div class="section-title-row">
+                            <h3>Tus Rutinas de Fuerza</h3>
+                            <button class="btn btn-text" onclick="switchTab('rutinas')">Ver detalles →</button>
+                        </div>
+                        <div class="routines-grid-mini">
+                            <!-- Tarjeta Pecho -->
+                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
+                                <div class="routine-mini-header">
+                                    <div class="routine-icon color-pecho">💥</div>
+                                    <h4>Pecho</h4>
+                                </div>
+                                <p class="routine-desc">Press con ladrillos, aperturas y lagartijas inclinadas.</p>
+                                <span class="exercise-count">3 Ejercicios</span>
+                            </div>
+
+                            <!-- Tarjeta Brazo -->
+                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
+                                <div class="routine-mini-header">
+                                    <div class="routine-icon color-brazo">💪</div>
+                                    <h4>Brazo</h4>
+                                </div>
+                                <p class="routine-desc">Curl, martillo y concentrado.</p>
+                                <span class="exercise-count">3 Ejercicios</span>
+                            </div>
+
+                            <!-- Tarjeta Espalda -->
+                            <div class="routine-mini-card glass-card pointer" onclick="switchTab('rutinas')">
+                                <div class="routine-mini-header">
+                                    <div class="routine-icon color-espalda">🏋️</div>
+                                    <h4>Espalda</h4>
+                                </div>
+                                <p class="routine-desc">Remo con mochila y peso corporal.</p>
+                                <span class="exercise-count">2 Ejercicios</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Nutrición Rápida -->
+                    <div class="dashboard-nutrition-preview glass-card">
+                        <div class="section-title-row">
+                            <h3>Nutrición de Hoy</h3>
+                            <button class="btn btn-text" onclick="switchTab('nutricion')">Registrar comida →</button>
+                        </div>
+                        <div class="nutrition-donut-container">
+                            <div class="kcal-display">
+                                <span class="kcal-number" id="kcal-value-main">1850</span>
+                                <span class="kcal-label">kcal consumidas</span>
+                                <span class="kcal-goal-label">de <span id="kcal-goal-txt">2500</span> kcal</span>
+                            </div>
+                            <svg class="progress-ring-main" width="160" height="160">
+                                <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                                <circle class="progress-ring-circle" id="kcal-ring-main" stroke="url(#blue-grad)" stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" stroke-dasharray="439.8" stroke-dashoffset="114.3"/>
+                                <defs>
+                                    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#3b82f6" />
+                                        <stop offset="100%" stop-color="#06b6d4" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="macro-bars-grid">
+                            <div class="macro-bar-item">
+                                <div class="macro-info">
+                                    <span>Proteína 🥩</span>
+                                    <span><span id="p-val-main">120</span>g / 160g</span>
+                                </div>
+                                <div class="macro-track">
+                                    <div class="macro-fill bg-protein" id="p-bar-main" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            <div class="macro-bar-item">
+                                <div class="macro-info">
+                                    <span>Carbohidratos 🌾</span>
+                                    <span><span id="c-val-main">210</span>g / 300g</span>
+                                </div>
+                                <div class="macro-track">
+                                    <div class="macro-fill bg-carbs" id="c-bar-main" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: RUTINAS -->
+            <section id="tab-rutinas" class="tab-content">
+                <div class="routines-header">
+                    <h2>Tus Rutinas de Fuerza</h2>
+                    <p class="text-secondary">Selecciona un grupo muscular para ver los ejercicios y registrar tus series.</p>
+                    
+                    <div class="routine-tabs">
+                        <button class="routine-tab-btn active" data-routine="pecho">💥 Pecho</button>
+                        <button class="routine-tab-btn" data-routine="brazo">💪 Brazo</button>
+                        <button class="routine-tab-btn" data-routine="espalda">🏋️ Espalda</button>
+                    </div>
+                </div>
+
+                <div class="routine-layout-grid">
+                    <!-- Ejercicios Container -->
+                    <div class="exercises-container">
+                        <!-- Pecho -->
+                        <div class="routine-group active" id="routine-pecho">
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Press con ladrillos</h3>
+                                    <p class="text-secondary">Simulación de press de banca con peso improvisado. Centrado en el pectoral mayor.</p>
+                                    <div class="exercise-meta">
+                                        <span>4 Series</span>
+                                        <span>12-15 Reps</span>
+                                        <span>Descanso: 90s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="15" class="input-log-rep">
+                                        <input type="number" value="12" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="12" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="12" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>4</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="12" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Aperturas (Chest Flyes)</h3>
+                                    <p class="text-secondary">Movimiento de abducción horizontal de hombro para aislar el pectoral.</p>
+                                    <div class="exercise-meta">
+                                        <span>3 Series</span>
+                                        <span>12 Reps</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Lagartijas inclinadas (Push-ups)</h3>
+                                    <p class="text-secondary">Manos elevadas en una superficie estable. Enfoque en la porción inferior del pectoral.</p>
+                                    <div class="exercise-meta">
+                                        <span>3 Series</span>
+                                        <span>Al fallo</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="18" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="15" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Brazo -->
+                        <div class="routine-group" id="routine-brazo">
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Curl de Bíceps</h3>
+                                    <p class="text-secondary">Flexión clásica de codo para desarrollar el bíceps braquial.</p>
+                                    <div class="exercise-meta">
+                                        <span>4 Series</span>
+                                        <span>12 Reps</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>4</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Curl Martillo</h3>
+                                    <p class="text-secondary">Agarre neutro. Trabaja el supinador largo y el braquiorradial (grosor del brazo).</p>
+                                    <div class="exercise-meta">
+                                        <span>3 Series</span>
+                                        <span>12 Reps</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="10" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Curl Concentrado</h3>
+                                    <p class="text-secondary">Sentado, codo apoyado en la cara interna del muslo para el pico del bíceps.</p>
+                                    <div class="exercise-meta">
+                                        <span>3 Series</span>
+                                        <span>10 Reps</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="8" class="input-log-rep">
+                                        <input type="number" value="8" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Espalda -->
+                        <div class="routine-group" id="routine-espalda">
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Remo con mochila</h3>
+                                    <p class="text-secondary">Tracción con mochila cargada con libros u otros elementos pesados. Enfocado en dorsales y trapecio.</p>
+                                    <div class="exercise-meta">
+                                        <span>4 Series</span>
+                                        <span>12 Reps</span>
+                                        <span>Descanso: 90s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="16" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="16" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <input type="number" value="16" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>4</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <input type="number" value="16" class="input-log-weight">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <div class="exercise-info">
+                                    <h3>Remo invertido (Peso corporal)</h3>
+                                    <p class="text-secondary">Tracción horizontal debajo de una mesa resistente o barra baja utilizando el propio peso.</p>
+                                    <div class="exercise-meta">
+                                        <span>3 Series</span>
+                                        <span>10-12 Reps</span>
+                                        <span>Descanso: 60s</span>
+                                    </div>
+                                </div>
+                                <div class="exercise-log">
+                                    <div class="log-row-header">
+                                        <span>Serie</span>
+                                        <span>Repeticiones</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Hecho</span>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>1</span>
+                                        <input type="number" value="12" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>2</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="log-row">
+                                        <span>3</span>
+                                        <input type="number" value="10" class="input-log-rep">
+                                        <span class="log-label-body">Body</span>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Temporizador lateral -->
+                    <div class="timer-sidebar glass-card">
+                        <h3>Cronómetro de Descanso</h3>
+                        <div class="timer-display" id="timer-display-time">01:30</div>
+                        
+                        <div class="timer-controls">
+                            <button class="btn btn-secondary btn-icon" id="btn-timer-reset" title="Reiniciar">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary btn-large btn-icon" id="btn-timer-play" title="Iniciar">
+                                <svg id="play-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <svg id="pause-icon" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="timer-quick-select">
+                            <button class="btn btn-small btn-chip active" data-time="90">90s</button>
+                            <button class="btn btn-small btn-chip" data-time="60">60s</button>
+                            <button class="btn btn-small btn-chip" data-time="45">45s</button>
+                            <button class="btn btn-small btn-chip" data-time="30">30s</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: NUTRICIÓN -->
+            <section id="tab-nutricion" class="tab-content">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Seguimiento de Nutrición</h2>
+                        <p class="text-secondary">Controla tus calorías y macronutrientes diarios para optimizar tu ganancia muscular.</p>
+                    </div>
+                    <button class="btn btn-primary" id="btn-open-food-modal">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Agregar Comida</span>
+                    </button>
+                </div>
+
+                <!-- Anillos de Nutrición -->
+                <div class="nutrition-dashboard-grid">
+                    <!-- Calorías Principales -->
+                    <div class="nutrition-card glass-card calorie-center">
+                        <h3>Consumo de Calorías</h3>
+                        <div class="calorie-donut-large">
+                            <div class="kcal-number-large" id="kcal-consumed">1850</div>
+                            <div class="kcal-label-large">kcal de <span id="kcal-goal-nut">2500</span></div>
+                            <div class="kcal-remaining-large" id="kcal-remaining-txt">Faltan 650 kcal</div>
+                        </div>
+                        <div class="progress-bar-container macro-track-large">
+                            <div class="progress-bar-fill" id="kcal-bar-nut" style="width: 74%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Macronutrientes Anillos -->
+                    <div class="nutrition-card glass-card macros-summary-card">
+                        <h3>Distribución de Macros</h3>
+                        <div class="macro-rings-row">
+                            <!-- Proteínas -->
+                            <div class="macro-ring-container">
+                                <svg class="progress-ring" width="90" height="90">
+                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
+                                    <circle class="progress-ring-circle" id="ring-protein" stroke="#f43f5e" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="56.5"/>
+                                </svg>
+                                <div class="macro-ring-label">
+                                    <span class="macro-name">Prot (🥩)</span>
+                                    <span class="macro-val"><span id="nut-p-val">120</span>g / 160g</span>
+                                    <span class="macro-percent" id="nut-p-pct">75%</span>
+                                </div>
+                            </div>
+                            <!-- Carbohidratos -->
+                            <div class="macro-ring-container">
+                                <svg class="progress-ring" width="90" height="90">
+                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
+                                    <circle class="progress-ring-circle" id="ring-carbs" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="67.8"/>
+                                </svg>
+                                <div class="macro-ring-label">
+                                    <span class="macro-name">Carb (🌾)</span>
+                                    <span class="macro-val"><span id="nut-c-val">210</span>g / 300g</span>
+                                    <span class="macro-percent" id="nut-c-pct">70%</span>
+                                </div>
+                            </div>
+                            <!-- Grasas -->
+                            <div class="macro-ring-container">
+                                <svg class="progress-ring" width="90" height="90">
+                                    <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="36" cx="45" cy="45"/>
+                                    <circle class="progress-ring-circle" id="ring-fats" stroke="#eab308" stroke-width="8" stroke-linecap="round" fill="transparent" r="36" cx="45" cy="45" stroke-dasharray="226.2" stroke-dashoffset="90.5"/>
+                                </svg>
+                                <div class="macro-ring-label">
+                                    <span class="macro-name">Grasas (🥑)</span>
+                                    <span class="macro-val"><span id="nut-f-val">50</span>g / 70g</span>
+                                    <span class="macro-percent" id="nut-f-pct">71%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de comidas -->
+                <div class="food-log-section glass-card">
+                    <div class="section-title-row">
+                        <h3>Comidas Registradas Hoy</h3>
+                        <button class="btn btn-secondary btn-small" id="btn-clear-food">Limpiar Día</button>
+                    </div>
+                    
+                    <div class="food-table-container">
+                        <table class="food-table">
+                            <thead>
+                                <tr>
+                                    <th>Comida / Alimento</th>
+                                    <th>Calorías</th>
+                                    <th>Proteínas</th>
+                                    <th>Carbohidratos</th>
+                                    <th>Grasas</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="food-log-body">
+                                <!-- Se llenará dinámicamente con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: PROGRESO -->
+            <section id="tab-progreso" class="tab-content">
+                <div class="progreso-header">
+                    <h2>Evolución de Peso e Historial</h2>
+                    <p class="text-secondary">Visualiza tu camino hacia tu meta de 95 kg. Registra tus pesos semanales para ver la tendencia.</p>
+                </div>
+
+                <div class="progress-charts-grid">
+                    <!-- Gráfico SVG Dinámico -->
+                    <div class="chart-container-card glass-card">
+                        <div class="chart-header">
+                            <h3>Gráfico de Peso (Semanal)</h3>
+                            <span class="chart-legend">83.5 kg -> 95 kg</span>
+                        </div>
+                        <div class="chart-wrapper">
+                            <!-- Gráfico SVG que se dibujará con JS -->
+                            <svg id="weight-svg-chart" viewBox="0 0 600 300" width="100%" height="100%">
+                                <!-- Ejes, rejilla y líneas dinámicas -->
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Registrar nuevo peso -->
+                    <div class="log-weight-card glass-card">
+                        <h3>Registrar Peso</h3>
+                        <p class="text-secondary">Añade un nuevo punto de peso en el historial.</p>
+                        
+                        <form id="form-add-weight" class="weight-form">
+                            <div class="form-group">
+                                <label for="weight-input">Peso Actual (kg)</label>
+                                <input type="number" id="weight-input" step="0.1" value="83.5" required min="40" max="200" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="weight-date-input">Fecha</label>
+                                <input type="date" id="weight-date-input" required class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">Registrar Peso</button>
+                        </form>
+
+                        <div class="history-list-container">
+                            <h4>Historial Reciente</h4>
+                            <ul class="weight-history-list" id="weight-history-list">
+                                <!-- Rellenado por JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: CALENDARIO -->
+            <section id="tab-calendario" class="tab-content">
+                <div class="calendar-header-row">
+                    <div>
+                        <h2>Calendario de Entrenamiento</h2>
+                        <p class="text-secondary">Haz clic en los días para programar o registrar tus sesiones de entrenamiento.</p>
+                    </div>
+                    <div class="calendar-nav">
+                        <button class="btn btn-secondary btn-icon" id="btn-calendar-prev">←</button>
+                        <h3 id="calendar-month-year">Junio 2026</h3>
+                        <button class="btn btn-secondary btn-icon" id="btn-calendar-next">→</button>
+                    </div>
+                </div>
+
+                <div class="calendar-layout-grid">
+                    <!-- Calendario Grid -->
+                    <div class="calendar-container glass-card">
+                        <div class="calendar-weekdays">
+                            <div>Dom</div>
+                            <div>Lun</div>
+                            <div>Mar</div>
+                            <div>Mié</div>
+                            <div>Jue</div>
+                            <div>Vie</div>
+                            <div>Sáb</div>
+                        </div>
+                        <div class="calendar-days-grid" id="calendar-days">
+                            <!-- Los días se generarán dinámicamente con JS -->
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas del Calendario -->
+                    <div class="calendar-stats-card glass-card">
+                        <h3>Resumen del Mes</h3>
+                        
+                        <div class="stat-circle-container">
+                            <div class="stat-number" id="cal-completed-count">12</div>
+                            <div class="stat-label">Días Entrenados</div>
+                        </div>
+
+                        <div class="calendar-legend-box">
+                            <h4>Referencias</h4>
+                            <div class="legend-item">
+                                <span class="legend-dot completed"></span>
+                                <span>Entrenamiento Completado</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot planned"></span>
+                                <span>Sesión Programada</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot rest"></span>
+                                <span>Día de Descanso</span>
+                            </div>
+                        </div>
+
+                        <div class="calendar-actions-list">
+                            <h4>Acción Rápida</h4>
+                            <button class="btn btn-primary btn-full" id="btn-mark-today-complete">Marcar Hoy Completado</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: ACTUALIZAR MÉTRICAS -->
+    <div class="modal-overlay" id="metrics-modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Actualizar Métricas Corporales</h2>
+                <button class="btn-close" id="btn-close-metrics-modal">&times;</button>
+            </div>
+            <form id="form-metrics" class="modal-form">
+                <div class="form-group">
+                    <label for="input-name">Nombre</label>
+                    <input type="text" id="input-name" value="Christian" required class="form-input">
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="input-weight">Peso Actual (kg)</label>
+                        <input type="number" id="input-weight" step="0.1" value="83.5" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-goal">Peso Objetivo (kg)</label>
+                        <input type="number" id="input-goal" step="0.1" value="95.0" required class="form-input">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="input-arm-l">Brazo Izquierdo (cm)</label>
+                        <input type="number" id="input-arm-l" step="0.5" value="37.0" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-arm-r">Brazo Derecho (cm)</label>
+                        <input type="number" id="input-arm-r" step="0.5" value="39.0" required class="form-input">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: AGREGAR COMIDA -->
+    <div class="modal-overlay" id="food-modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Agregar Alimento / Comida</h2>
+                <button class="btn-close" id="btn-close-food-modal">&times;</button>
+            </div>
+            <form id="form-add-food" class="modal-form">
+                <div class="form-group">
+                    <label for="food-name">Nombre del Alimento</label>
+                    <input type="text" id="food-name" placeholder="Ej: Pollo con arroz, Avena..." required class="form-input">
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="food-kcal">Calorías (kcal)</label>
+                        <input type="number" id="food-kcal" min="0" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="food-protein">Proteínas (g)</label>
+                        <input type="number" id="food-protein" min="0" required class="form-input">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="food-carbs">Carbohidratos (g)</label>
+                        <input type="number" id="food-carbs" min="0" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="food-fats">Grasas (g)</label>
+                        <input type="number" id="food-fats" min="0" required class="form-input">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Registrar Alimento</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
