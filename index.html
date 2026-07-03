@@ -209,6 +209,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .log-row .ex{font-weight:600;flex:1}
 .log-row .stat2{color:var(--muted);font-size:12.5px}
 .empty{text-align:center;color:var(--muted-2);padding:34px 10px;font-size:14px}
+.measure-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;align-items:end}
+.measure-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:18px}
+.ms-tile{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.ms-tile .v{font-family:'Anton';font-size:30px;line-height:1}
+.ms-tile .v small{font-size:14px;color:var(--muted);font-family:'Inter';font-weight:600}
+.ms-tile .k{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.ms-tile .d{font-size:11.5px;font-weight:700;margin-top:5px;color:var(--amber)}
 
 /* ---------- CALORÍAS ---------- */
 .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
@@ -538,6 +545,22 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="section-head">
           <div><span class="eyebrow">Sin registro no hay avance</span><h2>Progreso</h2></div>
         </div>
+
+        <!-- Medidas corporales -->
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="font-size:22px;margin-bottom:4px">Medidas corporales</h3>
+          <p class="muted" style="font-size:12.5px;margin-bottom:16px">Registra tu peso y medidas para ver tu evolución 📏</p>
+          <div class="measure-inputs">
+            <div class="field" style="margin:0"><label>Peso (kg)</label><input type="number" id="mPeso" min="0" step="0.1" placeholder="70"></div>
+            <div class="field" style="margin:0"><label>Brazo (cm)</label><input type="number" id="mBrazo" min="0" step="0.1" placeholder="35"></div>
+            <div class="field" style="margin:0"><label>Pierna (cm)</label><input type="number" id="mPierna" min="0" step="0.1" placeholder="55"></div>
+            <div class="field" style="margin:0"><label>Abdomen (cm)</label><input type="number" id="mAbdomen" min="0" step="0.1" placeholder="80"></div>
+          </div>
+          <button class="btn btn-molten" id="mSave" style="margin-top:14px">Guardar medidas</button>
+          <div class="measure-stats" id="measureStats"></div>
+          <div class="log-list" id="measureHist" style="max-height:220px;margin-top:16px"></div>
+        </div>
+
         <div class="prog-grid">
           <div class="card">
             <h3 style="font-size:22px;margin-bottom:16px">Registrar serie</h3>
@@ -797,6 +820,7 @@ let dietTarget = load('forja_diet', 2000);
 let prs = load('forja_prs', {});                 // {ejercicio: kg récord}
 let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
+let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
 
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
@@ -1000,6 +1024,39 @@ function renderProgress(){
       <span class="stat2" style="opacity:.6">${l.date}</span>`;
     ll.appendChild(row);
   });
+}
+
+/* ----------- Medidas corporales ----------- */
+document.getElementById('mSave').onclick=()=>{
+  const peso=parseFloat(document.getElementById('mPeso').value)||null;
+  const brazo=parseFloat(document.getElementById('mBrazo').value)||null;
+  const pierna=parseFloat(document.getElementById('mPierna').value)||null;
+  const abdomen=parseFloat(document.getElementById('mAbdomen').value)||null;
+  if(peso===null&&brazo===null&&pierna===null&&abdomen===null){alert('Llena al menos un dato 📏');return;}
+  measures.push({date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'2-digit'}),peso,brazo,pierna,abdomen});
+  save('forja_measures',measures);
+  if(peso!==null){ const cw=document.getElementById('cWeight'); if(cw){cw.value=peso; calc();} }
+  ['mPeso','mBrazo','mPierna','mAbdomen'].forEach(id=>document.getElementById(id).value='');
+  renderMeasures();
+};
+function renderMeasures(){
+  const box=document.getElementById('measureStats'), hist=document.getElementById('measureHist');
+  if(!measures.length){ box.innerHTML='<div class="empty" style="grid-column:1/-1">Aún no registras medidas. ¡Toma la primera hoy!</div>'; hist.innerHTML=''; return; }
+  const last=measures[measures.length-1], prev=measures.length>1?measures[measures.length-2]:null;
+  const defs=[['peso','Peso','kg'],['brazo','Brazo','cm'],['pierna','Pierna','cm'],['abdomen','Abdomen','cm']];
+  box.innerHTML=defs.map(([k,label,unit])=>{
+    const v=last[k]; let d='';
+    if(prev&&prev[k]!=null&&v!=null){
+      const diff=+(v-prev[k]).toFixed(1);
+      d = diff===0 ? '<div class="d" style="color:var(--muted)">— sin cambio</div>'
+        : `<div class="d">${diff>0?'▲ +':'▼ '}${Math.abs(diff)} ${unit}</div>`;
+    }
+    return `<div class="ms-tile"><div class="v">${v!=null?v:'—'}<small> ${unit}</small></div><div class="k">${label}</div>${d}</div>`;
+  }).join('');
+  hist.innerHTML=[...measures].reverse().slice(0,12).map(m=>{
+    const parts=[]; if(m.peso!=null)parts.push(m.peso+' kg'); if(m.brazo!=null)parts.push('Brazo '+m.brazo); if(m.pierna!=null)parts.push('Pierna '+m.pierna); if(m.abdomen!=null)parts.push('Abd '+m.abdomen);
+    return `<div class="log-row"><span class="dot"></span><span class="ex">${m.date}</span><span class="stat2">${parts.join(' · ')}</span></div>`;
+  }).join('');
 }
 
 /* ----------- CALORÍAS (Mifflin-St Jeor) ----------- */
@@ -1208,7 +1265,7 @@ document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='E
 
 /* ----------- Init ----------- */
 renderHome(); renderMuscleTabs(); renderExercises();
-fillProgSelects(); renderProgress();
+fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
