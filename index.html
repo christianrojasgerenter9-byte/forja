@@ -939,9 +939,7 @@ const WEEK = [
   ['SÁB','Descanso activo','Movilidad'],
 ];
 const COACHES = [
-  {id:'c1', n:'Coach Kari', sp:'Fuerza & hipertrofia', a:'K', reply:'¡Vamos con todo! Cuéntame cómo te fue con la última rutina y ajustamos cargas. 💪'},
-  {id:'c2', n:'Coach Beto', sp:'Pérdida de grasa', a:'B', reply:'Buena. Recuerda mantener el déficit y no saltarte la proteína. ¿Cómo va tu energía en los entrenos?'},
-  {id:'c3', n:'Coach Naomi', sp:'Nutrición deportiva', a:'N', reply:'Perfecto. Si me pasas tus calorías objetivo te armo el ajuste de macros para esta semana. 🥗'},
+  {id:'c1', n:'Christian Rojas', sp:'Coach FORJA · 56 4646 3204', a:'C', reply:'¡Gracias por tu mensaje! Para una respuesta inmediata escríbeme por WhatsApp: 56 4646 3204 📲'},
 ];
 
 /* ----------- Navegación ----------- */
@@ -1176,6 +1174,8 @@ function renderDiet(){
 /* ----------- COACHES / CHAT ----------- */
 let currentCoach=COACHES[0];
 let chats=load('forja_chats',{});
+// Limpia chats de los coaches demo antiguos (Kari, Beto, Naomi)
+if(chats.c2 || chats.c3 || (chats.c1 && chats.c1[0] && chats.c1[0].t && chats.c1[0].t.indexOf('Kari')>-1)){ chats={}; save('forja_chats',chats); }
 function renderCoachList(){
   const cl=document.getElementById('coachList'); cl.innerHTML='';
   COACHES.forEach(c=>{
@@ -1190,7 +1190,7 @@ function renderCoachList(){
 function openChat(){
   document.getElementById('chatName').textContent=currentCoach.n;
   document.getElementById('chatAvatar').innerHTML=currentCoach.a+'<span class="on"></span>';
-  if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, tu ${currentCoach.sp.toLowerCase()}. ¿En qué te apoyo hoy?`}];
+  if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, coach de FORJA. ¿En qué te apoyo hoy? También puedes escribirme directo por WhatsApp: 56 4646 3204 📲`}];
   renderMsgs();
 }
 function renderMsgs(){
