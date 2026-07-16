@@ -381,6 +381,20 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   .foot{flex-direction:column;text-align:center}
 }
 
+/* ===== Enfoque PRO (Volumen/Definición) (agregado) ===== */
+.enfoque-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);border-radius:var(--radius-sm);
+  padding:12px 16px;margin-bottom:16px}
+.enfoque-banner b{display:block;font-size:14px}
+.enfoque-banner span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.enfoque-banner button{flex-shrink:0;padding:8px 14px;border-radius:99px;background:var(--molten);
+  color:#170a02;font-weight:700;font-size:13px}
+.enfoque-banner.choose{background:var(--surface-2);border-color:var(--line)}
+.goal-opt{display:block;width:100%;text-align:left;padding:16px;border-radius:14px;margin-bottom:12px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--text);transition:.15s;cursor:pointer}
+.goal-opt:hover{border-color:var(--orange);box-shadow:var(--glow)}
+.goal-opt b{display:block;font-size:17px;margin-bottom:3px}
+.goal-opt span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
 /* ===== Caja de código PRO (agregado) ===== */
 .code-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
 .code-box>span{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
@@ -608,6 +622,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
         </div>
+        <div class="enfoque-banner" id="enfoqueBanner" style="display:none"></div>
         <div class="muscle-tabs" id="muscleTabs"></div>
         <div class="ex-grid" id="exGrid"></div>
       </section>
@@ -844,6 +859,18 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 </div>
 
 <!-- Modal PRO (paquete de pago) -->
+<!-- ===== Modal de objetivo PRO ===== -->
+<div class="modal-bg" id="goalModal">
+  <div class="pro-modal">
+    <button class="pro-close" id="goalClose" type="button">✕</button>
+    <div class="pro-badge">FORJA PRO</div>
+    <div class="pro-tagline">¿Cuál es tu objetivo?</div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;margin:6px 0 18px">Elige tu meta y te cargamos rutinas enfocadas.</p>
+    <button class="goal-opt" type="button" data-goal="volumen"><b>💪 Volumen</b><span>Ganar masa muscular y fuerza · cargas altas, pocas reps, descansos largos</span></button>
+    <button class="goal-opt" type="button" data-goal="definicion"><b>🔥 Definición</b><span>Marcar músculo y quemar grasa · más reps, descanso corto, ritmo alto</span></button>
+  </div>
+</div>
+
 <div class="modal-bg" id="proModal">
   <div class="pro-modal">
     <button class="pro-close" id="proClose">✕</button>
@@ -921,7 +948,8 @@ let doneToday = load('forja_done', {});          // {ejercicio:true}
 let dietTarget = load('forja_diet', 2000);
 let prs = load('forja_prs', {});
 let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usuario
-let mode = load('forja_mode','gym');   // 'gym' | 'home'                 // {ejercicio: kg récord}
+let mode = load('forja_mode','gym');   // 'gym' | 'home'
+let goal = load('forja_goal',null);   // null | 'definicion' | 'volumen' (solo PRO)                 // {ejercicio: kg récord}
 let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
@@ -1020,7 +1048,204 @@ const HOME_ROUTINES = {
     {n:'Sentadilla isométrica en pared', s:3, r:'45 seg', max:'90 seg'},
   ]},
 };
-function getRoutines(){ return mode==='home' ? HOME_ROUTINES : ROUTINES; }
+
+/* ===================== RUTINAS ENFOCADAS (SOLO PRO) ===================== */
+/* GYM — VOLUMEN (fuerza/masa: cargas altas, pocas reps, descansos largos) */
+const GYM_VOL = {
+  brazo:{label:'Brazo',ex:[
+    {n:'Curl de bíceps con barra (pesado)',s:4,r:'6-8',max:'10'},
+    {n:'Curl martillo con mancuernas',s:4,r:'8',max:'10'},
+    {n:'Press francés con barra Z',s:4,r:'6-8',max:'10'},
+    {n:'Fondos en paralelas con lastre',s:4,r:'8',max:'10'},
+    {n:'Curl predicador (banca Scott)',s:3,r:'8',max:'10'},
+    {n:'Press cerrado en banca',s:3,r:'6-8',max:'10'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadilla con barra (pesada)',s:5,r:'5',max:'8'},
+    {n:'Prensa de pierna',s:4,r:'8',max:'10'},
+    {n:'Peso muerto rumano',s:4,r:'6-8',max:'10'},
+    {n:'Hack squat',s:3,r:'8',max:'10'},
+    {n:'Extensión de cuádriceps',s:3,r:'10',max:'12'},
+    {n:'Elevación de pantorrilla de pie',s:4,r:'10',max:'12'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Press militar con barra (pesado)',s:4,r:'6-8',max:'10'},
+    {n:'Press Arnold con mancuernas',s:4,r:'8',max:'10'},
+    {n:'Elevaciones laterales',s:4,r:'10',max:'12'},
+    {n:'Remo al mentón con barra',s:3,r:'8',max:'10'},
+    {n:'Face pull en polea',s:3,r:'12',max:'15'},
+    {n:'Press tras nuca (controlado)',s:3,r:'8',max:'10'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Peso muerto convencional',s:4,r:'5',max:'6'},
+    {n:'Dominadas con lastre',s:4,r:'6-8',max:'10'},
+    {n:'Remo con barra pesado',s:4,r:'6-8',max:'10'},
+    {n:'Remo en polea baja',s:3,r:'8',max:'10'},
+    {n:'Jalón al pecho agarre ancho',s:3,r:'8',max:'10'},
+    {n:'Pullover con mancuerna',s:3,r:'10',max:'12'},
+  ]},
+  abs:{label:'Abdomen',ex:[
+    {n:'Elevación de piernas colgado con lastre',s:4,r:'10',max:'12'},
+    {n:'Crunch en polea alta',s:4,r:'10',max:'12'},
+    {n:'Plancha con peso',s:3,r:'45 seg',max:'60 seg'},
+    {n:'Rueda abdominal (ab wheel)',s:3,r:'8',max:'12'},
+    {n:'Woodchopper en polea',s:3,r:'12 c/lado',max:'15'},
+    {n:'Sit-up con disco',s:3,r:'12',max:'15'},
+  ]},
+};
+/* GYM — DEFINICIÓN (marcar/quemar: más reps, superseries, descanso corto) */
+const GYM_DEF = {
+  brazo:{label:'Brazo',ex:[
+    {n:'Superserie: curl mancuernas + extensión en polea',s:4,r:'12-15',max:'20'},
+    {n:'Curl martillo (ritmo alto)',s:3,r:'15',max:'20'},
+    {n:'Extensión de tríceps en polea (cuerda)',s:4,r:'15',max:'20'},
+    {n:'Curl en banco inclinado',s:3,r:'15',max:'18'},
+    {n:'Patada de tríceps',s:3,r:'15 c/brazo',max:'20'},
+    {n:'Fondos entre bancas (al fallo)',s:3,r:'al fallo',max:'25'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadilla (media carga, ritmo)',s:4,r:'15',max:'20'},
+    {n:'Zancadas caminando con mancuernas',s:4,r:'14 c/pierna',max:'20'},
+    {n:'Prensa a una pierna',s:3,r:'15 c/pierna',max:'18'},
+    {n:'Extensión de cuádriceps (dropset)',s:3,r:'18',max:'25'},
+    {n:'Curl femoral tumbado',s:3,r:'15',max:'20'},
+    {n:'Sentadilla con salto (finisher)',s:3,r:'20',max:'25'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Press de hombro con mancuernas (ritmo)',s:4,r:'15',max:'18'},
+    {n:'Superserie: laterales + frontales',s:4,r:'15',max:'20'},
+    {n:'Elevaciones laterales en polea',s:3,r:'18',max:'25'},
+    {n:'Pájaros (deltoide posterior)',s:3,r:'18',max:'20'},
+    {n:'Face pull',s:3,r:'20',max:'25'},
+    {n:'Circuito de hombro con banda',s:3,r:'20',max:'30'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Jalón al pecho (ritmo alto)',s:4,r:'15',max:'20'},
+    {n:'Remo en máquina',s:4,r:'15',max:'20'},
+    {n:'Remo en polea baja (agarre estrecho)',s:3,r:'15',max:'18'},
+    {n:'Pull-over en polea',s:3,r:'18',max:'20'},
+    {n:'Remo unilateral con mancuerna',s:3,r:'15 c/lado',max:'20'},
+    {n:'Superman con banda (finisher)',s:3,r:'20',max:'25'},
+  ]},
+  abs:{label:'Abdomen',ex:[
+    {n:'Circuito: crunch + bicicleta + plancha',s:4,r:'20',max:'30'},
+    {n:'Mountain climbers',s:4,r:'40 seg',max:'60 seg'},
+    {n:'Russian twist con disco',s:3,r:'24 c/lado',max:'30'},
+    {n:'Elevación de piernas',s:3,r:'18',max:'25'},
+    {n:'Plancha lateral',s:3,r:'40 seg c/lado',max:'60 seg'},
+    {n:'Burpees (finisher)',s:3,r:'15',max:'20'},
+  ]},
+};
+/* CASA — VOLUMEN (peso corporal + carga casera pesada, pocas reps difíciles) */
+const HOME_VOL = {
+  pecho:{label:'Pecho',ex:[
+    {n:'Flexiones lastradas (mochila cargada)',s:4,r:'8',max:'12'},
+    {n:'Flexiones con pies muy elevados',s:4,r:'8',max:'12'},
+    {n:'Flexiones diamante lentas (tempo 3s)',s:4,r:'8',max:'10'},
+    {n:'Flexiones arqueras (mano dominante)',s:3,r:'6 c/lado',max:'8'},
+    {n:'Aperturas con mochila/botellas pesadas',s:3,r:'10',max:'12'},
+    {n:'Flexiones con pausa abajo 3s',s:3,r:'8',max:'10'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Dominadas (barra o puerta resistente)',s:4,r:'6-8',max:'10'},
+    {n:'Remo con mochila muy cargada',s:4,r:'8',max:'10'},
+    {n:'Remo invertido bajo mesa (pies elevados)',s:4,r:'8',max:'12'},
+    {n:'Remo a una mano pesado',s:3,r:'8 c/lado',max:'10'},
+    {n:'Peso muerto rumano con mochila',s:3,r:'10',max:'12'},
+    {n:'Superman con pausa',s:3,r:'12',max:'15'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Pike push-ups (flexión en pica)',s:4,r:'8',max:'12'},
+    {n:'Press de hombro con mochila cargada',s:4,r:'8',max:'10'},
+    {n:'Handstand push-up en pared (asistida)',s:3,r:'5',max:'8'},
+    {n:'Elevaciones laterales con botellas pesadas',s:4,r:'10',max:'12'},
+    {n:'Remo al mentón con mochila',s:3,r:'10',max:'12'},
+    {n:'Pájaros con botellas',s:3,r:'12',max:'15'},
+  ]},
+  abdomen:{label:'Abdomen',ex:[
+    {n:'Elevación de piernas con pausa',s:4,r:'10',max:'12'},
+    {n:'Rueda abdominal / deslizamiento con trapo',s:4,r:'8',max:'12'},
+    {n:'Plancha con mochila',s:3,r:'45 seg',max:'60 seg'},
+    {n:'Crunch con peso (botella/mochila)',s:3,r:'12',max:'15'},
+    {n:'V-ups',s:3,r:'12',max:'15'},
+    {n:'Hollow hold',s:3,r:'30 seg',max:'45 seg'},
+  ]},
+  brazo:{label:'Brazo',ex:[
+    {n:'Curl de bíceps con mochila cargada',s:4,r:'8-10',max:'12'},
+    {n:'Fondos de tríceps en silla con lastre',s:4,r:'8',max:'12'},
+    {n:'Curl martillo con botellas pesadas',s:3,r:'10',max:'12'},
+    {n:'Flexiones diamante lentas',s:3,r:'8',max:'12'},
+    {n:'Extensión de tríceps con mochila (nuca)',s:3,r:'10',max:'12'},
+    {n:'Curl concentrado con botella pesada',s:3,r:'10 c/brazo',max:'12'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadilla búlgara con mochila',s:4,r:'8 c/pierna',max:'12'},
+    {n:'Sentadilla con mochila cargada',s:4,r:'10',max:'12'},
+    {n:'Peso muerto rumano a una pierna con botella',s:3,r:'10 c/pierna',max:'12'},
+    {n:'Zancadas con carga',s:4,r:'10 c/pierna',max:'12'},
+    {n:'Puente de glúteo con peso (pausa)',s:4,r:'12',max:'15'},
+    {n:'Elevación de pantorrilla con carga',s:4,r:'15',max:'20'},
+  ]},
+};
+/* CASA — DEFINICIÓN (muchas reps, circuitos, poco descanso) */
+const HOME_DEF = {
+  pecho:{label:'Pecho',ex:[
+    {n:'Flexiones estándar (ritmo alto)',s:4,r:'20',max:'30'},
+    {n:'Superserie: inclinadas + declinadas',s:4,r:'15',max:'20'},
+    {n:'Flexiones diamante',s:3,r:'15',max:'20'},
+    {n:'Flexiones explosivas',s:3,r:'10',max:'15'},
+    {n:'Aperturas con botellas ligeras',s:3,r:'20',max:'25'},
+    {n:'Flexiones al fallo (finisher)',s:2,r:'al fallo',max:'40'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Remo con mochila (ritmo)',s:4,r:'18',max:'25'},
+    {n:'Superman dinámico',s:4,r:'20',max:'25'},
+    {n:'Remo invertido bajo mesa',s:4,r:'15',max:'20'},
+    {n:'Pull-apart con banda/toalla',s:3,r:'20',max:'25'},
+    {n:'Remo a una mano rápido',s:3,r:'18 c/lado',max:'22'},
+    {n:'Buenos días con mochila ligera',s:3,r:'20',max:'25'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Press de hombro con botellas (ritmo)',s:4,r:'18',max:'22'},
+    {n:'Superserie: laterales + frontales',s:4,r:'18',max:'25'},
+    {n:'Pike push-ups',s:3,r:'12',max:'18'},
+    {n:'Círculos de brazos con botellas',s:3,r:'40 seg',max:'60 seg'},
+    {n:'Pájaros con botellas',s:3,r:'20',max:'25'},
+    {n:'Circuito de hombro con banda',s:3,r:'25',max:'30'},
+  ]},
+  abdomen:{label:'Abdomen',ex:[
+    {n:'Circuito: crunch + bicicleta + plancha',s:4,r:'20',max:'30'},
+    {n:'Mountain climbers',s:4,r:'45 seg',max:'60 seg'},
+    {n:'Russian twist con botella',s:4,r:'24 c/lado',max:'30'},
+    {n:'Elevación de piernas',s:3,r:'18',max:'25'},
+    {n:'Plancha lateral',s:3,r:'40 seg c/lado',max:'60 seg'},
+    {n:'Burpees (finisher)',s:3,r:'15',max:'20'},
+  ]},
+  brazo:{label:'Brazo',ex:[
+    {n:'Superserie: curl botellas + fondos silla',s:4,r:'15',max:'20'},
+    {n:'Curl martillo rápido',s:3,r:'18',max:'22'},
+    {n:'Extensión de tríceps con botella',s:4,r:'15',max:'20'},
+    {n:'Fondos de tríceps en silla (al fallo)',s:3,r:'al fallo',max:'25'},
+    {n:'Curl concentrado ligero',s:3,r:'15 c/brazo',max:'20'},
+    {n:'Flexiones diamante (finisher)',s:2,r:'al fallo',max:'25'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadillas (ritmo alto)',s:4,r:'25',max:'35'},
+    {n:'Zancadas caminando',s:4,r:'16 c/pierna',max:'22'},
+    {n:'Sentadilla búlgara',s:3,r:'15 c/pierna',max:'20'},
+    {n:'Puente de glúteo (reps altas)',s:4,r:'25',max:'30'},
+    {n:'Sentadilla con salto (finisher)',s:3,r:'15',max:'20'},
+    {n:'Sentadilla isométrica en pared',s:3,r:'50 seg',max:'90 seg'},
+  ]},
+};
+
+function getRoutines(){
+  if(plan==='pro' && goal){
+    if(mode==='home') return goal==='volumen'?HOME_VOL:HOME_DEF;
+    return goal==='volumen'?GYM_VOL:GYM_DEF;
+  }
+  return mode==='home' ? HOME_ROUTINES : ROUTINES;
+}
 
 const WEEK = [
   ['LUN','Pecho + Bíceps','8 ejercicios'],
@@ -1087,6 +1312,37 @@ document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=
   if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
   renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects();
 }));
+
+/* ----------- Enfoque PRO: Volumen / Definición ----------- */
+function goalPresc(g){
+  if(g==='definicion') return {s:4, r:'15-20', max:'25'};
+  if(g==='volumen')    return {s:4, r:'6-10',  max:'12'};
+  return null;
+}
+function openGoal(){ document.getElementById('goalModal').classList.add('open'); }
+function closeGoal(){ document.getElementById('goalModal').classList.remove('open'); }
+function renderEnfoque(){
+  const el=document.getElementById('enfoqueBanner'); if(!el) return;
+  if(plan!=='pro'){ el.style.display='none'; el.innerHTML=''; return; }
+  if(!goal){
+    el.className='enfoque-banner choose'; el.style.display='flex';
+    el.innerHTML='<div><b>🎯 Elige tu objetivo</b><span>Volumen o Definición para cargar tus rutinas enfocadas.</span></div><button type="button" id="enfoqueBtn">Definir</button>';
+  } else {
+    const info = goal==='definicion'
+      ? {t:'DEFINICIÓN', d:'15-20 reps · descanso 30-45 s · ritmo alto', e:'🔥'}
+      : {t:'VOLUMEN', d:'6-10 reps · descanso 90-120 s · cargas altas', e:'💪'};
+    el.className='enfoque-banner'; el.style.display='flex';
+    el.innerHTML='<div><b>'+info.e+' Enfoque PRO: '+info.t+'</b><span>'+info.d+'</span></div><button type="button" id="enfoqueBtn">Cambiar</button>';
+  }
+  const b=document.getElementById('enfoqueBtn'); if(b) b.onclick=openGoal;
+}
+document.querySelectorAll('.goal-opt').forEach(b=>b.addEventListener('click',()=>{
+  goal=b.dataset.goal; save('forja_goal',goal); closeGoal();
+  if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
+  renderEnfoque(); renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects();
+}));
+document.getElementById('goalClose').onclick=closeGoal;
+document.getElementById('goalModal').addEventListener('click',e=>{ if(e.target.id==='goalModal') closeGoal(); });
 function renderMuscleTabs(){
   const t=document.getElementById('muscleTabs'); t.innerHTML='';
   Object.keys(getRoutines()).forEach(k=>{
@@ -1099,6 +1355,7 @@ function renderMuscleTabs(){
 }
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
+  renderEnfoque();
   const ex=getRoutines()[currentMuscle].ex;
   document.getElementById('exCountPill').textContent=ex.length+' ejercicios';
   ex.forEach((e,i)=>{
@@ -1359,6 +1616,7 @@ function applyPlan(){
   document.getElementById('callLock').style.display = plan==='pro'?'none':'flex';
   document.getElementById('btnFree').textContent = plan==='free'?'Plan actual':'Cambiar a Gratis';
   document.getElementById('btnPro').textContent = plan==='pro'?'✓ Ya eres PRO':'Suscribirme a PRO';
+  if(typeof renderEnfoque==='function') renderEnfoque();
 }
 /* Abrir el paquete de pago (modal PRO) */
 function openPro(){
@@ -1388,7 +1646,7 @@ document.getElementById('codeActivate').onclick=()=>{
   if(validos.includes(val)){
     plan='pro'; save('forja_plan',plan); applyPlan();
     msg.style.color='var(--green)'; msg.textContent='✓ ¡PRO activado! Bienvenido, guerrero 🔥';
-    setTimeout(closePro,1300);
+    setTimeout(()=>{ closePro(); if(!goal) openGoal(); },1300);
   } else {
     msg.style.color='#ff5a5a'; msg.textContent='Código inválido. Verifícalo o escríbeme por WhatsApp.';
   }
