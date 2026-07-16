@@ -758,7 +758,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="join-t">¿Te interesa ingresar a este proyecto?</div>
             <div class="join-d">Comunícate conmigo y forma parte del equipo de coaches FORJA.</div>
           </div>
-          <a class="join-cta" href="tel:5646463204">
+          <a class="join-cta" href="https://wa.me/525646463204?text=Hola%20Christian%2C%20me%20interesa%20el%20proyecto%20FORJA%20%F0%9F%92%AA" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M20 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6l1.8-1.8a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4a1 1 0 00-1 1A17 17 0 0020 21a1 1 0 001-1v-3.5a1 1 0 00-1-1z"/></svg>
             Christian Rojas
           </a>
@@ -1625,8 +1625,12 @@ function startCall(video){
   },1000);
 }
 function endCall(){ clearInterval(callTimer); document.getElementById('callModal').classList.remove('open'); }
-document.getElementById('btnVideo').onclick=()=>startCall(true);
-document.getElementById('btnVoice').onclick=()=>startCall(false);
+function contactCoach(){
+  if(plan!=='pro'){ openPro(); return; }
+  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent('Hola Christian, soy usuario PRO de FORJA y quiero asesoría 💪'),'_blank');
+}
+document.getElementById('btnVideo').onclick=contactCoach;
+document.getElementById('btnVoice').onclick=contactCoach;
 document.getElementById('cEnd').onclick=endCall;
 document.getElementById('cMute').onclick=function(){this.style.background=this.style.background?'':'var(--orange)';};
 
