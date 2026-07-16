@@ -782,7 +782,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
               </div>
               <div class="chat-msgs" id="chatMsgs"></div>
               <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="Escribe a tu coach...">
+                <input type="text" id="chatInput" placeholder="Escríbeme y te respondo por WhatsApp...">
                 <button id="chatSend"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
               </div>
             </div>
@@ -1596,10 +1596,10 @@ function renderMsgs(){
 function sendMsg(){
   const inp=document.getElementById('chatInput'); const v=inp.value.trim(); if(!v)return;
   chats[currentCoach.id].push({who:'me',t:v}); inp.value=''; renderMsgs();
-  setTimeout(()=>{
-    chats[currentCoach.id].push({who:'them',t:currentCoach.reply});
-    save('forja_chats',chats); renderMsgs();
-  },900);
+  // Envía el mensaje de verdad al WhatsApp del coach (Christian)
+  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(v),'_blank');
+  chats[currentCoach.id].push({who:'them',t:'📲 Te abrí WhatsApp para enviarme tu mensaje. Ahí te respondo directo. 💪'});
+  save('forja_chats',chats); renderMsgs();
 }
 document.getElementById('chatSend').onclick=sendMsg;
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
