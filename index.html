@@ -7,6 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Firebase (nube, cuentas y analytics) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
 <style>
 /* ============================================================
    FORJA — App de entrenamiento
@@ -914,6 +919,26 @@ const CONFIG = {
   PRECIO_PRO: 199 // MXN / mes
 };
 
+/* ===================== FIREBASE (nube + cuentas + analytics) ===================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyArQ-5tDRp4zMo4KDAEXdCLYvYDRHofow8",
+  authDomain: "forja-9c65f.firebaseapp.com",
+  projectId: "forja-9c65f",
+  storageBucket: "forja-9c65f.firebasestorage.app",
+  messagingSenderId: "314442126293",
+  appId: "1:314442126293:web:60715eb5ac181127d3635c",
+  measurementId: "G-JKNBB4GP2J"
+};
+let FB_ON=false, fbAuth=null, fbDB=null, fbUser=null, displayName='';
+try{
+  if(window.firebase && firebaseConfig.apiKey){
+    firebase.initializeApp(firebaseConfig);
+    fbAuth=firebase.auth(); fbDB=firebase.firestore();
+    try{ firebase.analytics(); }catch(e){}
+    FB_ON=true;
+  }
+}catch(e){ FB_ON=false; }
+
 /* ----------- Almacenamiento con respaldo (funciona aquí y al publicarla) ----------- */
 const _mem = {};
 const store = {
@@ -921,7 +946,7 @@ const store = {
   set(k,v){ try{ localStorage.setItem(k,v);}catch(e){} _mem[k]=v; }
 };
 const load=(k,def)=>{ const v=store.get(k); if(v===null) return def; try{return JSON.parse(v);}catch(e){return def;} };
-const save=(k,v)=>store.set(k,JSON.stringify(v));
+const save=(k,v)=>{ store.set(k,JSON.stringify(v)); cloudSync(); };
 
 /* ----------- Aviso si el navegador NO guarda datos (incógnito, file:// en Firefox, previews) ----------- */
 const STORAGE_OK = (function(){
@@ -929,7 +954,7 @@ const STORAGE_OK = (function(){
   catch(e){ return false; }
 })();
 window.addEventListener('DOMContentLoaded',()=>{
-  if(STORAGE_OK) return;
+  if(STORAGE_OK || FB_ON) return;
   const note=document.querySelector('.auth-note');
   if(note){
     note.innerHTML='⚠️ <b>Tu navegador no está guardando datos.</b> Tu cuenta no se conservará al recargar. '+
@@ -1686,6 +1711,7 @@ function enterApp(){
   document.getElementById('authGate').style.display='none';
   document.querySelector('.app').style.display='flex';
   if(u) document.getElementById('userName').textContent=u.name;
+  else if(displayName) document.getElementById('userName').textContent=displayName;
 }
 function showGate(){
   document.getElementById('authGate').style.display='grid';
@@ -1732,7 +1758,87 @@ fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
-if(session && users[session]) enterApp(); else showGate();
+/* ===== Integración Firebase: cuentas reales + guardado en la nube ===== */
+function cloudSync(){
+  if(!FB_ON || !fbUser) return;
+  clearTimeout(cloudSync._t);
+  cloudSync._t=setTimeout(()=>{
+    fbDB.collection('usuarios').doc(fbUser.uid).set({
+      name:displayName, logs:logs, plan:plan, doneToday:doneToday, dietTarget:dietTarget,
+      prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null), updated:Date.now()
+    },{merge:true}).catch(()=>{});
+  },800);
+}
+function fbError(e){
+  const c=(e&&e.code)||'';
+  if(c.indexOf('email-already-in-use')>=0) return 'Ya existe una cuenta con ese correo.';
+  if(c.indexOf('invalid-email')>=0) return 'Escribe un correo válido.';
+  if(c.indexOf('weak-password')>=0) return 'La contraseña debe tener al menos 6 caracteres.';
+  if(c.indexOf('wrong-password')>=0||c.indexOf('invalid-credential')>=0||c.indexOf('user-not-found')>=0) return 'Correo o contraseña incorrectos.';
+  if(c.indexOf('network')>=0) return 'Sin conexión. Revisa tu internet.';
+  if(c.indexOf('too-many-requests')>=0) return 'Demasiados intentos. Espera un momento.';
+  return 'Ocurrió un error. Intenta de nuevo.';
+}
+if(FB_ON){
+  document.getElementById('doRegister').onclick=async()=>{
+    const name=document.getElementById('regName').value.trim();
+    const email=document.getElementById('regEmail').value.trim().toLowerCase();
+    const p=document.getElementById('regPass').value, p2=document.getElementById('regPass2').value;
+    const err=document.getElementById('regErr'); err.style.color=''; err.textContent='';
+    if(!name||!email||!p){err.textContent='Llena todos los campos.';return;}
+    if(!validEmail(email)){err.textContent='Escribe un correo válido.';return;}
+    if(p.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
+    if(p!==p2){err.textContent='Las contraseñas no coinciden.';return;}
+    err.textContent='Creando cuenta…';
+    try{
+      const cred=await fbAuth.createUserWithEmailAndPassword(email,p);
+      displayName=name;
+      await fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now()},{merge:true});
+      err.textContent='';
+    }catch(e){ err.textContent=fbError(e); }
+  };
+  document.getElementById('doLogin').onclick=async()=>{
+    const email=document.getElementById('logEmail').value.trim().toLowerCase();
+    const p=document.getElementById('logPass').value;
+    const err=document.getElementById('logErr'); err.style.color=''; err.textContent='';
+    if(!email||!p){err.textContent='Escribe tu correo y contraseña.';return;}
+    err.textContent='Entrando…';
+    try{ await fbAuth.signInWithEmailAndPassword(email,p); err.textContent=''; }
+    catch(e){ err.textContent=fbError(e); }
+  };
+  logout=function(){ try{ fbAuth.signOut(); }catch(e){} };
+  document.getElementById('logoutBtn').onclick=logout;
+  document.getElementById('logoutBtnTop').onclick=logout;
+  fbAuth.onAuthStateChanged(async(user)=>{
+    fbUser=user||null;
+    if(user){
+      let d={};
+      try{ const snap=await fbDB.collection('usuarios').doc(user.uid).get(); d=snap.exists?snap.data():{}; }catch(e){}
+      displayName = d.name || (user.email||'').split('@')[0];
+      if(Array.isArray(d.logs)) logs=d.logs;
+      if(d.plan) plan=d.plan;
+      if(d.doneToday) doneToday=d.doneToday;
+      if(typeof d.dietTarget==='number') dietTarget=d.dietTarget;
+      if(d.prs) prs=d.prs;
+      if(Array.isArray(d.measures)) measures=d.measures;
+      if(d.exset) exset=d.exset;
+      if(d.mode) mode=d.mode;
+      if(d.goal!==undefined) goal=d.goal;
+      session=user.email;
+      if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
+      try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); calc(); renderDiet(); applyPlan(); }catch(e){}
+      enterApp();
+    } else {
+      session=null;
+      document.getElementById('logEmail').value=''; document.getElementById('logPass').value='';
+      showGate();
+    }
+  });
+}
+
+/* ===== Arranque ===== */
+if(FB_ON){ showGate(); }
+else { if(session && users[session]) enterApp(); else showGate(); }
 
 /* ===== Temporizador de descanso ===== */
 function initRestTimer(){
