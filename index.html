@@ -1,3 +1,102 @@
+
+Claude terminó la respuesta
+
+Proceso de pensamiento
+Proceso de pensamiento
+¡Qué bueno! Arreglo las dos cosas. Primero reviso los botones de playlist y cómo están puestos.
+
+
+Ejecutó un comando
+Ejecutó un comando
+Reviso: los botones sí tienen target="_blank", solo hay que cambiar la URL. Y para el pago lo mando a tu WhatsApp. Un aviso importante sobre eso lo explico al final. Aplico los cambios:
+
+
+Ejecutó un comando, archivo leído
+Ejecutó un comando, archivo leído
+Listas las dos:
+
+1. Playlist. Cambié la URL a tu lista de YouTube Music. Los dos botones ("Playlist" del inicio y "▶ Abrir playlist") ya apuntan a tu enlace y abren en pestaña nueva.
+
+2. Pago por WhatsApp. El botón del plan PRO ahora dice "💳 Pagar por WhatsApp" y, al tocarlo, abre un chat directo a tu número (56 4646 3204) con un mensaje ya escrito: "Quiero activar FORJA PRO, ¿me pasas los datos para el pago? Puedo por BBVA o Banco Azteca." En el recuadro aparece la nota de que aceptas transferencia BBVA o Banco Azteca. Quité la mención de Stripe/Mercado Pago.
+
+Sobre poner los datos de tu tarjeta directamente en la app — te recomiendo no hacerlo, y por eso lo dejé por WhatsApp. Si pones el número de tarjeta o cuenta en la página, queda visible para cualquiera que la abra: cualquiera podría copiarlo, hacer cargos o compartirlo. Es un riesgo real de seguridad. Mandarlo por WhatsApp es lo correcto: le pasas los datos en privado solo a quien va a pagar. Así que los nombres de los bancos sí van en la app (como referencia), pero los números tú los das por el chat.
+
+Un detalle honesto para que lo tengas claro: como la app no tiene servidor, al tocar "Pagar por WhatsApp" no se activa el PRO automáticamente — solo abre el chat para que cobres. Para que el usuario que ya pagó desbloquee el PRO, lo más sencillo sin complicarte es darle un código de acceso por WhatsApp que él escriba en la app y active su PRO. Si quieres, te lo agrego después (es rápido).
+
+Súbelo reemplazando el index.html. ¿Quieres que te deje listo lo del código de acceso para el PRO, o seguimos con el perfilado definición/volumen?
+
+
+C:\Users\chris\AppData\Roaming\Claude\local-agent-mode-sessions\6812aab0-34b1-4fd1-873e-bc4d185cdeda\15db51ce-2ff5-4951-97a5-155cd7f48c8f\local_1c92d53f-007d-4f66-a34d-98c347be6529\outputs\index.html
+Código 
+si el codigo de acceso pueden ser codigos inventados por mi ?
+
+
+Proceso de pensamiento
+Proceso de pensamiento
+¡Exacto, esa es la idea! Tú inventas los códigos, los pones en la app, y se los das por WhatsApp a quien ya te pagó. Lo implemento.
+
+
+Ejecutó un comando, archivo leído
+Ejecutó un comando, archivo leído
+¡Listo! Ya tienes el sistema de códigos que tú inventas.
+
+Cómo funciona: en el recuadro del plan PRO, debajo de "Pagar por WhatsApp", ahora hay un campo "¿Ya pagaste? Ingresa tu código PRO". El usuario escribe el código que tú le diste, toca Activar, y si es válido se desbloquea el PRO al instante en su dispositivo.
+
+Cómo pones tus códigos: en el index.html, arriba del todo en la sección CONFIG, busca esta línea:
+
+CODIGOS_PRO: ["FORJA2026", "BEASTMODE", "PRO-CHRISTIAN"],
+Cambia esos por los que tú quieras, entre comillas y separados por coma. Puedes poner los que gustes (por ejemplo "JULIO50", "CLIENTE-ANA", etc.). No importan mayúsculas/minúsculas al escribirlos.
+
+El flujo queda así: el usuario paga por WhatsApp → tú le mandas un código → él lo escribe en la app y se activa su PRO.
+
+Un punto honesto de seguridad: como la app no tiene servidor, los códigos viven dentro del archivo, así que alguien muy técnico que revise el código de la página podría verlos. Para un negocio pequeño normalmente no pasa nada, pero si quieres más protección puedo dejarlos ocultos (cifrados): tú me dices tus códigos, yo los convierto y en el archivo ya no se leen directos. ¿Lo quieres así, o lo dejamos simple por ahora?
+
+Súbelo reemplazando el index.html y pruébalo con uno de los códigos de ejemplo.
+
+
+C:\Users\chris\AppData\Roaming\Claude\local-agent-mode-sessions\6812aab0-34b1-4fd1-873e-bc4d185cdeda\15db51ce-2ff5-4951-97a5-155cd7f48c8f\local_1c92d53f-007d-4f66-a34d-98c347be6529\outputs\index.html
+Código 
+esta perfecta
+
+¡Excelente! 🔥 Me da gusto que quedó como querías.
+
+Solo recuerda subir el index.html final a GitHub reemplazando el anterior, y probar con Ctrl + F5 para ver los cambios.
+
+Resumen de todo lo que quedó en Forja: temporizador de descanso, casillas editables de Series/Reps/Máx, login más robusto, perfil En casa con las 6 rutinas, playlist con tu enlace, pago por WhatsApp (BBVA/Banco Azteca) y códigos PRO que tú inventas.
+
+Cuando quieras le seguimos con el perfilado definición/volumen del PRO, o lo que necesites. ¡Éxito con FORJA! 💪
+
+ahora vamos a subirla a github
+
+
+Proceso de pensamiento
+Proceso de pensamiento
+Vamos. Yo no puedo subirlo directo (tu navegador no está conectado a mí y no tengo acceso a tu GitHub), pero te guío y es rápido. La forma más fácil es arrastrar y soltar el archivo:
+
+Primero, ten a la mano el index.html nuevo (el que te acabo de compartir arriba; está en tu carpeta de descargas/outputs).
+
+Luego, en el navegador:
+
+Entra a tu repositorio forja en GitHub (la página que ya tenías abierta).
+Toca el botón "Add file" (arriba a la derecha) → "Upload files".
+Arrastra tu index.html nuevo a la zona que dice "Drag files here" (o toca "choose your files" y selecciónalo). Como se llama igual, GitHub lo reemplaza.
+Baja y toca el botón verde "Commit changes".
+Espera 1–2 minutos y abre tu sitio con Ctrl + F5 para ver la versión nueva.
+Con eso queda publicado con el temporizador, el modo En casa, la playlist, el pago por WhatsApp y los códigos PRO.
+
+Si prefieres, también puedes abrir el index.html viejo en GitHub, darle al lápiz ✏️, borrar todo con Ctrl+A → Supr, pegar el contenido del nuevo y hacer commit — pero arrastrar es más simple.
+
+¿Quieres que te acompañe paso a paso mientras lo haces? Dime en qué parte vas o si algo no aparece como te digo.
+
+
+
+
+
+
+Claude es IA y puede cometer errores. Verifica las respuestas. Danos tu opinión
+
+
+Index · HTML
 <!doctype html>
 <html lang="es-MX">
 <head>
@@ -12,9 +111,9 @@
    FORJA — App de entrenamiento
    © Christian Rojas. Todos los derechos reservados.
    ============================================================ */
-
+ 
 /* ---------- CONFIG editable rápido (busca CONFIG en el JS también) ---------- */
-
+ 
 :root{
   --bg:#0A0A0C;
   --surface:#141418;
@@ -35,7 +134,7 @@
   --nav-w:248px;
   --maxw:1180px;
 }
-
+ 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
@@ -57,10 +156,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 input,select{font-family:inherit}
 h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line-height:.98;text-transform:uppercase}
 .tabnum{font-variant-numeric:tabular-nums}
-
+ 
 /* ---------- Layout base ---------- */
 .app{position:relative;z-index:1;display:flex;min-height:100dvh}
-
+ 
 /* Sidebar (PC) */
 .sidebar{
   width:var(--nav-w);flex-shrink:0;position:sticky;top:0;height:100dvh;
@@ -72,7 +171,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
 .brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand-sub{font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
-
+ 
 .nav-btn{
   display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:var(--radius-sm);
   color:var(--muted);font-weight:600;font-size:14.5px;transition:.18s;position:relative;text-align:left;width:100%;
@@ -85,7 +184,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .nav-plan .lbl{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 .nav-plan .val{font-family:'Anton';font-size:19px;margin-top:2px}
 .nav-plan button{margin-top:10px;width:100%;font-size:12.5px;font-weight:700;padding:9px;border-radius:9px;background:var(--molten);color:#fff}
-
+ 
 /* Main */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{
@@ -94,10 +193,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 }
 .topbar .brand-name{font-size:20px}
 .content{padding:34px clamp(18px,4vw,46px) 120px;max-width:var(--maxw);width:100%;margin:0 auto;flex:1}
-
+ 
 /* Bottom nav (móvil) */
 .bottomnav{display:none}
-
+ 
 /* ---------- Utilidades ---------- */
 .eyebrow{font-size:11px;letter-spacing:3.5px;text-transform:uppercase;color:var(--orange);font-weight:700}
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
@@ -111,12 +210,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .btn-ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
 .btn-ghost:hover{border-color:var(--muted-2)}
 .grid{display:grid;gap:16px}
-
+ 
 .view{display:none;animation:fade .4s ease}
 .view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
-
+ 
 /* ---------- INICIO ---------- */
 .hero{
   position:relative;border-radius:24px;overflow:hidden;padding:clamp(26px,5vw,48px);
@@ -131,7 +230,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hero h1 em{font-style:normal;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{color:var(--muted);max-width:44ch;font-size:15.5px}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-
+ 
 /* Anillo de progreso */
 .ring-wrap{display:grid;place-items:center;position:relative}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
@@ -141,13 +240,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ring-inner{position:relative;text-align:center}
 .ring-inner .big{font-family:'Anton';font-size:52px;line-height:1}
 .ring-inner .lbl{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:4px}
-
+ 
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
 .stat .n{font-family:'Anton';font-size:30px}
 .stat .n span{font-size:15px;color:var(--muted)}
 .stat .l{font-size:11.5px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-
+ 
 .home-2col{display:grid;grid-template-columns:1.3fr .8fr;gap:16px;margin-top:16px}
 .playlist{
   background:
@@ -163,7 +262,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .day-item .idx{font-family:'Anton';font-size:20px;color:var(--orange);width:26px}
 .day-item .nm{font-weight:600;flex:1}
 .day-item .rp{font-size:12px;color:var(--muted)}
-
+ 
 /* ---------- RUTINAS ---------- */
 .muscle-tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px}
 .muscle-tab{padding:10px 18px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:13.5px;color:var(--muted);transition:.16s}
@@ -190,7 +289,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-pr:hover{border-color:var(--amber)}
 .ex-pr .pr-k{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
 .ex-pr .pr-v{font-family:'Anton';font-size:20px;color:var(--amber);letter-spacing:.5px}
-
+ 
 /* ---------- PROGRESO ---------- */
 .prog-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:start}
 .field{margin-bottom:13px}
@@ -216,7 +315,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ms-tile .v small{font-size:14px;color:var(--muted);font-family:'Inter';font-weight:600}
 .ms-tile .k{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
 .ms-tile .d{font-size:11.5px;font-weight:700;margin-top:5px;color:var(--amber)}
-
+ 
 /* ---------- CALORÍAS ---------- */
 .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(255,45,120,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
@@ -230,7 +329,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .macro.c{border-top:3px solid var(--amber)}
 .macro.g{border-top:3px solid var(--magenta)}
 .tdee-mini{display:flex;justify-content:space-between;gap:10px;margin-top:16px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
-
+ 
 /* ---------- DIETA ---------- */
 .diet-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
 .meal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
@@ -241,7 +340,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .meal ul{list-style:none;padding:16px 18px;display:flex;flex-direction:column;gap:9px}
 .meal li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--text)}
 .meal li span{color:var(--muted);font-size:12px}
-
+ 
 /* ---------- COACHES / CHAT ---------- */
 .coach-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
 .coach-list{display:flex;flex-direction:column;gap:10px}
@@ -279,7 +378,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .join-cta{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;padding:12px 20px;border-radius:12px;background:var(--molten);color:#fff;box-shadow:var(--glow);letter-spacing:.5px}
 .join-cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
 .join-by{width:100%;text-align:right;font-size:12.5px;color:var(--amber);font-weight:700}
-
+ 
 /* ---------- SUSCRIPCIÓN ---------- */
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
 .plan{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:flex;flex-direction:column}
@@ -296,7 +395,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .check{fill:var(--green)}
 .cross{fill:var(--muted-2)}
 .plan .btn{width:100%}
-
+ 
 /* ---------- Modal videollamada ---------- */
 .modal-bg{position:fixed;inset:0;z-index:100;background:rgba(5,5,7,.82);backdrop-filter:blur(8px);display:none;place-items:center;padding:20px}
 .modal-bg.open{display:grid}
@@ -314,7 +413,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .c-mute{background:var(--surface-2);border:1px solid var(--line)}
 .c-end{background:#E5342B}
 .c-end:hover{filter:brightness(1.1)}
-
+ 
 /* ---------- Auth (login / registro) ---------- */
 .auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;
   background:radial-gradient(700px 400px at 80% 0%,rgba(255,45,120,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(255,90,31,.18),transparent 60%),var(--bg)}
@@ -331,7 +430,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .auth-form .btn{width:100%;margin-top:8px}
 .auth-swap{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
 .auth-swap b{color:var(--orange);cursor:pointer}
-
+ 
 /* ---------- Modal PRO (paquete de pago) ---------- */
 .pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(255,45,120,.3),transparent 62%),#121218;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
 .pro-close{position:absolute;top:14px;right:16px;font-size:18px;color:var(--muted);width:34px;height:34px;border-radius:9px}
@@ -352,11 +451,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .tb-logout{width:38px;height:38px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center}
 .tb-logout svg{width:18px;height:18px;fill:var(--muted)}
 .tb-logout:hover svg{fill:var(--text)}
-
+ 
 /* ---------- Footer ---------- */
 .foot{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,46px);color:var(--muted-2);font-size:12.5px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;max-width:var(--maxw);margin:0 auto;width:100%}
 .foot .r{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
-
+ 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:900px){
   .hero-grid{grid-template-columns:1fr}
@@ -380,7 +479,24 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   .macros{grid-template-columns:1fr}
   .foot{flex-direction:column;text-align:center}
 }
-
+ 
+/* ===== Caja de código PRO (agregado) ===== */
+.code-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
+.code-box>span{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
+.code-row{display:flex;gap:8px}
+.code-row input{flex:1;padding:11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);font-family:inherit;text-align:center;letter-spacing:1px;text-transform:uppercase}
+.code-row input:focus{outline:none;border-color:var(--orange)}
+.code-row button{padding:11px 16px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);
+  color:var(--text);font-weight:700;transition:.15s}
+.code-row button:hover{border-color:var(--orange)}
+.code-msg{font-size:13px;margin-top:8px;min-height:16px}
+/* ===== Selector Gimnasio / En casa (agregado) ===== */
+.mode-toggle{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);
+  border-radius:99px;padding:4px;margin-bottom:16px}
+.mode-btn{padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
+.mode-btn.active{background:var(--molten);color:#170a02}
+.mode-btn:hover:not(.active){color:var(--text)}
 /* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
 .ex-meta input.v{
   width:100%;max-width:82px;text-align:center;font-family:'Anton',sans-serif;
@@ -430,11 +546,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 #restStart:hover{filter:brightness(1.08)}
 #restReset{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 #restReset:hover{border-color:var(--orange)}
-
+ 
 </style>
 </head>
 <body>
-
+ 
 <!-- ===================== LOGIN / REGISTRO ===================== -->
 <div class="auth-gate" id="authGate">
   <div class="auth-card">
@@ -447,7 +563,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <button class="auth-tab active" data-auth="login">Ingresar</button>
       <button class="auth-tab" data-auth="register">Crear cuenta</button>
     </div>
-
+ 
     <div class="auth-form" id="formLogin">
       <div class="field"><label>Correo</label><input type="email" id="logEmail" placeholder="tucorreo@mail.com" autocomplete="email"></div>
       <div class="field"><label>Contraseña</label><input type="password" id="logPass" placeholder="••••••••" autocomplete="current-password"></div>
@@ -455,7 +571,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <button class="btn btn-molten" id="doLogin">Ingresar</button>
       <div class="auth-swap">¿No tienes cuenta? <b data-auth="register">Crea una aquí</b></div>
     </div>
-
+ 
     <div class="auth-form" id="formRegister" style="display:none">
       <div class="field"><label>Nombre</label><input type="text" id="regName" placeholder="Christian" autocomplete="name"></div>
       <div class="field"><label>Correo</label><input type="email" id="regEmail" placeholder="tucorreo@mail.com" autocomplete="email"></div>
@@ -465,13 +581,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <button class="btn btn-molten" id="doRegister">Crear cuenta</button>
       <div class="auth-swap">¿Ya tienes cuenta? <b data-auth="login">Ingresa aquí</b></div>
     </div>
-
+ 
     <p class="auth-note">🔒 Demo: tus datos se guardan solo en este dispositivo.<br>Para una app real se conecta a un servicio de autenticación (Firebase, Supabase, etc.).</p>
   </div>
 </div>
-
+ 
 <div class="app">
-
+ 
   <!-- ===================== SIDEBAR (PC) ===================== -->
   <aside class="sidebar">
     <div class="brand">
@@ -511,7 +627,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <button class="logout" id="logoutBtn">Cerrar sesión</button>
     </div>
   </aside>
-
+ 
   <!-- ===================== MAIN ===================== -->
   <div class="main">
     <div class="topbar">
@@ -524,9 +640,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <button class="tb-logout" id="logoutBtnTop" title="Cerrar sesión"><svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5v3H9v4h7v3zM4 5h8V3H4a2 2 0 00-2 2v14a2 2 0 002 2h8v-2H4z"/></svg></button>
       </div>
     </div>
-
+ 
     <main class="content">
-
+ 
       <!-- ============ INICIO ============ -->
       <section class="view active" id="view-inicio">
         <div class="hero">
@@ -558,7 +674,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="stat"><div class="n" id="stStreak">0 <span>días</span></div><div class="l">Racha activa</div></div>
           </div>
         </div>
-
+ 
         <div class="home-2col">
           <div class="card">
             <span class="eyebrow">Split semanal</span>
@@ -577,7 +693,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
         </div>
       </section>
-
+ 
       <!-- ============ RUTINAS ============ -->
       <section class="view" id="view-rutinas">
         <div class="section-head">
@@ -587,16 +703,20 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
           <span class="pill" id="exCountPill">0 ejercicios</span>
         </div>
+        <div class="mode-toggle" id="modeToggle">
+          <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
+          <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
+        </div>
         <div class="muscle-tabs" id="muscleTabs"></div>
         <div class="ex-grid" id="exGrid"></div>
       </section>
-
+ 
       <!-- ============ PROGRESO ============ -->
       <section class="view" id="view-progreso">
         <div class="section-head">
           <div><span class="eyebrow">Sin registro no hay avance</span><h2>Progreso</h2></div>
         </div>
-
+ 
         <!-- Medidas corporales -->
         <div class="card" style="margin-bottom:16px">
           <h3 style="font-size:22px;margin-bottom:4px">Medidas corporales</h3>
@@ -611,7 +731,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <div class="measure-stats" id="measureStats"></div>
           <div class="log-list" id="measureHist" style="max-height:220px;margin-top:16px"></div>
         </div>
-
+ 
         <div class="prog-grid">
           <div class="card">
             <h3 style="font-size:22px;margin-bottom:16px">Registrar serie</h3>
@@ -639,7 +759,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
         </div>
       </section>
-
+ 
       <!-- ============ CALORÍAS ============ -->
       <section class="view" id="view-calorias">
         <div class="section-head">
@@ -690,7 +810,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
         </div>
       </section>
-
+ 
       <!-- ============ DIETA ============ -->
       <section class="view" id="view-dieta">
         <div class="section-head">
@@ -705,7 +825,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         </div>
         <div class="meal-grid" id="mealGrid"></div>
       </section>
-
+ 
       <!-- ============ COACHES ============ -->
       <section class="view" id="view-coaches">
         <div class="section-head">
@@ -753,7 +873,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
         </div>
       </section>
-
+ 
       <!-- ============ SUSCRIPCIÓN ============ -->
       <section class="view" id="view-suscripcion">
         <div class="section-head">
@@ -790,15 +910,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
         </div>
       </section>
-
+ 
     </main>
-
+ 
     <footer class="foot">
       <span>FORJA · Sistema de entrenamiento físico</span>
       <span class="r">© 2026 Christian Rojas · Todos los derechos reservados</span>
     </footer>
   </div>
-
+ 
   <!-- Bottom nav (móvil) -->
   <nav class="bottomnav">
     <button class="bn-btn active" data-go="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Inicio</button>
@@ -808,7 +928,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     <button class="bn-btn" data-go="coaches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Coaches</button>
   </nav>
 </div>
-
+ 
 <!-- Modal videollamada -->
 <div class="modal-bg" id="callModal">
   <div class="call-modal">
@@ -821,7 +941,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     </div>
   </div>
 </div>
-
+ 
 <!-- Modal PRO (paquete de pago) -->
 <div class="modal-bg" id="proModal">
   <div class="pro-modal">
@@ -836,24 +956,36 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Rutinas premium exclusivas</li>
       <li><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Soporte prioritario</li>
     </ul>
-    <button class="btn btn-molten" id="proActivate">Activar FORJA PRO</button>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin:2px 0 12px">Pago por transferencia <b>BBVA</b> o <b>Banco Azteca</b>. Te paso los datos por WhatsApp.</p>
+    <button class="btn btn-molten" id="proActivate">💳 Pagar por WhatsApp</button>
+    <div class="code-box">
+      <span>¿Ya pagaste? Ingresa tu código PRO</span>
+      <div class="code-row">
+        <input id="codeInput" placeholder="Ej. FORJA2026" autocomplete="off" spellcheck="false">
+        <button id="codeActivate" type="button">Activar</button>
+      </div>
+      <div class="code-msg" id="codeMsg"></div>
+    </div>
     <button class="pro-skip" id="proSkip">Seguir con el plan gratis por ahora</button>
   </div>
 </div>
-
+ 
 <script>
 /* ============================================================
    FORJA — Lógica
    © Christian Rojas. Todos los derechos reservados.
    ============================================================ */
-
+ 
 /* ----------- CONFIG: cambia esto por lo tuyo ----------- */
 const CONFIG = {
   // 👇 Pega aquí el enlace de TU playlist de YouTube
-  YOUTUBE_PLAYLIST: "https://www.youtube.com/results?search_query=gym+workout+music+playlist+2026",
+  YOUTUBE_PLAYLIST: "https://music.youtube.com/playlist?list=PLZDh_ATnrRRaVNoDvaXToP55z4W7z3Zq_&si=lkIwAkSHewTzgARI",
+  WHATSAPP: "525646463204",   // 👈 tu número para recibir pagos
+  // 👇 Códigos PRO que TÚ inventas. Agrega o quita los que quieras (entre comillas, separados por coma).
+  CODIGOS_PRO: ["FORJA2026", "BEASTMODE", "PRO-CHRISTIAN"],
   PRECIO_PRO: 199 // MXN / mes
 };
-
+ 
 /* ----------- Almacenamiento con respaldo (funciona aquí y al publicarla) ----------- */
 const _mem = {};
 const store = {
@@ -862,7 +994,7 @@ const store = {
 };
 const load=(k,def)=>{ const v=store.get(k); if(v===null) return def; try{return JSON.parse(v);}catch(e){return def;} };
 const save=(k,v)=>store.set(k,JSON.stringify(v));
-
+ 
 /* ----------- Aviso si el navegador NO guarda datos (incógnito, file:// en Firefox, previews) ----------- */
 const STORAGE_OK = (function(){
   try{ localStorage.setItem('__forja_t','1'); const ok=localStorage.getItem('__forja_t')==='1'; localStorage.removeItem('__forja_t'); return ok; }
@@ -880,18 +1012,19 @@ window.addEventListener('DOMContentLoaded',()=>{
     note.style.paddingTop='12px';
   }
 });
-
+ 
 /* ----------- Estado ----------- */
 let logs = load('forja_logs', []);
 let plan = load('forja_plan', 'free');           // 'free' | 'pro'
 let doneToday = load('forja_done', {});          // {ejercicio:true}
 let dietTarget = load('forja_diet', 2000);
 let prs = load('forja_prs', {});
-let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usuario                 // {ejercicio: kg récord}
+let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usuario
+let mode = load('forja_mode','gym');   // 'gym' | 'home'                 // {ejercicio: kg récord}
 let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
-
+ 
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
   brazo:   { label:'Brazo', ex:[
@@ -935,6 +1068,59 @@ const ROUTINES = {
     {n:'Mountain climbers', s:3, r:'30 seg', max:'60 seg'},
   ]},
 };
+/* ----------- Datos: rutinas EN CASA (sin gym, peso corporal / equipo casero) ----------- */
+const HOME_ROUTINES = {
+  pecho:   { label:'Pecho', ex:[
+    {n:'Flexiones (push-ups)', s:4, r:'12-15', max:'25'},
+    {n:'Flexiones con pies elevados', s:4, r:'10-12', max:'20'},
+    {n:'Flexiones diamante', s:3, r:'10', max:'15'},
+    {n:'Flexiones declinadas (manos elevadas)', s:3, r:'12', max:'20'},
+    {n:'Aperturas con botellas de agua', s:3, r:'15', max:'20'},
+    {n:'Flexiones lentas (tempo 3 seg)', s:3, r:'8', max:'12'},
+  ]},
+  espalda: { label:'Espalda', ex:[
+    {n:'Remo inclinado con mochila cargada', s:4, r:'12', max:'15'},
+    {n:'Superman (lumbares)', s:4, r:'15', max:'20'},
+    {n:'Remo invertido bajo una mesa', s:3, r:'10-12', max:'15'},
+    {n:'Remo a una mano con mochila', s:3, r:'12 c/lado', max:'15'},
+    {n:'Pull-apart con toalla o banda', s:3, r:'15', max:'20'},
+    {n:'Buenos días con mochila', s:3, r:'15', max:'20'},
+  ]},
+  hombro:  { label:'Hombro', ex:[
+    {n:'Press de hombro con botellas/mochila', s:4, r:'12', max:'15'},
+    {n:'Elevaciones laterales con botellas', s:4, r:'15', max:'20'},
+    {n:'Elevaciones frontales con mochila', s:3, r:'12', max:'15'},
+    {n:'Pike push-ups (flexión en pica)', s:3, r:'10', max:'15'},
+    {n:'Pájaros con botellas (deltoide posterior)', s:3, r:'15', max:'20'},
+    {n:'Círculos de brazos', s:3, r:'30 seg', max:'60 seg'},
+  ]},
+  abdomen: { label:'Abdomen', ex:[
+    {n:'Plancha (plank)', s:4, r:'40 seg', max:'90 seg'},
+    {n:'Crunch abdominal', s:4, r:'20', max:'30'},
+    {n:'Elevación de piernas en piso', s:3, r:'15', max:'20'},
+    {n:'Russian twist con botella', s:3, r:'20', max:'30'},
+    {n:'Mountain climbers', s:3, r:'30 seg', max:'60 seg'},
+    {n:'Bicicleta abdominal', s:3, r:'20', max:'30'},
+  ]},
+  brazo:   { label:'Brazo', ex:[
+    {n:'Curl de bíceps con botellas/mochila', s:4, r:'12-15', max:'20'},
+    {n:'Fondos de tríceps en silla', s:4, r:'12', max:'20'},
+    {n:'Curl martillo con botellas', s:3, r:'12', max:'15'},
+    {n:'Extensión de tríceps con botella (nuca)', s:3, r:'12-15', max:'18'},
+    {n:'Flexiones diamante', s:3, r:'al fallo', max:'20'},
+    {n:'Curl concentrado con botella', s:3, r:'12 c/brazo', max:'15'},
+  ]},
+  pierna:  { label:'Pierna', ex:[
+    {n:'Sentadillas (peso corporal)', s:4, r:'20', max:'30'},
+    {n:'Zancadas alternadas', s:4, r:'12 c/pierna', max:'20'},
+    {n:'Sentadilla búlgara (pie en silla)', s:3, r:'12 c/pierna', max:'15'},
+    {n:'Puente de glúteo', s:4, r:'20', max:'30'},
+    {n:'Elevación de pantorrilla', s:4, r:'25', max:'30'},
+    {n:'Sentadilla isométrica en pared', s:3, r:'45 seg', max:'90 seg'},
+  ]},
+};
+function getRoutines(){ return mode==='home' ? HOME_ROUTINES : ROUTINES; }
+ 
 const WEEK = [
   ['LUN','Pecho + Bíceps','8 ejercicios'],
   ['MAR','Espalda + Tríceps','7 ejercicios'],
@@ -948,7 +1134,7 @@ const COACHES = [
   {id:'c2', n:'Coach Beto', sp:'Pérdida de grasa', a:'B', reply:'Buena. Recuerda mantener el déficit y no saltarte la proteína. ¿Cómo va tu energía en los entrenos?'},
   {id:'c3', n:'Coach Naomi', sp:'Nutrición deportiva', a:'N', reply:'Perfecto. Si me pasas tus calorías objetivo te armo el ajuste de macros para esta semana. 🥗'},
 ];
-
+ 
 /* ----------- Navegación ----------- */
 const views = document.querySelectorAll('.view');
 function go(id){
@@ -960,14 +1146,14 @@ function go(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
-
+ 
 /* ----------- Playlist ----------- */
 document.getElementById('playlistBtnHero').href=CONFIG.YOUTUBE_PLAYLIST;
 document.getElementById('playlistBtnHome').href=CONFIG.YOUTUBE_PLAYLIST;
-
+ 
 /* ----------- YouTube "cómo se hace" ----------- */
 const howTo = name => 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' técnica correcta ejercicio');
-
+ 
 /* ----------- INICIO ----------- */
 function renderHome(){
   const wl=document.getElementById('weekList'); wl.innerHTML='';
@@ -989,22 +1175,30 @@ function renderHome(){
   document.getElementById('ring').style.setProperty('--pct',pct);
   document.getElementById('ringPct').textContent=pct;
 }
-
+ 
 /* ----------- RUTINAS ----------- */
 let currentMuscle='brazo';
+function renderModeToggle(){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+}
+document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>{
+  mode=b.dataset.mode; save('forja_mode',mode);
+  if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
+  renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects();
+}));
 function renderMuscleTabs(){
   const t=document.getElementById('muscleTabs'); t.innerHTML='';
-  Object.keys(ROUTINES).forEach(k=>{
+  Object.keys(getRoutines()).forEach(k=>{
     const b=document.createElement('button');
     b.className='muscle-tab'+(k===currentMuscle?' active':'');
-    b.textContent=ROUTINES[k].label;
+    b.textContent=getRoutines()[k].label;
     b.onclick=()=>{currentMuscle=k;renderMuscleTabs();renderExercises();};
     t.appendChild(b);
   });
 }
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
-  const ex=ROUTINES[currentMuscle].ex;
+  const ex=getRoutines()[currentMuscle].ex;
   document.getElementById('exCountPill').textContent=ex.length+' ejercicios';
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
@@ -1060,16 +1254,16 @@ function renderExercises(){
     prs[k]=num; save('forja_prs',prs); renderExercises();
   });
 }
-
+ 
 /* ----------- PROGRESO ----------- */
 function fillProgSelects(){
   const ms=document.getElementById('pMuscle');
-  ms.innerHTML=Object.keys(ROUTINES).map(k=>`<option value="${k}">${ROUTINES[k].label}</option>`).join('');
+  ms.innerHTML=Object.keys(getRoutines()).map(k=>`<option value="${k}">${getRoutines()[k].label}</option>`).join('');
   ms.onchange=fillExerciseSelect; fillExerciseSelect();
 }
 function fillExerciseSelect(){
   const k=document.getElementById('pMuscle').value;
-  document.getElementById('pExercise').innerHTML=ROUTINES[k].ex.map(e=>`<option>${e.n}</option>`).join('');
+  document.getElementById('pExercise').innerHTML=getRoutines()[k].ex.map(e=>`<option>${e.n}</option>`).join('');
 }
 document.getElementById('pSave').onclick=()=>{
   const w=+document.getElementById('pWeight').value||0;
@@ -1109,7 +1303,7 @@ function renderProgress(){
     ll.appendChild(row);
   });
 }
-
+ 
 /* ----------- Medidas corporales ----------- */
 document.getElementById('mSave').onclick=()=>{
   const peso=parseFloat(document.getElementById('mPeso').value)||null;
@@ -1142,7 +1336,7 @@ function renderMeasures(){
     return `<div class="log-row"><span class="dot"></span><span class="ex">${m.date}</span><span class="stat2">${parts.join(' · ')}</span></div>`;
   }).join('');
 }
-
+ 
 /* ----------- CALORÍAS (Mifflin-St Jeor) ----------- */
 function calc(){
   const sex=document.getElementById('cSex').value;
@@ -1169,7 +1363,7 @@ function calc(){
 }
 document.getElementById('cCalc').onclick=calc;
 document.getElementById('applyDiet').onclick=()=>{ calc(); renderDiet(); go('dieta'); };
-
+ 
 /* ----------- DIETA ----------- */
 function renderDiet(){
   const t=dietTarget||2000;
@@ -1191,7 +1385,7 @@ function renderDiet(){
     g.appendChild(el);
   });
 }
-
+ 
 /* ----------- COACHES / CHAT ----------- */
 let currentCoach=COACHES[0];
 let chats=load('forja_chats',{});
@@ -1229,7 +1423,7 @@ function sendMsg(){
 }
 document.getElementById('chatSend').onclick=sendMsg;
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
-
+ 
 /* ----------- Videollamada / llamada ----------- */
 let callTimer=null, callSecs=0;
 function startCall(video){
@@ -1255,7 +1449,7 @@ document.getElementById('btnVideo').onclick=()=>startCall(true);
 document.getElementById('btnVoice').onclick=()=>startCall(false);
 document.getElementById('cEnd').onclick=endCall;
 document.getElementById('cMute').onclick=function(){this.style.background=this.style.background?'':'var(--orange)';};
-
+ 
 /* ----------- Suscripción ----------- */
 function applyPlan(){
   const label = plan==='pro'?'FORJA PRO':'Gratis';
@@ -1272,22 +1466,37 @@ function openPro(){
   document.getElementById('proModal').classList.add('open');
 }
 function closePro(){ document.getElementById('proModal').classList.remove('open'); }
-
+ 
 document.getElementById('btnPro').onclick=()=>{
   if(plan==='pro'){alert('¡Ya tienes FORJA PRO activo! 🔥');return;}
   openPro();
 };
 /* Al dar clic en "Gratis" se abre el paquete de pago (upsell) */
 document.getElementById('btnFree').onclick=openPro;
-
+ 
 document.getElementById('proActivate').onclick=()=>{
-  plan='pro'; save('forja_plan',plan); applyPlan(); closePro();
-  alert('🔥 ¡Bienvenido a FORJA PRO! Ya puedes hacer videollamadas con tus coaches.\n\n(Demo: aquí conectarías tu pasarela de pago, ej. Stripe / Mercado Pago.)');
+  const msg='Hola Christian 🔥 Quiero activar FORJA PRO ($'+CONFIG.PRECIO_PRO+'/mes). ¿Me pasas los datos para el pago? Puedo por transferencia BBVA o Banco Azteca.';
+  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(msg),'_blank');
+  closePro();
 };
+document.getElementById('codeActivate').onclick=()=>{
+  const val=(document.getElementById('codeInput').value||'').trim().toUpperCase();
+  const msg=document.getElementById('codeMsg');
+  const validos=(CONFIG.CODIGOS_PRO||[]).map(c=>String(c).trim().toUpperCase());
+  if(!val){ msg.style.color='var(--amber)'; msg.textContent='Escribe tu código.'; return; }
+  if(validos.includes(val)){
+    plan='pro'; save('forja_plan',plan); applyPlan();
+    msg.style.color='var(--green)'; msg.textContent='✓ ¡PRO activado! Bienvenido, guerrero 🔥';
+    setTimeout(closePro,1300);
+  } else {
+    msg.style.color='#ff5a5a'; msg.textContent='Código inválido. Verifícalo o escríbeme por WhatsApp.';
+  }
+};
+document.getElementById('codeInput').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('codeActivate').click(); });
 document.getElementById('proSkip').onclick=()=>{ plan='free'; save('forja_plan',plan); applyPlan(); closePro(); };
 document.getElementById('proClose').onclick=closePro;
 document.getElementById('proModal').addEventListener('click',e=>{ if(e.target.id==='proModal') closePro(); });
-
+ 
 /* ----------- Login / Registro ----------- */
 async function hashPass(str){
   try{
@@ -1304,7 +1513,7 @@ async function hashVariants(str){
   return out;
 }
 const validEmail=e=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
-
+ 
 function switchAuth(mode){
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.auth===mode));
   document.getElementById('formLogin').style.display    = mode==='login'?'block':'none';
@@ -1312,7 +1521,7 @@ function switchAuth(mode){
   document.getElementById('logErr').textContent=''; document.getElementById('regErr').textContent='';
 }
 document.querySelectorAll('[data-auth]').forEach(el=>el.addEventListener('click',()=>switchAuth(el.dataset.auth)));
-
+ 
 function enterApp(){
   const u=users[session];
   document.getElementById('authGate').style.display='none';
@@ -1323,7 +1532,7 @@ function showGate(){
   document.getElementById('authGate').style.display='grid';
   document.querySelector('.app').style.display='none';
 }
-
+ 
 document.getElementById('doRegister').onclick=async()=>{
   const name=document.getElementById('regName').value.trim();
   const email=document.getElementById('regEmail').value.trim().toLowerCase();
@@ -1355,15 +1564,17 @@ document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('logoutBtnTop').onclick=logout;
 document.getElementById('logPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('doLogin').click();});
 document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('doRegister').click();});
-
+ 
 /* ----------- Init ----------- */
+if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
+renderModeToggle();
 renderHome(); renderMuscleTabs(); renderExercises();
 fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
 if(session && users[session]) enterApp(); else showGate();
-
+ 
 /* ===== Temporizador de descanso ===== */
 function initRestTimer(){
   const $=id=>document.getElementById(id);
@@ -1402,9 +1613,9 @@ function initRestTimer(){
   setFromInputs();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initRestTimer); else initRestTimer();
-
+ 
 </script>
-
+ 
 <!-- ===== Temporizador de descanso ===== -->
 <div class="rest-modal" id="restModal" aria-hidden="true">
   <div class="rest-card" role="dialog" aria-modal="true" aria-label="Temporizador de descanso">
@@ -1436,6 +1647,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     </div>
   </div>
 </div>
-
+ 
 </body>
 </html>
+ 
+
