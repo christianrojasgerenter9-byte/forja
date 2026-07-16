@@ -278,8 +278,6 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .join-d{color:var(--muted);font-size:13px;margin-top:3px}
 .join-cta{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;padding:12px 20px;border-radius:12px;background:var(--molten);color:#fff;box-shadow:var(--glow);letter-spacing:.5px}
 .join-cta:hover{filter:brightness(1.06);transform:translateY(-1px)}
-.join-cta.wa{background:#25D366;box-shadow:0 0 40px rgba(37,211,102,.35)}
-.join-cta.wa:hover{filter:brightness(1.08)}
 .join-by{width:100%;text-align:right;font-size:12.5px;color:var(--amber);font-weight:700}
 
 /* ---------- SUSCRIPCIÓN ---------- */
@@ -331,7 +329,6 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .auth-err{color:#FF6B6B;font-size:13px;min-height:18px;margin:2px 0 6px}
 .auth-note{text-align:center;color:var(--muted-2);font-size:11.5px;margin-top:16px;line-height:1.5}
 .auth-form .btn{width:100%;margin-top:8px}
-.auth-form .btn[disabled]{opacity:.6;pointer-events:none}
 .auth-swap{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
 .auth-swap b{color:var(--orange);cursor:pointer}
 
@@ -383,6 +380,57 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   .macros{grid-template-columns:1fr}
   .foot{flex-direction:column;text-align:center}
 }
+
+/* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
+.ex-meta input.v{
+  width:100%;max-width:82px;text-align:center;font-family:'Anton',sans-serif;
+  background:var(--bg);color:var(--text);border:1px solid var(--line);
+  border-radius:8px;padding:6px 4px;transition:.15s;
+}
+.ex-meta input.v:focus{outline:none;border-color:var(--orange);box-shadow:var(--glow)}
+.ex-meta input.v:hover{border-color:var(--muted)}
+/* ===== Temporizador de descanso (agregado) ===== */
+.ex-rest{
+  width:100%;margin-top:10px;padding:11px;border-radius:12px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:.15s;
+}
+.ex-rest:hover{border-color:var(--orange);box-shadow:var(--glow)}
+.rest-modal{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:20px;
+  background:rgba(5,5,8,.72);backdrop-filter:blur(6px)}
+.rest-modal.open{display:grid}
+.rest-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.rest-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.rest-head h3{font-size:22px}
+.rest-close{font-size:22px;color:var(--muted);width:36px;height:36px;border-radius:10px}
+.rest-close:hover{color:var(--text);background:var(--surface-2)}
+.rest-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.rest-display{text-align:center;font-family:'Anton',sans-serif;font-size:72px;line-height:1;
+  background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent;
+  font-variant-numeric:tabular-nums;margin:4px 0}
+.rest-display.done{background:linear-gradient(120deg,#2FD07A,#7CFF9B);-webkit-background-clip:text;background-clip:text}
+.rest-ring{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin:12px 0 20px}
+.rest-ring>i{display:block;height:100%;width:100%;background:var(--molten);transition:width .25s linear}
+.rest-setup{display:flex;gap:10px;align-items:flex-end;justify-content:center;margin-bottom:16px}
+.rest-field{display:flex;flex-direction:column;gap:6px;align-items:center}
+.rest-field label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.rest-field input{width:80px;text-align:center;font-size:24px;font-weight:800;padding:10px;
+  background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:12px}
+.rest-field input:focus{outline:none;border-color:var(--orange)}
+.rest-colon{font-size:24px;color:var(--muted);padding-bottom:12px}
+.rest-presets{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.rest-presets button{background:var(--bg);color:var(--muted);border:1px solid var(--line);
+  padding:7px 12px;border-radius:99px;font-size:13px;transition:.15s}
+.rest-presets button:hover{border-color:var(--orange);color:var(--text)}
+.rest-controls{display:flex;gap:10px}
+.rest-controls button{flex:1;padding:14px;border-radius:12px;font-weight:800;font-size:15px;transition:.15s}
+#restStart{background:var(--molten);color:#170a02}
+#restStart:hover{filter:brightness(1.08)}
+#restReset{background:var(--bg);color:var(--text);border:1px solid var(--line)}
+#restReset:hover{border-color:var(--orange)}
+
 </style>
 </head>
 <body>
@@ -418,9 +466,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <div class="auth-swap">¿Ya tienes cuenta? <b data-auth="login">Ingresa aquí</b></div>
     </div>
 
-    <p class="auth-note" id="authNote">🔒 Demo: tus datos se guardan solo en este dispositivo.<br>Para una app real se conecta a un servicio de autenticación (Firebase, Supabase, etc.).</p>
+    <p class="auth-note">🔒 Demo: tus datos se guardan solo en este dispositivo.<br>Para una app real se conecta a un servicio de autenticación (Firebase, Supabase, etc.).</p>
   </div>
 </div>
+
 <div class="app">
 
   <!-- ===================== SIDEBAR (PC) ===================== -->
@@ -666,11 +715,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <div class="join-ic">🚀</div>
           <div class="join-tx">
             <div class="join-t">¿Te interesa ingresar a este proyecto?</div>
-            <div class="join-d">Escríbeme por WhatsApp y forma parte del equipo de coaches FORJA.</div>
+            <div class="join-d">Comunícate conmigo y forma parte del equipo de coaches FORJA.</div>
           </div>
-          <a class="join-cta wa" href="https://wa.me/525646463204?text=Hola%20Christian%2C%20me%20interesa%20el%20proyecto%20FORJA%20%F0%9F%92%AA" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-3-.2-.3A8 8 0 1112 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1a6.5 6.5 0 01-3.2-2.8c-.2-.4.2-.4.7-1.3.1-.2 0-.4 0-.5l-.7-1.8c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2.2-.2 3.7a10 10 0 004 3.7c1.5.7 2.4.8 3.2.6.5-.1 1.4-.6 1.6-1.2.2-.6.2-1 .1-1.2 0-.1-.2-.2-.4-.3z"/></svg>
-            WhatsApp · 56 4646 3204
+          <a class="join-cta" href="tel:5646463204">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M20 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6l1.8-1.8a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4a1 1 0 00-1 1A17 17 0 0020 21a1 1 0 001-1v-3.5a1 1 0 00-1-1z"/></svg>
+            56 4646 3204
           </a>
           <div class="join-by">— Christian Rojas</div>
         </div>
@@ -791,10 +840,6 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     <button class="pro-skip" id="proSkip">Seguir con el plan gratis por ahora</button>
   </div>
 </div>
-<!-- Firebase (autenticación + base de datos en la nube) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 /* ============================================================
@@ -806,27 +851,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 const CONFIG = {
   // 👇 Pega aquí el enlace de TU playlist de YouTube
   YOUTUBE_PLAYLIST: "https://www.youtube.com/results?search_query=gym+workout+music+playlist+2026",
-  PRECIO_PRO: 199, // MXN / mes
-
-  // 👇 FIREBASE: configuración del proyecto forja-a3141
-  FIREBASE: {
-    apiKey: "AIzaSyATdRrPXrnWJGoOHxJq1RFzgB9cN33Ewzw",
-    authDomain: "forja-a3141.firebaseapp.com",
-    projectId: "forja-a3141",
-    storageBucket: "forja-a3141.firebasestorage.app",
-    messagingSenderId: "383412353833",
-    appId: "1:383412353833:web:b94a4d571ffaf74e355538"
-  }
+  PRECIO_PRO: 199 // MXN / mes
 };
-
-/* ----------- Nube (Firebase) ----------- */
-const cloudOn = typeof firebase !== 'undefined' && CONFIG.FIREBASE.apiKey && CONFIG.FIREBASE.apiKey.indexOf('PEGA_AQUI') === -1;
-let fbAuth = null, db = null, currentUser = null, cloudName = '';
-if (cloudOn) {
-  firebase.initializeApp(CONFIG.FIREBASE);
-  fbAuth = firebase.auth();
-  db = firebase.firestore();
-}
 
 /* ----------- Almacenamiento con respaldo (funciona aquí y al publicarla) ----------- */
 const _mem = {};
@@ -835,55 +861,36 @@ const store = {
   set(k,v){ try{ localStorage.setItem(k,v);}catch(e){} _mem[k]=v; }
 };
 const load=(k,def)=>{ const v=store.get(k); if(v===null) return def; try{return JSON.parse(v);}catch(e){return def;} };
-const save=(k,v)=>{ store.set(k,JSON.stringify(v)); scheduleCloudSave(); };
+const save=(k,v)=>store.set(k,JSON.stringify(v));
+
+/* ----------- Aviso si el navegador NO guarda datos (incógnito, file:// en Firefox, previews) ----------- */
+const STORAGE_OK = (function(){
+  try{ localStorage.setItem('__forja_t','1'); const ok=localStorage.getItem('__forja_t')==='1'; localStorage.removeItem('__forja_t'); return ok; }
+  catch(e){ return false; }
+})();
+window.addEventListener('DOMContentLoaded',()=>{
+  if(STORAGE_OK) return;
+  const note=document.querySelector('.auth-note');
+  if(note){
+    note.innerHTML='⚠️ <b>Tu navegador no está guardando datos.</b> Tu cuenta no se conservará al recargar. '+
+      'Solución: ábrela en <b>Chrome</b> (sin modo incógnito) o publícala en un sitio <b>https://</b>. '+
+      'Evita abrir el archivo con doble clic en Firefox.';
+    note.style.color='#FFD166';
+    note.style.borderTop='1px solid var(--line)';
+    note.style.paddingTop='12px';
+  }
+});
 
 /* ----------- Estado ----------- */
 let logs = load('forja_logs', []);
 let plan = load('forja_plan', 'free');           // 'free' | 'pro'
 let doneToday = load('forja_done', {});          // {ejercicio:true}
 let dietTarget = load('forja_diet', 2000);
-let prs = load('forja_prs', {});                 // {ejercicio: kg récord}
-let users = load('forja_users', {});             // {correo:{name,pass}} (modo local)
-let session = load('forja_session', null);       // correo activo (modo local)
+let prs = load('forja_prs', {});
+let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usuario                 // {ejercicio: kg récord}
+let users = load('forja_users', {});             // {correo:{name,pass}}
+let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
-
-/* ----------- Sincronización con Firestore ----------- */
-let cloudTimer = null;
-function scheduleCloudSave(){
-  if(!cloudOn || !currentUser) return;
-  clearTimeout(cloudTimer);
-  cloudTimer = setTimeout(saveCloudNow, 800);
-}
-async function saveCloudNow(){
-  if(!cloudOn || !currentUser) return;
-  try{
-    await db.collection('forja_users').doc(currentUser.uid).set({
-      name: cloudName || currentUser.displayName || '',
-      logs, plan, doneToday, dietTarget, prs, measures,
-      chats: (typeof chats !== 'undefined' && chats) ? chats : {},
-      updated: firebase.firestore.FieldValue.serverTimestamp()
-    },{merge:true});
-  }catch(e){ console.warn('Firestore (guardar):', e); }
-}
-async function loadCloud(uid){
-  try{
-    const snap = await db.collection('forja_users').doc(uid).get();
-    if(snap.exists){
-      const d = snap.data();
-      logs = d.logs || []; plan = d.plan || 'free'; doneToday = d.doneToday || {};
-      dietTarget = d.dietTarget || 2000; prs = d.prs || {}; measures = d.measures || [];
-      chats = d.chats || {}; cloudName = d.name || '';
-    } else {
-      // Primera vez en la nube: sube lo que ya había en este dispositivo (no se pierde nada)
-      await saveCloudNow();
-    }
-  }catch(e){ console.warn('Firestore (cargar):', e); }
-}
-function rerenderAll(){
-  renderHome(); renderMuscleTabs(); renderExercises();
-  renderProgress(); renderMeasures(); renderDiet();
-  renderCoachList(); openChat(); applyPlan();
-}
 
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
@@ -926,8 +933,6 @@ const ROUTINES = {
     {n:'Russian twist', s:3, r:'20', max:'30'},
     {n:'Rueda abdominal (ab wheel)', s:3, r:'10', max:'15'},
     {n:'Mountain climbers', s:3, r:'30 seg', max:'60 seg'},
-    {n:'Crunch de bicicleta', s:3, r:'20', max:'30'},
-    {n:'Elevación de piernas acostado', s:3, r:'15', max:'20'},
   ]},
 };
 const WEEK = [
@@ -939,7 +944,9 @@ const WEEK = [
   ['SÁB','Descanso activo','Movilidad'],
 ];
 const COACHES = [
-  {id:'c1', n:'Christian Rojas', sp:'Coach FORJA · 56 4646 3204', a:'C', reply:'¡Gracias por tu mensaje! Para una respuesta inmediata escríbeme por WhatsApp: 56 4646 3204 📲'},
+  {id:'c1', n:'Coach Kari', sp:'Fuerza & hipertrofia', a:'K', reply:'¡Vamos con todo! Cuéntame cómo te fue con la última rutina y ajustamos cargas. 💪'},
+  {id:'c2', n:'Coach Beto', sp:'Pérdida de grasa', a:'B', reply:'Buena. Recuerda mantener el déficit y no saltarte la proteína. ¿Cómo va tu energía en los entrenos?'},
+  {id:'c3', n:'Coach Naomi', sp:'Nutrición deportiva', a:'N', reply:'Perfecto. Si me pasas tus calorías objetivo te armo el ajuste de macros para esta semana. 🥗'},
 ];
 
 /* ----------- Navegación ----------- */
@@ -1001,6 +1008,8 @@ function renderExercises(){
   document.getElementById('exCountPill').textContent=ex.length+' ejercicios';
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
+    const ov=exset[e.n]||{};
+    const sVal=(ov.s??e.s), rVal=(ov.r??e.r), mVal=(ov.max??e.max);
     const c=document.createElement('div');c.className='ex-card';
     c.innerHTML=`
       <div class="ex-top">
@@ -1008,9 +1017,9 @@ function renderExercises(){
         <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
       </div>
       <div class="ex-meta">
-        <div class="m"><div class="v">${e.s}</div><div class="k">Series</div></div>
-        <div class="m"><div class="v" style="font-size:18px">${e.r}</div><div class="k">Reps</div></div>
-        <div class="m"><div class="v" style="font-size:18px">${e.max}</div><div class="k">Máx reps</div></div>
+        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="s" value="${sVal}" aria-label="Series"><div class="k">Series</div></div>
+        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="r" value="${rVal}" style="font-size:16px" aria-label="Reps"><div class="k">Reps</div></div>
+        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="max" value="${mVal}" style="font-size:16px" aria-label="Máx reps"><div class="k">Máx reps</div></div>
       </div>
       <button class="ex-pr" data-pr="${e.n}">
         <span class="pr-k">🏆 Récord personal (PR)</span>
@@ -1022,8 +1031,20 @@ function renderExercises(){
           Cómo se hace
         </a>
         <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
-      </div>`;
+      </div>
+      <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>`;
     g.appendChild(c);
+  });
+  g.querySelectorAll('.ex-set').forEach(inp=>{
+    inp.addEventListener('change',()=>{
+      const k=inp.dataset.ex, f=inp.dataset.f, val=inp.value.trim();
+      if(!exset[k]) exset[k]={};
+      if(val==='') delete exset[k][f]; else exset[k][f]=val;
+      if(exset[k] && Object.keys(exset[k]).length===0) delete exset[k];
+      save('forja_exset',exset);
+    });
+    // evitar que Enter recargue/pierda foco de forma rara
+    inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') inp.blur(); });
   });
   g.querySelectorAll('.ex-done').forEach(b=>b.onclick=()=>{
     const k=b.dataset.ex; doneToday[k]=!doneToday[k]; save('forja_done',doneToday);
@@ -1174,8 +1195,6 @@ function renderDiet(){
 /* ----------- COACHES / CHAT ----------- */
 let currentCoach=COACHES[0];
 let chats=load('forja_chats',{});
-// Limpia chats de los coaches demo antiguos (Kari, Beto, Naomi)
-if(chats.c2 || chats.c3 || (chats.c1 && chats.c1[0] && chats.c1[0].t && chats.c1[0].t.indexOf('Kari')>-1)){ chats={}; save('forja_chats',chats); }
 function renderCoachList(){
   const cl=document.getElementById('coachList'); cl.innerHTML='';
   COACHES.forEach(c=>{
@@ -1190,7 +1209,7 @@ function renderCoachList(){
 function openChat(){
   document.getElementById('chatName').textContent=currentCoach.n;
   document.getElementById('chatAvatar').innerHTML=currentCoach.a+'<span class="on"></span>';
-  if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, coach de FORJA. ¿En qué te apoyo hoy? También puedes escribirme directo por WhatsApp: 56 4646 3204 📲`}];
+  if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, tu ${currentCoach.sp.toLowerCase()}. ¿En qué te apoyo hoy?`}];
   renderMsgs();
 }
 function renderMsgs(){
@@ -1274,21 +1293,17 @@ async function hashPass(str){
   try{
     const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  }catch(e){ let h=0; for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;} return 'h'+h; }
+  }catch(e){ return fallbackHash(str); }
+}
+function fallbackHash(str){ let h=0; for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;} return 'h'+h; }
+async function hashVariants(str){
+  const out=[];
+  try{ const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    out.push([...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')); }catch(e){}
+  out.push(fallbackHash(str));
+  return out;
 }
 const validEmail=e=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
-
-/* Traduce los errores de Firebase a mensajes claros en español */
-function fbError(e){
-  const c=(e&&e.code)||'';
-  if(c.indexOf('invalid-credential')>-1||c.indexOf('wrong-password')>-1||c.indexOf('user-not-found')>-1) return 'Correo o contraseña incorrectos.';
-  if(c.indexOf('email-already-in-use')>-1) return 'Ya existe una cuenta con ese correo. Usa la pestaña "Ingresar".';
-  if(c.indexOf('invalid-email')>-1) return 'Escribe un correo válido.';
-  if(c.indexOf('weak-password')>-1) return 'La contraseña debe tener al menos 6 caracteres.';
-  if(c.indexOf('too-many-requests')>-1) return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
-  if(c.indexOf('network')>-1) return 'Sin conexión a internet. Revisa tu conexión.';
-  return 'Ocurrió un error: '+((e&&e.message)||c||'desconocido');
-}
 
 function switchAuth(mode){
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.auth===mode));
@@ -1299,21 +1314,14 @@ function switchAuth(mode){
 document.querySelectorAll('[data-auth]').forEach(el=>el.addEventListener('click',()=>switchAuth(el.dataset.auth)));
 
 function enterApp(){
+  const u=users[session];
   document.getElementById('authGate').style.display='none';
   document.querySelector('.app').style.display='flex';
-  let nm='';
-  if(cloudOn) nm = cloudName || (currentUser&&currentUser.displayName) || '';
-  else { const u=users[session]; nm = u?u.name:''; }
-  if(nm) document.getElementById('userName').textContent=nm;
+  if(u) document.getElementById('userName').textContent=u.name;
 }
 function showGate(){
   document.getElementById('authGate').style.display='grid';
   document.querySelector('.app').style.display='none';
-}
-function setBusy(id,busy,txt){
-  const b=document.getElementById(id);
-  if(busy){ b.dataset.txt=b.textContent; b.textContent=txt; b.setAttribute('disabled',''); }
-  else{ b.textContent=b.dataset.txt||b.textContent; b.removeAttribute('disabled'); }
 }
 
 document.getElementById('doRegister').onclick=async()=>{
@@ -1325,56 +1333,20 @@ document.getElementById('doRegister').onclick=async()=>{
   if(!validEmail(email)){err.textContent='Escribe un correo válido.';return;}
   if(p.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
   if(p!==p2){err.textContent='Las contraseñas no coinciden.';return;}
-  err.textContent='';
-
-  if(cloudOn){
-    setBusy('doRegister',true,'Creando cuenta…');
-    try{
-      cloudName=name;
-      const cred=await fbAuth.createUserWithEmailAndPassword(email,p);
-      currentUser=cred.user;
-      try{ await cred.user.updateProfile({displayName:name}); }catch(e){}
-      await saveCloudNow();
-      // onAuthStateChanged se encarga de entrar a la app
-    }catch(e){ err.textContent=fbError(e); }
-    setBusy('doRegister',false);
-    return;
-  }
-
-  // Modo local (sin Firebase configurado)
   if(users[email]){err.textContent='Ya existe una cuenta con ese correo.';return;}
   users[email]={name, pass:await hashPass(p)}; save('forja_users',users);
   session=email; save('forja_session',session); enterApp();
 };
-
 document.getElementById('doLogin').onclick=async()=>{
   const email=document.getElementById('logEmail').value.trim().toLowerCase();
   const p=document.getElementById('logPass').value;
   const err=document.getElementById('logErr');
-  if(!email||!p){err.textContent='Escribe tu correo y contraseña.';return;}
-  err.textContent='';
-
-  if(cloudOn){
-    setBusy('doLogin',true,'Ingresando…');
-    try{
-      await fbAuth.signInWithEmailAndPassword(email,p);
-      // onAuthStateChanged se encarga de entrar a la app
-    }catch(e){ err.textContent=fbError(e); }
-    setBusy('doLogin',false);
-    return;
-  }
-
-  // Modo local (sin Firebase configurado)
   const u=users[email];
-  if(!u){err.textContent='No hay ninguna cuenta con ese correo en este dispositivo. Las cuentas locales solo existen donde se crearon: crea una nueva aquí.';return;}
-  const hp=await hashPass(p);
-  if(u.pass!==hp && u.pass!==p){err.textContent='Contraseña incorrecta.';return;}
-  if(u.pass===p){ u.pass=hp; save('forja_users',users); } // migra cuentas antiguas guardadas sin cifrar
+  const variantes=await hashVariants(p);
+  if(!u || !variantes.includes(u.pass)){err.textContent='Correo o contraseña incorrectos.';return;}
   session=email; save('forja_session',session); enterApp();
 };
-
 function logout(){
-  if(cloudOn && fbAuth){ fbAuth.signOut(); }
   session=null; save('forja_session',null);
   document.getElementById('logEmail').value=''; document.getElementById('logPass').value='';
   switchAuth('login'); showGate();
@@ -1390,22 +1362,80 @@ fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
+if(session && users[session]) enterApp(); else showGate();
 
-if(cloudOn){
-  document.getElementById('authNote').innerHTML='☁️ Tus datos se guardan en la nube de forma segura.<br>Puedes ingresar desde cualquier dispositivo.';
-  fbAuth.onAuthStateChanged(async user=>{
-    currentUser=user;
-    if(user){
-      await loadCloud(user.uid);
-      rerenderAll();
-      enterApp();
-    } else {
-      showGate();
-    }
-  });
-} else {
-  if(session && users[session]) enterApp(); else showGate();
+/* ===== Temporizador de descanso ===== */
+function initRestTimer(){
+  const $=id=>document.getElementById(id);
+  const modal=$('restModal'), disp=$('restDisplay'), bar=$('restBar');
+  const minEl=$('restMin'), secEl=$('restSec'), startBtn=$('restStart'), resetBtn=$('restReset');
+  let total=60, remaining=60, tmr=null, running=false;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v|0));
+  const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+  function readInputs(){const m=clamp(+minEl.value||0,0,59),s=clamp(+secEl.value||0,0,59);minEl.value=m;secEl.value=s;return m*60+s;}
+  function render(){disp.textContent=fmt(remaining);bar.style.width=(total>0?remaining/total*100:0)+'%';}
+  function setFromInputs(){total=readInputs();remaining=total;disp.classList.remove('done');disp.textContent=fmt(remaining);render();}
+  function alarm(){
+    try{const c=new (window.AudioContext||window.webkitAudioContext)();
+      [0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;
+        o.connect(g);g.connect(c.destination);
+        g.gain.setValueAtTime(.001,c.currentTime+t);
+        g.gain.exponentialRampToValueAtTime(.4,c.currentTime+t+.02);
+        g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);
+        o.start(c.currentTime+t);o.stop(c.currentTime+t+.22);});
+    }catch(e){}
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  }
+  function stop(){running=false;startBtn.textContent='Iniciar';minEl.disabled=secEl.disabled=false;clearInterval(tmr);tmr=null;}
+  function tick(){remaining--;if(remaining<=0){remaining=0;render();stop();disp.classList.add('done');disp.textContent='¡LISTO!';alarm();return;}render();}
+  function start(){if(remaining<=0)setFromInputs();if(remaining<=0)return;running=true;startBtn.textContent='Pausar';minEl.disabled=secEl.disabled=true;tmr=setInterval(tick,1000);}
+  function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');if(!running)setFromInputs();}
+  function close(){stop();modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+  startBtn.addEventListener('click',()=>running?stop():start());
+  resetBtn.addEventListener('click',()=>{stop();setFromInputs();});
+  $('restClose').addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  [minEl,secEl].forEach(el=>el.addEventListener('input',()=>{if(!running)setFromInputs();}));
+  $('restPresets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const s=+b.dataset.s;minEl.value=Math.floor(s/60);secEl.value=s%60;stop();setFromInputs();});
+  document.addEventListener('click',e=>{const b=e.target.closest('.ex-rest');if(b)open();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))close();});
+  setFromInputs();
 }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initRestTimer); else initRestTimer();
+
 </script>
+
+<!-- ===== Temporizador de descanso ===== -->
+<div class="rest-modal" id="restModal" aria-hidden="true">
+  <div class="rest-card" role="dialog" aria-modal="true" aria-label="Temporizador de descanso">
+    <div class="rest-head">
+      <h3>Descanso</h3>
+      <button class="rest-close" id="restClose" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="rest-sub">Pon el tiempo que creas necesario.</div>
+    <div class="rest-display" id="restDisplay">01:00</div>
+    <div class="rest-ring"><i id="restBar"></i></div>
+    <div class="rest-setup">
+      <div class="rest-field"><label>Minutos</label>
+        <input id="restMin" type="number" min="0" max="59" value="1" inputmode="numeric"></div>
+      <div class="rest-colon">:</div>
+      <div class="rest-field"><label>Segundos</label>
+        <input id="restSec" type="number" min="0" max="59" value="0" inputmode="numeric"></div>
+    </div>
+    <div class="rest-presets" id="restPresets">
+      <button type="button" data-s="30">30 s</button>
+      <button type="button" data-s="45">45 s</button>
+      <button type="button" data-s="60">1 min</button>
+      <button type="button" data-s="90">1:30</button>
+      <button type="button" data-s="120">2 min</button>
+      <button type="button" data-s="180">3 min</button>
+    </div>
+    <div class="rest-controls">
+      <button id="restStart" type="button">Iniciar</button>
+      <button id="restReset" type="button">Reiniciar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
