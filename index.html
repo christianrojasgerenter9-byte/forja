@@ -1057,7 +1057,7 @@ const HOME_ROUTINES = {
   brazo:   { label:'Brazo', ex:[
     {n:'Curl de bíceps con botellas/mochila', s:4, r:'12-15', max:'20'},
     {n:'Fondos de tríceps en silla', s:4, r:'12', max:'20'},
-    {n:'Curl martillo con botellas', s:3, r:'12', max:'15'},
+    {n:'Curl martillo con mochila', s:3, r:'12', max:'15'},
     {n:'Extensión de tríceps con botella (nuca)', s:3, r:'12-15', max:'18'},
     {n:'Flexiones diamante', s:3, r:'al fallo', max:'20'},
     {n:'Curl concentrado con botella', s:3, r:'12 c/brazo', max:'15'},
@@ -1178,12 +1178,12 @@ const HOME_VOL = {
     {n:'Superman con pausa',s:3,r:'12',max:'15'},
   ]},
   hombro:{label:'Hombro',ex:[
-    {n:'Pike push-ups (flexión en pica)',s:4,r:'8',max:'12'},
-    {n:'Press de hombro con mochila cargada',s:4,r:'8',max:'10'},
-    {n:'Handstand push-up en pared (asistida)',s:3,r:'5',max:'8'},
-    {n:'Elevaciones laterales con botellas pesadas',s:4,r:'10',max:'12'},
+    {n:'Press militar con ladrillos',s:4,r:'8-10',max:'12'},
+    {n:'Elevaciones laterales con ladrillos',s:4,r:'10',max:'12'},
+    {n:'Elevaciones frontales con ladrillos',s:3,r:'10',max:'12'},
+    {n:'Pájaros con ladrillos (deltoide posterior)',s:3,r:'12',max:'15'},
     {n:'Remo al mentón con mochila',s:3,r:'10',max:'12'},
-    {n:'Pájaros con botellas',s:3,r:'12',max:'15'},
+    {n:'Pike push-ups (flexión en pica)',s:3,r:'8',max:'12'},
   ]},
   abdomen:{label:'Abdomen',ex:[
     {n:'Elevación de piernas con pausa',s:4,r:'10',max:'12'},
@@ -1196,7 +1196,7 @@ const HOME_VOL = {
   brazo:{label:'Brazo',ex:[
     {n:'Curl de bíceps con mochila cargada',s:4,r:'8-10',max:'12'},
     {n:'Fondos de tríceps en silla con lastre',s:4,r:'8',max:'12'},
-    {n:'Curl martillo con botellas pesadas',s:3,r:'10',max:'12'},
+    {n:'Curl martillo con mochila cargada',s:3,r:'10',max:'12'},
     {n:'Flexiones diamante lentas',s:3,r:'8',max:'12'},
     {n:'Extensión de tríceps con mochila (nuca)',s:3,r:'10',max:'12'},
     {n:'Curl concentrado con botella pesada',s:3,r:'10 c/brazo',max:'12'},
@@ -1271,12 +1271,13 @@ function getRoutines(){
 }
 
 const WEEK = [
-  ['LUN','Pecho + Bíceps','8 ejercicios'],
-  ['MAR','Espalda + Tríceps','7 ejercicios'],
-  ['MIÉ','Pierna completa','6 ejercicios'],
-  ['JUE','Hombro + Abs','8 ejercicios'],
-  ['VIE','Full body / cardio','5 ejercicios'],
-  ['SÁB','Descanso activo','Movilidad'],
+  ['LUN','Brazo + Hombro','12 ejercicios'],
+  ['MAR','Pierna completa','6 ejercicios'],
+  ['MIÉ','Espalda + Pecho','12 ejercicios'],
+  ['JUE','Pierna · 2ª sesión','6 ejercicios'],
+  ['VIE','Abs','6 ejercicios'],
+  ['SÁB','Descanso','Recuperación'],
+  ['DOM','Descanso','Recuperación'],
 ];
 const COACHES = [
   {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
@@ -1457,19 +1458,26 @@ document.getElementById('pSave').onclick=()=>{
   renderProgress(); renderHome();
 };
 function renderProgress(){
-  const last=logs.slice(-8);
   const chart=document.getElementById('chart'), cx=document.getElementById('chartX');
   chart.innerHTML=''; cx.innerHTML='';
-  if(!last.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. ¡Guarda tu primera serie!</div>'; }
+  if(!logs.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. ¡Guarda tu primera serie!</div>'; }
   else{
-    const vols=last.map(l=>l.weight*l.reps||l.reps);
+    // Agrupar por fecha: una barra = una sesión (suma de peso × reps del día)
+    const byDate={}, order=[];
+    logs.forEach(l=>{
+      const v=l.weight*l.reps||l.reps;
+      if(!(l.date in byDate)){ byDate[l.date]=0; order.push(l.date); }
+      byDate[l.date]+=v;
+    });
+    const lastDates=order.slice(-8);
+    const vols=lastDates.map(d=>byDate[d]);
     const max=Math.max(...vols,1);
-    last.forEach((l,i)=>{
+    lastDates.forEach((d,i)=>{
       const bar=document.createElement('div');bar.className='bar';
       bar.style.height=Math.max(vols[i]/max*100,4)+'%';
-      bar.dataset.v=vols[i]+' kg·rep';
+      bar.dataset.v=vols[i].toLocaleString('es-MX')+' kg·rep';
       chart.appendChild(bar);
-      const s=document.createElement('span');s.textContent=l.date;cx.appendChild(s);
+      const s=document.createElement('span');s.textContent=d;cx.appendChild(s);
     });
   }
   const ll=document.getElementById('logList'); ll.innerHTML='';
