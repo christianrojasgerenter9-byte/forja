@@ -977,6 +977,14 @@ let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
 
+/* Reinicio diario: los "Hecho" de ayer se limpian para que el anillo empiece en 0% cada día */
+const HOY = new Date().toLocaleDateString('es-MX');
+if(load('forja_done_date','') !== HOY){
+  doneToday = {};
+  store.set('forja_done', JSON.stringify(doneToday));
+  store.set('forja_done_date', JSON.stringify(HOY));
+}
+
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
   brazo:   { label:'Brazo', ex:[
@@ -1316,10 +1324,14 @@ function renderHome(){
   document.getElementById('stVolume').innerHTML=vol.toLocaleString('es-MX')+' <span>kg</span>';
   const days=new Set(logs.map(l=>l.date)).size;
   document.getElementById('stStreak').innerHTML=days+' <span>días</span>';
-  // ring = % rutina de hoy completada (sobre brazo por defecto = grupo demo)
-  const total=ROUTINES.brazo.ex.length;
-  const done=ROUTINES.brazo.ex.filter(e=>doneToday[e.n]).length;
-  const pct=Math.round(done/total*100);
+  // ring = % de la rutina de HOY según tu split (marca "Hecho" en Rutinas)
+  const DAY_GROUPS = {1:['brazo','hombro'], 2:['pierna'], 3:['espalda','pecho'], 4:['pierna'], 5:['abs','abdomen'], 6:[], 0:[]};
+  const R=getRoutines();
+  const groupsHoy=(DAY_GROUPS[new Date().getDay()]||[]).filter(k=>R[k]);
+  const exHoy=groupsHoy.flatMap(k=>R[k].ex);
+  const total=exHoy.length;
+  const done=exHoy.filter(e=>doneToday[e.n]).length;
+  const pct=total?Math.round(done/total*100):0;
   document.getElementById('ring').style.setProperty('--pct',pct);
   document.getElementById('ringPct').textContent=pct;
 }
