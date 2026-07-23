@@ -502,6 +502,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 #phCamModal.open{display:flex}
 #phCamStage{position:relative;flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center}
 #phCamVideo{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#phCamVideo.rear{transform:none}
 #phSilhouette{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #phPoseTag{position:absolute;top:calc(18px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.1em;text-transform:uppercase;background:rgba(10,10,12,.75);padding:8px 20px;border-radius:99px;border:1px solid var(--orange)}
 #phCamBar{display:flex;gap:12px;padding:14px 14px calc(14px + env(safe-area-inset-bottom));background:var(--bg)}
@@ -2038,6 +2039,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   </div>
   <div id="phCamBar">
     <button class="ph-btn ghost sm" id="phCancelCam" type="button">Salir</button>
+    <button class="ph-btn ghost sm" id="phFlipCam" type="button" title="Cambiar cámara">🔄</button>
     <button class="ph-btn" id="phShootBtn" type="button">Capturar — Frente</button>
   </div>
 </div>
@@ -2181,16 +2183,30 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   }
 
   /* ---------- Cámara ---------- */
-  async function phOpenCamera(){
+  let phFacing = 'user'; // 'user' = frontal, 'environment' = trasera
+  async function phStartStream(){
+    if(phStream){ phStream.getTracks().forEach(function(t){ t.stop(); }); phStream = null; }
     try{
       phStream = await navigator.mediaDevices.getUserMedia({
-        video:{ facingMode:'user', width:{ideal:1280}, height:{ideal:1706} }, audio:false
+        video:{ facingMode:{ideal: phFacing}, width:{ideal:1280}, height:{ideal:1706} }, audio:false
       });
-    }catch(e){ phToast('No se pudo acceder a la cámara. Revisa permisos del navegador.'); return; }
-    el('phCamVideo').srcObject = phStream;
+    }catch(e){ phToast('No se pudo acceder a la cámara. Revisa permisos del navegador.'); return false; }
+    const v = el('phCamVideo');
+    v.srcObject = phStream;
+    v.classList.toggle('rear', phFacing === 'environment');
+    return true;
+  }
+  async function phOpenCamera(){
+    if(!(await phStartStream())) return;
     phShots = []; phPose = 0;
     phPoseUI();
     el('phCamModal').classList.add('open');
+  }
+  async function phFlipCamera(){
+    phFacing = (phFacing === 'user') ? 'environment' : 'user';
+    const ok = await phStartStream();
+    if(ok) phToast(phFacing === 'user' ? 'Cámara frontal' : 'Cámara trasera');
+    else phFacing = (phFacing === 'user') ? 'environment' : 'user'; // revertir si falló
   }
   function phCloseCamera(){
     if(phStream){ phStream.getTracks().forEach(t=>t.stop()); phStream = null; }
@@ -2215,7 +2231,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     c.width = targetW; c.height = Math.round(v.videoHeight * scale);
     const x = c.getContext('2d');
     x.setTransform(1,0,0,1,0,0);
-    x.translate(c.width,0); x.scale(-1,1);
+    if(phFacing === 'user'){ x.translate(c.width,0); x.scale(-1,1); } // espejo solo en frontal
     x.drawImage(v,0,0,c.width,c.height);
     const data = c.toDataURL('image/jpeg',.72);
     const f = el('phFlash'); f.style.opacity = .85; setTimeout(()=>f.style.opacity = 0, 120);
@@ -2269,6 +2285,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   el('phOpenCam').onclick = phOpenCamera;
   el('phCancelCam').onclick = phCloseCamera;
   el('phShootBtn').onclick = phCapture;
+  el('phFlipCam').onclick = phFlipCamera;
   el('phDevMode').onchange = phRenderState;
   ['phCmpA','phCmpB','phCmpPose'].forEach(function(id){ el(id).onchange = phUpdateCmp; });
   document.querySelectorAll('[data-go="fotos"]').forEach(function(b){
