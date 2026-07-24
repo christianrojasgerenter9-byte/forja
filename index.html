@@ -1396,8 +1396,20 @@ function go(id){
       b.classList.toggle('active', b.dataset.go===id);
   });
   window.scrollTo({top:0,behavior:'smooth'});
+  /* Enrutado con hash: el botón atrás navega entre secciones y la URL recuerda dónde estabas */
+  if(location.hash.slice(1) !== id){
+    try{ history.pushState(null,'','#'+id); }catch(e){ location.hash = id; }
+  }
 }
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+window.addEventListener('hashchange', function(){
+  const id = location.hash.slice(1);
+  if(id && document.getElementById('view-'+id)) go(id);
+});
+(function(){
+  const id = location.hash.slice(1);
+  if(id && document.getElementById('view-'+id)) go(id);
+})();
 
 /* ----------- Playlist ----------- */
 document.getElementById('playlistBtnHero').href=CONFIG.YOUTUBE_PLAYLIST;
