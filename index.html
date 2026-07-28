@@ -1094,13 +1094,27 @@ let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
 
-/* Reinicio diario: los "Hecho" de ayer se limpian para que el anillo empiece en 0% cada día */
-const HOY = new Date().toLocaleDateString('es-MX');
-if(load('forja_done_date','') !== HOY){
+/* Reinicio diario: los "Hecho" de ayer se limpian para que el anillo empiece en 0% cada dia */
+/* Clave de fecha estable (YYYY-MM-DD): no depende del formato del navegador */
+function hoyKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+let doneDate = load('forja_done_date','');
+
+/* Limpia los "Hecho" si cambio el dia. rerender=true vuelve a pintar la UI. */
+function checkNuevoDia(rerender){
+  const hoy = hoyKey();
+  if(doneDate === hoy) return false;
+  doneDate = hoy;
   doneToday = {};
   store.set('forja_done', JSON.stringify(doneToday));
-  store.set('forja_done_date', JSON.stringify(HOY));
+  store.set('forja_done_date', JSON.stringify(doneDate));
+  cloudSync();
+  if(rerender){ try{ renderHome(); renderExercises(); }catch(e){} }
+  return true;
 }
+checkNuevoDia(false);
 
 /* ----------- Datos: rutinas ----------- */
 const ROUTINES = {
@@ -1924,13 +1938,17 @@ fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
+/* Vigilante de medianoche: reinicia aunque la app quede abierta o vuelvas de segundo plano */
+setInterval(()=>checkNuevoDia(true), 60000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkNuevoDia(true); });
+window.addEventListener('focus',()=>checkNuevoDia(true));
 /* ===== Integración Firebase: cuentas reales + guardado en la nube ===== */
 function cloudSync(){
   if(!FB_ON || !fbUser) return;
   clearTimeout(cloudSync._t);
   cloudSync._t=setTimeout(()=>{
     fbDB.collection('usuarios').doc(fbUser.uid).set({
-      name:displayName, logs:logs, plan:plan, doneToday:doneToday, dietTarget:dietTarget,
+      name:displayName, logs:logs, plan:plan, doneToday:doneToday, doneDate:doneDate, dietTarget:dietTarget,
       prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null), updated:Date.now()
     },{merge:true}).catch(()=>{});
   },800);
@@ -1983,7 +2001,13 @@ if(FB_ON){
       displayName = d.name || (user.email||'').split('@')[0];
       if(Array.isArray(d.logs)) logs=d.logs;
       if(d.plan) plan=d.plan;
-      if(d.doneToday) doneToday=d.doneToday;
+      /* Solo aceptamos los "Hecho" de la nube si son de HOY; si no, arrancamos en cero */
+      if(d.doneToday && d.doneDate === hoyKey()){ doneToday=d.doneToday; doneDate=d.doneDate; }
+      else {
+        doneToday={}; doneDate=hoyKey();
+        store.set('forja_done', JSON.stringify(doneToday));
+        store.set('forja_done_date', JSON.stringify(doneDate));
+      }
       if(typeof d.dietTarget==='number') dietTarget=d.dietTarget;
       if(d.prs) prs=d.prs;
       if(Array.isArray(d.measures)) measures=d.measures;
