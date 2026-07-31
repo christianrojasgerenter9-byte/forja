@@ -340,6 +340,22 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .auth-tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:20px}
 .auth-tab{flex:1;padding:11px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted);transition:.16s}
 .auth-tab.active{background:var(--molten);color:#fff;box-shadow:var(--glow)}
+.legal{max-width:820px}
+.legal h3{font-size:17px;margin:26px 0 8px;color:var(--orange);letter-spacing:.3px}
+.legal h3:first-child{margin-top:0}
+.legal p,.legal li{font-size:14px;line-height:1.65;color:var(--muted);margin:0 0 10px}
+.legal strong{color:var(--text)}
+.legal ul{margin:0 0 12px;padding-left:20px}
+.legal .upd{font-size:12px;color:var(--muted-2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:18px}
+.legal table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13px}
+.legal th,.legal td{border:1px solid var(--line);padding:8px 10px;text-align:left;color:var(--muted)}
+.legal th{color:var(--text);background:var(--surface-2)}
+.legal .warn{border:1px solid rgba(255,173,71,.35);background:rgba(255,173,71,.07);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+.consent{display:flex;gap:10px;align-items:flex-start;margin:4px 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.consent input{width:17px;height:17px;margin-top:1px;accent-color:var(--orange);flex:none;cursor:pointer}
+.consent a{color:var(--orange);text-decoration:underline;cursor:pointer}
+.foot .lk{color:var(--muted-2);text-decoration:underline;cursor:pointer}
+.foot .lk:hover{color:var(--orange)}
 .auth-err{color:#FF6B6B;font-size:13px;min-height:18px;margin:2px 0 6px}
 .auth-note{text-align:center;color:var(--muted-2);font-size:11.5px;margin-top:16px;line-height:1.5}
 .auth-form .btn{width:100%;margin-top:8px}
@@ -554,6 +570,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <div class="field"><label>Correo</label><input type="email" id="regEmail" placeholder="tucorreo@mail.com" autocomplete="email"></div>
       <div class="field"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
       <div class="field"><label>Confirmar contraseña</label><input type="password" id="regPass2" placeholder="Repite tu contraseña" autocomplete="new-password"></div>
+      <label class="consent"><input type="checkbox" id="regConsent"><span>Leí y acepto el <a data-go="privacidad">Aviso de privacidad</a>, y otorgo mi consentimiento expreso para el tratamiento de mis datos personales sensibles (medidas corporales y fotografías de progreso).</span></label>
       <div class="auth-err" id="regErr"></div>
       <button class="btn btn-molten" id="doRegister">Crear cuenta</button>
       <div class="auth-swap">¿Ya tienes cuenta? <b data-auth="login">Ingresa aquí</b></div>
@@ -594,6 +611,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     <button class="nav-btn" data-go="coaches">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Coaches
     </button>
+    <button class="nav-btn" data-go="privacidad">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg> Privacidad
+    </button>
     <button class="nav-btn" data-go="suscripcion">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg> Suscripción
     </button>
@@ -616,6 +636,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       </div>
       <div class="tb-right">
         <span class="pill" id="planPillTop">Gratis</span>
+        <button class="tb-logout" data-go="privacidad" title="Aviso de privacidad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button>
         <button class="tb-logout" id="logoutBtnTop" title="Cerrar sesión"><svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5v3H9v4h7v3zM4 5h8V3H4a2 2 0 00-2 2v14a2 2 0 002 2h8v-2H4z"/></svg></button>
       </div>
     </div>
@@ -910,6 +931,79 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       </section>
 
       <!-- ============ SUSCRIPCIÓN ============ -->
+      <section class="view" id="view-privacidad">
+        <div class="section-head">
+          <div><span class="eyebrow">Tus datos, claros</span><h2>Aviso de privacidad</h2></div>
+          <button class="btn btn-ghost" id="privVolver" style="display:none">← Volver al registro</button>
+        </div>
+        <div class="card legal">
+          <div class="upd">Última actualización: 31 de julio de 2026</div>
+
+          <h3>1. Responsable de tus datos</h3>
+          <p><strong>Alex Fitness, S.A. de C.V.</strong>, en adelante "FORJA", con domicilio en <strong>Ciudad de México, México</strong>, es el responsable del tratamiento de tus datos personales, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+          <p>Correo para asuntos de privacidad: <strong>chrsitianrojas10@proton.me</strong></p>
+
+          <h3>2. Qué datos recabamos</h3>
+          <p><strong>Identificación y contacto:</strong> nombre o alias, correo electrónico, contraseña (cifrada, nunca la conocemos en texto claro) y tu número de WhatsApp solo si tú nos escribes.</p>
+          <div class="warn">
+            <p style="margin:0"><strong>Datos sensibles.</strong> Los siguientes se consideran sensibles por el artículo 3, fracción VI de la LFPDPPP, porque tocan tu estado de salud: sexo, edad, peso, estatura, medidas de brazo, pierna y abdomen, nivel de actividad, objetivo calórico y <strong>fotografías de tu cuerpo</strong> en tres poses. Requieren tu consentimiento expreso y puedes negarte sin perder el resto de la app.</p>
+          </div>
+          <p><strong>Actividad en la app:</strong> ejercicios, series, repeticiones, cargas, récords personales, rutinas completadas, plan de alimentación y modo de entrenamiento.</p>
+          <p><strong>Datos comerciales:</strong> plan contratado, vigencia y comprobantes de transferencia que nos envíes. <strong>No pedimos ni guardamos números de tarjeta, CLABE ni claves bancarias dentro de la app.</strong></p>
+          <p><strong>Técnicos:</strong> a través de Google Firebase Analytics recabamos identificador de instalación, tipo de dispositivo, sistema operativo, idioma, región aproximada y eventos de uso.</p>
+
+          <h3>3. Para qué los usamos</h3>
+          <p><strong>Finalidades necesarias:</strong> crear y administrar tu cuenta; guardar y sincronizar tus rutinas, registros y récords entre dispositivos; calcular tu requerimiento calórico y tu plan de alimentación; registrar la evolución de tus medidas y fotografías; administrar tu suscripción y su vigencia; atender tus dudas y reportes; cumplir obligaciones legales.</p>
+          <p><strong>Finalidades opcionales:</strong> avisarte de nuevas funciones o promociones, elaborar estadísticas agregadas y anónimas, e invitarte a encuestas. Puedes negarte a estas sin afectar tu uso de FORJA: escribe a nuestro correo con el asunto "Negativa de finalidades secundarias" y surtirá efecto en un máximo de cinco días hábiles.</p>
+
+          <h3>4. Tus fotografías de progreso</h3>
+          <ul>
+            <li>Se capturan con la cámara de tu dispositivo solo cuando tú inicias una sesión.</li>
+            <li><strong>Se almacenan en servidores de Google Firestore</strong> asociadas a tu cuenta. No se quedan únicamente en tu teléfono.</li>
+            <li>No las publicamos, no las compartimos con terceros y no las usamos con fines publicitarios.</li>
+            <li>La tarjeta de progreso que el plan gratuito invita a compartir <strong>no contiene tus fotos corporales</strong>: solo muestra datos de avance y la marca FORJA. Publicarla es decisión tuya y ocurre fuera de la app.</li>
+            <li>Puedes borrarlas cuando quieras desde la sección Fotos o solicitando su cancelación.</li>
+          </ul>
+
+          <h3>5. Con quién se comparten</h3>
+          <p>FORJA <strong>no vende, cede ni comercializa tus datos personales.</strong> Usamos los siguientes proveedores como encargados, que procesan datos por cuenta e instrucción nuestra:</p>
+          <table>
+            <tr><th>Proveedor</th><th>Servicio</th><th>Servidores</th></tr>
+            <tr><td>Google LLC (Firebase)</td><td>Cuentas, nube y métricas</td><td>Estados Unidos</td></tr>
+            <tr><td>GitHub, Inc.</td><td>Alojamiento de la app</td><td>Estados Unidos</td></tr>
+          </table>
+          <p>Al usar FORJA reconoces que tus datos, incluidos los sensibles, se almacenan fuera de México. Solo los entregaremos a autoridades cuando exista requerimiento fundado y motivado, en los supuestos del artículo 37 de la LFPDPPP.</p>
+
+          <h3>6. Derechos ARCO</h3>
+          <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>cancelarlos</strong> u <strong>oponerte</strong> a su tratamiento. Escribe a nuestro correo con el asunto "Derechos ARCO" incluyendo: tu nombre y el correo con el que te registraste, copia de una identificación oficial vigente, la descripción de los datos y el derecho que ejerces.</p>
+          <p>Responderemos en un máximo de 20 días hábiles y, si procede, lo haremos efectivo dentro de los 15 días hábiles siguientes.</p>
+
+          <h3>7. Revocar tu consentimiento</h3>
+          <p>Puedes revocarlo cuando quieras por el mismo medio, con el asunto "Revocación de consentimiento". Ten presente que revocarlo sobre los datos necesarios para operar implica cancelar tu cuenta y eliminar tu historial de entrenamiento, medidas y fotografías.</p>
+
+          <h3>8. Cuánto conservamos tus datos</h3>
+          <p>Mientras tu cuenta siga activa. Si pides la cancelación, eliminaremos tu información en un máximo de 30 días naturales, salvo la que debamos conservar por obligación legal.</p>
+
+          <h3>9. Seguridad</h3>
+          <p>Aplicamos medidas administrativas, técnicas y físicas razonables: autenticación de usuarios, cifrado de contraseñas, conexiones HTTPS y reglas de acceso que restringen la información de cada cuenta a su titular. Ningún sistema es infalible; si ocurre una vulneración que afecte de forma significativa tus derechos, te lo informaremos sin demora.</p>
+
+          <h3>10. Almacenamiento local y analítica</h3>
+          <p>Usamos el almacenamiento local de tu navegador para guardar tu sesión y preferencias, y Firebase Analytics para medir el uso de la app. Puedes borrar esta información desde la configuración de tu navegador; al hacerlo se cerrará tu sesión y perderás lo que no se haya sincronizado.</p>
+
+          <h3>11. Menores de edad</h3>
+          <p>FORJA está dirigida a mayores de 18 años. No recabamos intencionalmente datos de menores. Si eres menor, necesitas el consentimiento de quien ejerza la patria potestad o tutela. Si detectamos una cuenta de un menor sin ese consentimiento, la eliminaremos junto con sus datos.</p>
+
+          <h3>12. Sobre el entrenamiento y tu salud</h3>
+          <p>Las rutinas, cálculos calóricos y planes de alimentación de FORJA tienen fines informativos y de acompañamiento deportivo. <strong>No son diagnóstico, tratamiento ni prescripción médica o nutricional.</strong> Consulta a un profesional de la salud antes de iniciar cualquier programa, sobre todo si tienes alguna condición preexistente.</p>
+
+          <h3>13. Cambios a este aviso</h3>
+          <p>Podemos modificarlo por cambios en la ley, en nuestras prácticas o en el servicio. La versión vigente estará siempre aquí, con su fecha de actualización. Los cambios importantes te los avisaremos por correo o con un aviso dentro de la app.</p>
+
+          <h3>14. Autoridad competente</h3>
+          <p>Si consideras que tu derecho a la protección de datos fue vulnerado, puedes acudir ante el Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI) o la autoridad que lo sustituya.</p>
+        </div>
+      </section>
+
       <section class="view" id="view-suscripcion">
         <div class="section-head">
           <div><span class="eyebrow">Elige tu nivel</span><h2>Suscripción</h2></div>
@@ -950,7 +1044,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
     <footer class="foot">
       <span>FORJA · Sistema de entrenamiento físico</span>
-      <span class="r">© 2026 Christian Rojas · Todos los derechos reservados</span>
+      <span class="r"><a class="lk" data-go="privacidad">Aviso de privacidad</a> · © 2026 Christian Rojas · Todos los derechos reservados</span>
     </footer>
   </div>
 
@@ -1040,6 +1134,9 @@ const CONFIG = {
   ],
   PRECIO_PRO: 199 // MXN / mes
 };
+/* Version del aviso de privacidad. Si cambias el texto de fondo, sube la fecha:
+   asi queda registrado que version acepto cada usuario. */
+const AVISO_VERSION = "2026-07-31";
 
 /* ===================== FIREBASE (nube + cuentas + analytics) ===================== */
 const firebaseConfig = {
@@ -1474,6 +1571,23 @@ window.addEventListener('hashchange', function(){
 (function(){
   const id = location.hash.slice(1);
   if(id && document.getElementById('view-'+id)) go(id);
+})();
+
+/* El aviso debe poder leerse desde la pantalla de registro, cuando la app aun esta oculta */
+(function(){
+  const gate=document.getElementById('authGate');
+  const app=document.querySelector('.app');
+  const volver=document.getElementById('privVolver');
+  document.querySelectorAll('[data-go="privacidad"]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(!app || getComputedStyle(app).display!=='none') return;
+      if(gate) gate.style.display='none';
+      app.style.display='flex';
+      if(volver) volver.style.display='inline-flex';
+      go('privacidad');
+    });
+  });
+  if(volver) volver.onclick=()=>{ volver.style.display='none'; showGate(); };
 })();
 
 /* ----------- Playlist ----------- */
@@ -1960,6 +2074,7 @@ document.getElementById('doRegister').onclick=async()=>{
   if(!validEmail(email)){err.textContent='Escribe un correo válido.';return;}
   if(p.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
   if(p!==p2){err.textContent='Las contraseñas no coinciden.';return;}
+  if(!document.getElementById('regConsent').checked){err.textContent='Debes leer y aceptar el Aviso de privacidad para crear tu cuenta.';return;}
   if(users[email]){err.textContent='Ya existe una cuenta con ese correo.';return;}
   users[email]={name, pass:await hashPass(p)}; save('forja_users',users);
   session=email; save('forja_session',session); enterApp();
@@ -2027,11 +2142,12 @@ if(FB_ON){
     if(!validEmail(email)){err.textContent='Escribe un correo válido.';return;}
     if(p.length<6){err.textContent='La contraseña debe tener al menos 6 caracteres.';return;}
     if(p!==p2){err.textContent='Las contraseñas no coinciden.';return;}
+    if(!document.getElementById('regConsent').checked){err.textContent='Debes leer y aceptar el Aviso de privacidad para crear tu cuenta.';return;}
     err.textContent='Creando cuenta…';
     try{
       const cred=await fbAuth.createUserWithEmailAndPassword(email,p);
       displayName=name;
-      await fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now()},{merge:true});
+      await fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now(), avisoAceptado:true, avisoVersion:AVISO_VERSION, avisoFecha:new Date().toISOString()},{merge:true});
       err.textContent='';
     }catch(e){ err.textContent=fbError(e); }
   };
