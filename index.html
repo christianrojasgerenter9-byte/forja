@@ -4,6 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FORJA · Entrenamiento</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0C0908">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FORJA">
+<link rel="apple-touch-icon" href="forja-icono-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -180,6 +187,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-pie .k3{border:1px dashed var(--line)}
 .fjcal-total{font-size:12.5px;color:var(--muted)}
 .fjcal-total b{color:var(--text)}
+.sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
+         background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
+         padding:8px 16px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
+.sin-red.ver{display:block}
 .fjcal-day.editable{cursor:pointer}
 .fjcal-day.sel{outline:2px solid var(--orange);outline-offset:1px}
 .fjcal-edit{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
@@ -1303,6 +1314,9 @@ try{
   if(window.firebase && firebaseConfig.apiKey){
     firebase.initializeApp(firebaseConfig);
     fbAuth=firebase.auth(); fbDB=firebase.firestore();
+    /* Guarda los datos en el dispositivo: sin conexion se sigue leyendo y
+       escribiendo, y lo pendiente se sube solo al recuperar la red. */
+    try{ fbDB.enablePersistence({synchronizeTabs:true}).catch(()=>{}); }catch(e){}
     try{ firebase.analytics(); }catch(e){}
     FB_ON=true;
   }
@@ -2584,6 +2598,38 @@ try{ FORJARacha.alCambiar = () => cloudSync(); }catch(e){}
 /* Vigilante de medianoche: reinicia aunque la app quede abierta o vuelvas de segundo plano */
 setInterval(()=>{ checkNuevoDia(true); if(checkVigenciaPro()) invitarAPro(); }, 60000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkNuevoDia(true); });
+
+/* ---------- Sin conexion: instalable y con la rutina siempre a la mano ---------- */
+(function(){
+  /* Aviso flotante */
+  const aviso=document.createElement('div');
+  aviso.className='sin-red';
+  aviso.textContent='Sin conexion — se guarda en tu telefono';
+  document.body.appendChild(aviso);
+  const pintar=()=>aviso.classList.toggle('ver', !navigator.onLine);
+  window.addEventListener('online', ()=>{ pintar(); try{ cloudSync(); }catch(e){} });
+  window.addEventListener('offline', pintar);
+  pintar();
+
+  /* Service worker: guarda la cascara para abrir sin datos */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('sw.js')
+        .then(reg=>{
+          /* Si hay version nueva publicada, se aplica en la siguiente apertura */
+          reg.addEventListener('updatefound', ()=>{
+            const sw=reg.installing;
+            if(sw) sw.addEventListener('statechange', ()=>{
+              if(sw.state==='installed' && navigator.serviceWorker.controller){
+                console.log('FORJA: hay una version nueva lista');
+              }
+            });
+          });
+        })
+        .catch(e=>console.warn('FORJA: no se registro el service worker', e));
+    });
+  }
+})();
 window.addEventListener('focus',()=>checkNuevoDia(true));
 /* ===== Integración Firebase: cuentas reales + guardado en la nube ===== */
 function cloudSync(){
