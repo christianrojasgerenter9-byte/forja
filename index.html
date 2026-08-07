@@ -155,35 +155,36 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hoy-chip.reset{color:var(--muted);font-size:12px}
 .hoy-hint{width:100%;font-size:11.5px;color:var(--muted-2);margin-top:4px}
 /* ---- Calendario de entrenamientos ---- */
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 14px;gap:10px}
-.cal-mes{font-family:Anton,Impact,sans-serif;font-size:20px;letter-spacing:.03em;text-transform:capitalize}
-.cal-nav{display:flex;gap:6px}
-.cal-nav button{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+.fjcal-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 14px;gap:10px}
+.fjcal-mes{font-family:Anton,Impact,sans-serif;font-size:20px;letter-spacing:.03em;text-transform:capitalize}
+.fjcal-nav{display:flex;gap:6px}
+.fjcal-nav button{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
   width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:15px;line-height:1}
-.cal-nav button:hover{border-color:var(--orange);color:var(--orange)}
-.cal-nav button:disabled{opacity:.35;cursor:default}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-dow{font-size:11px;color:var(--muted-2);text-align:center;letter-spacing:.08em;padding-bottom:4px}
-.cal-day{aspect-ratio:1;display:grid;place-items:center;border-radius:10px;font-size:13px;
+.fjcal-nav button:hover{border-color:var(--orange);color:var(--orange)}
+.fjcal-nav button:disabled{opacity:.35;cursor:default}
+.fjcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.fjcal-dow{font-size:11px;color:var(--muted-2);text-align:center;letter-spacing:.08em;padding-bottom:4px}
+.fjcal-day{aspect-ratio:1;display:grid;place-items:center;border-radius:10px;font-size:13px;
   border:1px solid var(--line);background:var(--surface-2);color:var(--muted);position:relative}
-.cal-day.vacio{border:0;background:transparent}
-.cal-day.descanso{background:transparent;border-style:dashed;opacity:.55}
-.cal-day.futuro{opacity:.35}
-.cal-day.parcial{border-color:var(--orange);color:var(--text)}
-.cal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#0A0A0C;
+.fjcal-day.vacio{border:0;background:transparent}
+.fjcal-day.descanso{background:transparent;border-style:dashed;opacity:.55}
+.fjcal-day.futuro{opacity:.35}
+.fjcal-day.parcial{border-color:var(--orange);color:var(--text)}
+.fjcal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#0A0A0C;
   border-color:transparent;font-weight:700}
-.cal-day.hoy{outline:2px solid var(--text);outline-offset:1px}
-.cal-pie{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
-.cal-pie i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}
-.cal-pie .k1{background:linear-gradient(135deg,var(--orange),var(--magenta))}
-.cal-pie .k2{border:1px solid var(--orange)}
-.cal-pie .k3{border:1px dashed var(--line)}
-.cal-total{font-size:12.5px;color:var(--muted)}
-.cal-total b{color:var(--text)}
+.fjcal-day.hoy{outline:2px solid var(--text);outline-offset:1px}
+.fjcal-pie{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
+.fjcal-pie i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.fjcal-pie .k1{background:linear-gradient(135deg,var(--orange),var(--magenta))}
+.fjcal-pie .k2{border:1px solid var(--orange)}
+.fjcal-pie .k3{border:1px dashed var(--line)}
+.fjcal-total{font-size:12.5px;color:var(--muted)}
+.fjcal-total b{color:var(--text)}
 /* ---- Mapa corporal ---- */
 .bm-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
 @media(max-width:760px){.bm-wrap{grid-template-columns:1fr}}
 .bm-svg{width:100%;max-width:420px;margin:0 auto;display:block}
+.bm-fija{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2}
 .bm-part{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2;cursor:pointer;
          transition:fill .35s ease,opacity .35s ease}
 .bm-part:hover{stroke:var(--text);stroke-width:1.8}
@@ -191,8 +192,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bm-part.s1{fill:var(--orange);opacity:.72;stroke:transparent}
 .bm-part.s2{fill:#3D7FD1;opacity:.6;stroke:transparent}
 .bm-part.s3{fill:transparent;stroke:var(--line);stroke-dasharray:3 3}
-.bm-fija{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2}
-.bm-cap{fill:var(--muted-2);font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.bm-cap{fill:var(--muted-2);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
 .bm-lista{display:flex;flex-direction:column;gap:7px}
 .bm-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
         border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface-2);
@@ -748,7 +748,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <p class="muted" style="font-size:13.5px;margin:0 0 18px">
             Cada músculo se enciende cuando lo entrenas y se va apagando con los días. Tócalo para ponerlo en la rutina de hoy.</p>
           <div class="bm-wrap">
-            <svg class="bm-svg" id="bodyMap" viewBox="0 0 260 212" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de músculos entrenados">
+            <svg class="bm-svg" id="bodyMap" viewBox="0 0 260 212" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de musculos entrenados">
               <defs>
                 <linearGradient id="bmHot" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/>
@@ -803,16 +803,17 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
             <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:18px">
               <span class="eyebrow">Calendario</span>
-              <div class="cal-head">
-                <div class="cal-mes" id="calMes">—</div>
-                <div class="cal-nav">
+              <div class="fjcal-head">
+                <div class="fjcal-mes" id="calMes">—</div>
+                <div class="fjcal-nav">
                   <button id="calPrev" title="Mes anterior">‹</button>
                   <button id="calNext" title="Mes siguiente">›</button>
                 </div>
               </div>
-              <div class="cal-grid" id="calGrid"></div>
-              <div class="cal-pie">
-                <span class="cal-total" id="calTotal"></span>
+              <div class="fjcal-grid" id="calGrid"></div>
+              <div class="fjcal-pie" id="calPie">
+                <span class="fjcal-total" id="calTotal"></span>
+                <span id="calVer" style="opacity:.5"></span>
                 <span><i class="k1"></i>Entrenado</span>
                 <span><i class="k2"></i>A medias</span>
                 <span><i class="k3"></i>Descanso</span>
@@ -1799,8 +1800,8 @@ function renderHome(){
   const ringLbl=ringEl.querySelector('.lbl');
   if(ringLbl) ringLbl.textContent = total ? groupsHoy.map(k=>R[k].label).join(' + ') : 'Descanso';
   renderHoyPicker();
-  try{ renderCalendario(); }catch(e){}
-  try{ renderCuerpo(); }catch(e){}
+  try{ renderCalendario(); }catch(e){ console.warn('calendario:', e); }
+  try{ renderCuerpo(); }catch(e){ console.warn('mapa corporal:', e); }
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
     FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
@@ -1809,6 +1810,59 @@ function renderHome(){
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
     if(rlbl) rlbl.textContent = 'Racha activa · ' + rc.pie;
   }catch(e){}
+}
+
+/* ----------- Historial: lectura tolerante ----------- */
+/* Si forja-racha.js quedo en una version vieja, calculamos aqui mismo
+   en vez de dejar el calendario y el muneco en blanco. */
+function rachaDias(){
+  try{ return (typeof FORJARacha!=='undefined' && FORJARacha.datos) ? (FORJARacha.datos()||{}) : {}; }
+  catch(e){ return {}; }
+}
+function rachaClave(f){
+  return f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+}
+function rachaEntrenado(dias, f){
+  const r=dias[rachaClave(f)];
+  if(!r) return false;
+  const t=r.t||0;
+  return t ? (r.h/t)>=0.5 : (r.h>0);
+}
+function rachaMes(anio, mesIdx){
+  if(typeof FORJARacha!=='undefined' && typeof FORJARacha.mes==='function'){
+    try{ return FORJARacha.mes(anio, mesIdx); }catch(e){}
+  }
+  const dias=rachaDias(), hoy=new Date(); hoy.setHours(0,0,0,0);
+  const primero=new Date(anio, mesIdx, 1), ultimo=new Date(anio, mesIdx+1, 0).getDate();
+  const celdas=[]; let total=0;
+  for(let i=0;i<((primero.getDay()+6)%7);i++) celdas.push(null);
+  for(let d=1; d<=ultimo; d++){
+    const f=new Date(anio, mesIdx, d), k=rachaClave(f), r=dias[k], ok=rachaEntrenado(dias,f);
+    if(ok) total++;
+    celdas.push({fecha:k, dia:d, entrenado:ok, parcial:!!r&&!ok,
+      descanso:[0,6].indexOf(f.getDay())!==-1, hoy:f.getTime()===hoy.getTime(), futuro:f>hoy,
+      grupos:(r&&r.g)||[], hechos:(r&&r.h)||0, total:(r&&r.t)||0});
+  }
+  const N=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return {anio, mes:mesIdx, celdas, total, etiqueta:N[mesIdx]+' '+anio};
+}
+function rachaPorGrupo(){
+  if(typeof FORJARacha!=='undefined' && typeof FORJARacha.porGrupo==='function'){
+    try{ return FORJARacha.porGrupo(); }catch(e){}
+  }
+  const dias=rachaDias(), hoy=new Date(); hoy.setHours(0,0,0,0), out={};
+  Object.keys(dias).forEach(k=>{
+    const r=dias[k]; if(!r||!Array.isArray(r.g)) return;
+    const p=k.split('-').map(Number), f=new Date(p[0],p[1]-1,p[2]); f.setHours(0,0,0,0);
+    const hace=Math.round((hoy-f)/86400000); if(hace<0) return;
+    r.g.forEach(bruto=>{
+      const g = bruto==='abdomen' ? 'abs' : bruto;
+      if(!out[g]) out[g]={hace:hace, ultima:k, semana:0};
+      if(hace<out[g].hace){ out[g].hace=hace; out[g].ultima=k; }
+      if(hace<=6) out[g].semana++;
+    });
+  });
+  return out;
 }
 
 /* ----------- Mapa corporal: musculos encendidos ----------- */
@@ -1831,8 +1885,8 @@ function bmTexto(hace){
 
 function renderCuerpo(){
   const svg=document.getElementById('bodyMap');
-  if(!svg || typeof FORJARacha==='undefined') return;
-  const info=FORJARacha.porGrupo();
+  if(!svg) return;
+  const info=rachaPorGrupo();
   const R=getRoutines();
   const sel=(gruposElegidosHoy()||gruposDelSplit());
 
@@ -1889,18 +1943,30 @@ function bmToggle(g){
 let calOffset = 0;   /* 0 = mes actual, -1 = mes pasado, ... */
 
 function renderCalendario(){
-  const grid=document.getElementById('calGrid'); if(!grid || typeof FORJARacha==='undefined') return;
-  const base=new Date();
-  const m=FORJARacha.mes(base.getFullYear(), base.getMonth()+calOffset);
+  const grid=document.getElementById('calGrid');
+  if(!grid){ console.warn('calendario: falta el bloque HTML, sube el index.html nuevo'); return; }
+  const aviso=document.getElementById('calTotal');
+  let m;
+  try{
+    const base=new Date();
+    m=rachaMes(base.getFullYear(), base.getMonth()+calOffset);
+  }catch(e){
+    /* En celular no hay consola a la mano: el error se muestra en pantalla. */
+    grid.innerHTML='';
+    if(aviso) aviso.textContent='No se pudo cargar el calendario: '+(e.message||e);
+    return;
+  }
 
   document.getElementById('calMes').textContent=m.etiqueta;
-  document.getElementById('calTotal').innerHTML='<b>'+m.total+'</b> '+(m.total===1?'dia entrenado':'dias entrenados');
+  document.getElementById('calTotal').innerHTML = m.total
+      ? '<b>'+m.total+'</b> '+(m.total===1?'dia entrenado':'dias entrenados')
+      : 'Aun sin dias marcados este mes';
 
   const DOW=['L','M','M','J','V','S','D'];
-  let html=DOW.map(d=>'<div class="cal-dow">'+d+'</div>').join('');
+  let html=DOW.map(d=>'<div class="fjcal-dow">'+d+'</div>').join('');
   html+=m.celdas.map(c=>{
-    if(!c) return '<div class="cal-day vacio"></div>';
-    const cls=['cal-day'];
+    if(!c) return '<div class="fjcal-day vacio"></div>';
+    const cls=['fjcal-day'];
     if(c.entrenado) cls.push('on');
     else if(c.parcial) cls.push('parcial');
     if(c.descanso && !c.entrenado) cls.push('descanso');
@@ -1913,6 +1979,10 @@ function renderCalendario(){
   }).join('');
   grid.innerHTML=html;
 
+  const ver=document.getElementById('calVer');
+  if(ver) ver.textContent = 'v3 · modulo ' +
+    ((typeof FORJARacha!=='undefined' && FORJARacha.porGrupo) ? 'nuevo' :
+     (typeof FORJARacha!=='undefined') ? 'viejo' : 'no cargado');
   document.getElementById('calNext').disabled = calOffset>=0;
   document.getElementById('calPrev').onclick=()=>{ calOffset--; renderCalendario(); };
   document.getElementById('calNext').onclick=()=>{ if(calOffset<0){ calOffset++; renderCalendario(); } };
