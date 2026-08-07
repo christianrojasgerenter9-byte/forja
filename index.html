@@ -180,6 +180,16 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-pie .k3{border:1px dashed var(--line)}
 .fjcal-total{font-size:12.5px;color:var(--muted)}
 .fjcal-total b{color:var(--text)}
+.fjcal-day.editable{cursor:pointer}
+.fjcal-day.sel{outline:2px solid var(--orange);outline-offset:1px}
+.fjcal-edit{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)}
+.fjcal-edit h4{margin:0 0 3px;font-size:14px;text-transform:capitalize}
+.fjcal-edit p{margin:0 0 11px;font-size:11.5px;color:var(--muted-2)}
+.fjcal-acc{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.fjcal-acc button{border-radius:9px;padding:8px 16px;font-size:12.5px;cursor:pointer;border:1px solid var(--line);
+                  background:transparent;color:var(--text)}
+.fjcal-acc .ok{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#0A0A0C;border:0;font-weight:600}
+.fjcal-acc .del{color:#FF6B6B}
 /* ---- Mapa corporal ---- */
 .bm-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
 @media(max-width:760px){.bm-wrap{grid-template-columns:1fr}}
@@ -811,6 +821,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
                 </div>
               </div>
               <div class="fjcal-grid" id="calGrid"></div>
+              <div id="calEdit"></div>
               <div class="fjcal-pie" id="calPie">
                 <span class="fjcal-total" id="calTotal"></span>
                 <span id="calVer" style="opacity:.5"></span>
@@ -1804,7 +1815,8 @@ function renderHome(){
   try{ renderCuerpo(); }catch(e){ console.warn('mapa corporal:', e); }
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
-    FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
+    const recHoy = rachaDias()[rachaClave(new Date())];
+    if(!(recHoy && recHoy.m)) FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
     const rc = FORJARacha.etiqueta();
     document.getElementById('stStreak').innerHTML = rc.numero + ' <span>' + rc.unidad + '</span>';
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
@@ -1824,7 +1836,7 @@ function rachaClave(f){
 }
 function rachaEntrenado(dias, f){
   const r=dias[rachaClave(f)];
-  if(!r) return false;
+  if(!r || !r.h) return false;
   const t=r.t||0;
   return t ? (r.h/t)>=0.5 : (r.h>0);
 }
@@ -1839,7 +1851,7 @@ function rachaMes(anio, mesIdx){
   for(let d=1; d<=ultimo; d++){
     const f=new Date(anio, mesIdx, d), k=rachaClave(f), r=dias[k], ok=rachaEntrenado(dias,f);
     if(ok) total++;
-    celdas.push({fecha:k, dia:d, entrenado:ok, parcial:!!r&&!ok,
+    celdas.push({fecha:k, dia:d, entrenado:ok, parcial:!!r&&!!r.h&&!ok,
       descanso:[0,6].indexOf(f.getDay())!==-1, hoy:f.getTime()===hoy.getTime(), futuro:f>hoy,
       grupos:(r&&r.g)||[], hechos:(r&&r.h)||0, total:(r&&r.t)||0});
   }
@@ -1855,6 +1867,7 @@ function rachaPorGrupo(){
     const r=dias[k]; if(!r||!Array.isArray(r.g)) return;
     const p=k.split('-').map(Number), f=new Date(p[0],p[1]-1,p[2]); f.setHours(0,0,0,0);
     const hace=Math.round((hoy-f)/86400000); if(hace<0) return;
+    if(!r.h || !r.g.length) return;
     r.g.forEach(bruto=>{
       const g = bruto==='abdomen' ? 'abs' : bruto;
       if(!out[g]) out[g]={hace:hace, ultima:k, semana:0};
@@ -1941,6 +1954,71 @@ function bmToggle(g){
 
 /* ----------- Calendario de entrenamientos ----------- */
 let calOffset = 0;   /* 0 = mes actual, -1 = mes pasado, ... */
+let calDiaSel = null;  /* dia abierto en el editor */
+
+/* Escribe un dia del historial. Usa el modulo si esta al dia; si no, escribe directo. */
+function rachaGuardar(fecha, grupos){
+  /* Se escribe directo para poder marcarlo como manual (m:1). Un dia manual
+     manda sobre el registro automatico: si no, al repintar Inicio se volvia
+     a escribir encima con los grupos del split. */
+  const dias=rachaDias();
+  dias[fecha]={h:6, t:6, g:grupos.slice(0,3), m:1};
+  try{ store.set('forja_dias', JSON.stringify(dias)); }catch(e){}
+  try{ if(typeof FORJARacha!=='undefined' && FORJARacha.alCambiar) FORJARacha.alCambiar(dias); }catch(e){}
+  cloudSync();
+}
+function rachaBorrar(fecha){
+  const dias=rachaDias();
+  delete dias[fecha];
+  /* Vetado: evita que el registro automatico lo reviva en el mismo dia. */
+  if(fecha===rachaClave(new Date())) dias[fecha]={h:0, t:0, g:[], m:1};
+  try{ store.set('forja_dias', JSON.stringify(dias)); }catch(e){}
+  try{ if(typeof FORJARacha!=='undefined' && FORJARacha.alCambiar) FORJARacha.alCambiar(dias); }catch(e){}
+  cloudSync();
+}
+
+/* Editor de un dia: elegir que se entreno o borrarlo */
+function renderCalEditor(){
+  const caja=document.getElementById('calEdit'); if(!caja) return;
+  if(!calDiaSel){ caja.innerHTML=''; return; }
+
+  const R=getRoutines(), keys=Object.keys(R);
+  const dias=rachaDias(), r=dias[calDiaSel];
+  const sel=((r&&r.g)||[]).map(k=>k==='abdomen'&&!keys.includes('abdomen')?'abs':k).filter(k=>keys.includes(k));
+  const p=calDiaSel.split('-').map(Number);
+  const f=new Date(p[0],p[1]-1,p[2]);
+  const DIAS=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+  const MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  caja.innerHTML =
+    '<div class="fjcal-edit">'+
+      '<h4>'+DIAS[f.getDay()]+' '+f.getDate()+' de '+MES[f.getMonth()]+'</h4>'+
+      '<p>'+(r ? 'Toca para quitar o agregar grupos.' : 'Marca que entrenaste ese dia.')+'</p>'+
+      '<div class="hoy-chips" style="margin-top:0">'+
+        keys.map(k=>'<button class="hoy-chip'+(sel.includes(k)?' on':'')+'" data-g="'+k+'">'+R[k].label+'</button>').join('')+
+      '</div>'+
+      '<div class="fjcal-acc">'+
+        '<button class="ok" id="calOk">Guardar</button>'+
+        (r?'<button class="del" id="calDel">Borrar dia</button>':'')+
+        '<button id="calCancel">Cancelar</button>'+
+      '</div>'+
+    '</div>';
+
+  let elegidos=[...sel];
+  caja.querySelectorAll('.hoy-chip').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g, i=elegidos.indexOf(g);
+    if(i>=0) elegidos.splice(i,1);
+    else { elegidos.push(g); if(elegidos.length>3) elegidos.shift(); }
+    b.classList.toggle('on');
+  });
+  caja.querySelector('#calOk').onclick=()=>{
+    if(!elegidos.length){ rachaBorrar(calDiaSel); } else { rachaGuardar(calDiaSel, elegidos); }
+    calDiaSel=null; renderHome();
+  };
+  const del=caja.querySelector('#calDel');
+  if(del) del.onclick=()=>{ rachaBorrar(calDiaSel); calDiaSel=null; renderHome(); };
+  caja.querySelector('#calCancel').onclick=()=>{ calDiaSel=null; renderCalEditor(); renderCalendario(); };
+}
 
 function renderCalendario(){
   const grid=document.getElementById('calGrid');
@@ -1970,22 +2048,28 @@ function renderCalendario(){
     if(c.entrenado) cls.push('on');
     else if(c.parcial) cls.push('parcial');
     if(c.descanso && !c.entrenado) cls.push('descanso');
-    if(c.futuro) cls.push('futuro');
+    if(c.futuro) cls.push('futuro'); else cls.push('editable');
     if(c.hoy) cls.push('hoy');
+    if(c.fecha===calDiaSel) cls.push('sel');
     const tip=c.entrenado||c.parcial
       ? c.dia+': '+(c.grupos.length?c.grupos.join(' + '):'entrenamiento')+' ('+c.hechos+'/'+c.total+')'
       : (c.descanso?'Descanso':'Sin entrenar');
-    return '<div class="'+cls.join(' ')+'" title="'+tip+'">'+c.dia+'</div>';
+    return '<div class="'+cls.join(' ')+'" title="'+tip+'" data-f="'+c.fecha+'">'+c.dia+'</div>';
   }).join('');
   grid.innerHTML=html;
+  grid.querySelectorAll('.fjcal-day.editable').forEach(d=>d.onclick=()=>{
+    calDiaSel = (calDiaSel===d.dataset.f) ? null : d.dataset.f;
+    renderCalendario(); renderCalEditor();
+  });
 
   const ver=document.getElementById('calVer');
   if(ver) ver.textContent = 'v3 · modulo ' +
     ((typeof FORJARacha!=='undefined' && FORJARacha.porGrupo) ? 'nuevo' :
      (typeof FORJARacha!=='undefined') ? 'viejo' : 'no cargado');
   document.getElementById('calNext').disabled = calOffset>=0;
-  document.getElementById('calPrev').onclick=()=>{ calOffset--; renderCalendario(); };
-  document.getElementById('calNext').onclick=()=>{ if(calOffset<0){ calOffset++; renderCalendario(); } };
+  document.getElementById('calPrev').onclick=()=>{ calOffset--; calDiaSel=null; renderCalendario(); renderCalEditor(); };
+  document.getElementById('calNext').onclick=()=>{ if(calOffset<0){ calOffset++; calDiaSel=null; renderCalendario(); renderCalEditor(); } };
+  renderCalEditor();
 }
 
 /* ----------- Selector: que entreno hoy ----------- */
