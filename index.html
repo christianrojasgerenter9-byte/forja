@@ -180,6 +180,31 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .cal-pie .k3{border:1px dashed var(--line)}
 .cal-total{font-size:12.5px;color:var(--muted)}
 .cal-total b{color:var(--text)}
+/* ---- Mapa corporal ---- */
+.bm-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
+@media(max-width:760px){.bm-wrap{grid-template-columns:1fr}}
+.bm-svg{width:100%;max-width:420px;margin:0 auto;display:block}
+.bm-part{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2;cursor:pointer;
+         transition:fill .35s ease,opacity .35s ease}
+.bm-part:hover{stroke:var(--text);stroke-width:1.8}
+.bm-part.s0{fill:url(#bmHot);stroke:transparent}
+.bm-part.s1{fill:var(--orange);opacity:.72;stroke:transparent}
+.bm-part.s2{fill:#3D7FD1;opacity:.6;stroke:transparent}
+.bm-part.s3{fill:transparent;stroke:var(--line);stroke-dasharray:3 3}
+.bm-fija{fill:var(--surface-2);stroke:var(--line);stroke-width:1.2}
+.bm-cap{fill:var(--muted-2);font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.bm-lista{display:flex;flex-direction:column;gap:7px}
+.bm-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+        border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface-2);
+        font-size:13px;cursor:pointer}
+.bm-row:hover{border-color:var(--orange)}
+.bm-row .bm-est{font-size:11.5px;color:var(--muted-2)}
+.bm-row .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:0}
+.bm-row .dot.s0{background:linear-gradient(135deg,var(--orange),var(--magenta))}
+.bm-row .dot.s1{background:var(--orange)}
+.bm-row .dot.s2{background:#3D7FD1}
+.bm-row .dot.s3{background:transparent;border:1px dashed var(--muted-2)}
+.bm-pie{font-size:11.5px;color:var(--muted-2);margin-top:12px;line-height:1.6}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
   background:conic-gradient(#FF2D78 calc(var(--pct)*1%), #202027 0);
   display:grid;place-items:center;transition:background 1s ease;box-shadow:var(--glow)}
@@ -714,6 +739,59 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="stat"><div class="n" id="stSessions">0</div><div class="l">Sesiones registradas</div></div>
             <div class="stat"><div class="n tabnum" id="stVolume">0 <span>kg</span></div><div class="l">Volumen total movido</div></div>
             <div class="stat"><div class="n" id="stStreak">0 <span>días</span></div><div class="l">Racha activa</div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <span class="eyebrow">Mapa muscular</span>
+          <h2 style="font-size:26px;margin:8px 0 4px">Tu cuerpo esta semana</h2>
+          <p class="muted" style="font-size:13.5px;margin:0 0 18px">
+            Cada músculo se enciende cuando lo entrenas y se va apagando con los días. Tócalo para ponerlo en la rutina de hoy.</p>
+          <div class="bm-wrap">
+            <svg class="bm-svg" id="bodyMap" viewBox="0 0 260 212" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de músculos entrenados">
+              <defs>
+                <linearGradient id="bmHot" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/>
+                </linearGradient>
+              </defs>
+
+              <!-- ===== FRENTE ===== -->
+              <circle class="bm-fija" cx="65" cy="22" r="12"/>
+              <rect class="bm-fija" x="60" y="33" width="10" height="7" rx="3"/>
+              <ellipse class="bm-part" data-g="hombro" cx="44" cy="48" rx="11" ry="9"/>
+              <ellipse class="bm-part" data-g="hombro" cx="86" cy="48" rx="11" ry="9"/>
+              <rect class="bm-part" data-g="pecho" x="50" y="42" width="30" height="24" rx="8"/>
+              <rect class="bm-part" data-g="abs" x="54" y="68" width="22" height="31" rx="6"/>
+              <rect class="bm-part" data-g="brazo" x="30" y="58" width="12" height="45" rx="6"/>
+              <rect class="bm-part" data-g="brazo" x="88" y="58" width="12" height="45" rx="6"/>
+              <rect class="bm-part" data-g="pierna" x="48" y="102" width="15" height="68" rx="7"/>
+              <rect class="bm-part" data-g="pierna" x="67" y="102" width="15" height="68" rx="7"/>
+              <text class="bm-cap" x="65" y="186" text-anchor="middle">Frente</text>
+
+              <!-- ===== ESPALDA ===== -->
+              <circle class="bm-fija" cx="195" cy="22" r="12"/>
+              <rect class="bm-fija" x="190" y="33" width="10" height="7" rx="3"/>
+              <ellipse class="bm-part" data-g="hombro" cx="174" cy="48" rx="11" ry="9"/>
+              <ellipse class="bm-part" data-g="hombro" cx="216" cy="48" rx="11" ry="9"/>
+              <rect class="bm-part" data-g="espalda" x="180" y="42" width="30" height="33" rx="8"/>
+              <rect class="bm-part" data-g="espalda" x="184" y="77" width="22" height="22" rx="6"/>
+              <rect class="bm-part" data-g="brazo" x="160" y="58" width="12" height="45" rx="6"/>
+              <rect class="bm-part" data-g="brazo" x="218" y="58" width="12" height="45" rx="6"/>
+              <rect class="bm-part" data-g="pierna" x="178" y="102" width="15" height="68" rx="7"/>
+              <rect class="bm-part" data-g="pierna" x="197" y="102" width="15" height="68" rx="7"/>
+              <text class="bm-cap" x="195" y="186" text-anchor="middle">Espalda</text>
+            </svg>
+
+            <div>
+              <div class="bm-lista" id="bmLista"></div>
+              <div class="bm-pie">
+                <span class="dot s0" style="width:9px;height:9px;border-radius:50%;display:inline-block;background:linear-gradient(135deg,var(--orange),var(--magenta));margin-right:6px"></span>Hoy &nbsp;·&nbsp;
+                <span style="width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--orange);margin-right:6px"></span>Ayer o antier &nbsp;·&nbsp;
+                <span style="width:9px;height:9px;border-radius:50%;display:inline-block;background:#3D7FD1;margin-right:6px"></span>Recuperado &nbsp;·&nbsp;
+                <span style="width:9px;height:9px;border-radius:50%;display:inline-block;border:1px dashed var(--muted-2);margin-right:6px"></span>Apagado
+                <div id="bmAviso" style="margin-top:8px"></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1722,6 +1800,7 @@ function renderHome(){
   if(ringLbl) ringLbl.textContent = total ? groupsHoy.map(k=>R[k].label).join(' + ') : 'Descanso';
   renderHoyPicker();
   try{ renderCalendario(); }catch(e){}
+  try{ renderCuerpo(); }catch(e){}
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
     FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
@@ -1730,6 +1809,80 @@ function renderHome(){
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
     if(rlbl) rlbl.textContent = 'Racha activa · ' + rc.pie;
   }catch(e){}
+}
+
+/* ----------- Mapa corporal: musculos encendidos ----------- */
+const BM_NOMBRES={pecho:'Pecho',espalda:'Espalda',hombro:'Hombro',brazo:'Brazo',pierna:'Pierna',abs:'Abdomen'};
+
+/* Estado por dias sin entrenar: s0 hoy, s1 reciente, s2 recuperado, s3 apagado */
+function bmEstado(hace){
+  if(hace===undefined || hace===null || hace>=7) return 's3';
+  if(hace===0) return 's0';
+  if(hace<=2)  return 's1';
+  return 's2';
+}
+function bmTexto(hace){
+  if(hace===undefined || hace===null) return 'Sin entrenar';
+  if(hace===0) return 'Hoy';
+  if(hace===1) return 'Ayer';
+  if(hace>=7)  return 'Hace ' + hace + ' dias';
+  return 'Hace ' + hace + ' dias';
+}
+
+function renderCuerpo(){
+  const svg=document.getElementById('bodyMap');
+  if(!svg || typeof FORJARacha==='undefined') return;
+  const info=FORJARacha.porGrupo();
+  const R=getRoutines();
+  const sel=(gruposElegidosHoy()||gruposDelSplit());
+
+  /* pinta cada pieza del muneco */
+  svg.querySelectorAll('.bm-part').forEach(el=>{
+    const g=el.dataset.g;
+    const d=info[g];
+    const hace=d?d.hace:null;
+    el.setAttribute('class','bm-part '+bmEstado(hace));
+    let t=el.querySelector('title');
+    if(!t){ t=document.createElementNS('http://www.w3.org/2000/svg','title'); el.appendChild(t); }
+    t.textContent=(BM_NOMBRES[g]||g)+' — '+bmTexto(hace)+(d?' · '+d.semana+' en la semana':'');
+    el.onclick=()=>bmToggle(g);
+  });
+
+  /* lista lateral */
+  const lista=document.getElementById('bmLista');
+  if(lista){
+    const orden=['pecho','espalda','hombro','brazo','pierna','abs'];
+    lista.innerHTML=orden.map(g=>{
+      const d=info[g], hace=d?d.hace:null, st=bmEstado(hace);
+      const activo=sel.map(k=>k==='abdomen'?'abs':k).includes(g);
+      return '<div class="bm-row" data-g="'+g+'"'+(activo?' style="border-color:var(--orange)"':'')+'>'+
+        '<span><i class="dot '+st+'"></i>'+(BM_NOMBRES[g]||g)+'</span>'+
+        '<span class="bm-est">'+bmTexto(hace)+'</span></div>';
+    }).join('');
+    lista.querySelectorAll('.bm-row').forEach(r=>r.onclick=()=>bmToggle(r.dataset.g));
+  }
+
+  /* aviso de musculos abandonados */
+  const av=document.getElementById('bmAviso');
+  if(av){
+    const olvidados=['pecho','espalda','hombro','brazo','pierna','abs']
+      .filter(g=>!info[g] || info[g].hace>=7)
+      .map(g=>BM_NOMBRES[g]);
+    av.innerHTML = olvidados.length
+      ? '<b style="color:var(--orange)">Apagados:</b> '+olvidados.join(', ')+'. Elige uno y enciendelo hoy.'
+      : '<b style="color:#3D7FD1">Cuerpo completo encendido esta semana.</b> Asi se ve un split bien llevado.';
+  }
+}
+
+/* Tocar un musculo lo mete (o lo saca) de la rutina de hoy */
+function bmToggle(g){
+  const real=resolverGrupo(g) || resolverGrupo(g==='abs'?'abdomen':g);
+  if(!real) return;
+  let nuevo=[...(gruposElegidosHoy()||gruposDelSplit())];
+  const i=nuevo.indexOf(real);
+  if(i>=0) nuevo.splice(i,1);
+  else { nuevo.push(real); if(nuevo.length>2) nuevo.shift(); }
+  setGruposHoy(nuevo);
 }
 
 /* ----------- Calendario de entrenamientos ----------- */
