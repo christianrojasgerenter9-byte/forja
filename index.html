@@ -12,6 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+  <script src="forja-racha.js"></script>
 <style>
 /* ============================================================
    FORJA — App de entrenamiento
@@ -1610,8 +1611,6 @@ function renderHome(){
   document.getElementById('stSessions').textContent=logs.length;
   const vol=logs.reduce((a,l)=>a+(l.weight*l.reps||0),0);
   document.getElementById('stVolume').innerHTML=vol.toLocaleString('es-MX')+' <span>kg</span>';
-  const days=new Set(logs.map(l=>l.date)).size;
-  document.getElementById('stStreak').innerHTML=days+' <span>días</span>';
   // ring = % de la rutina de HOY: el split del dia + cualquier grupo que YA estes marcando hoy
   const DAY_GROUPS = {1:['brazo','hombro'], 2:['pierna'], 3:['espalda','pecho'], 4:['pierna'], 5:['abs','abdomen'], 6:[], 0:[]};
   const R=getRoutines();
@@ -1634,6 +1633,14 @@ function renderHome(){
   document.getElementById('ringPct').textContent=pct;
   const ringLbl=ringEl.querySelector('.lbl');
   if(ringLbl) ringLbl.textContent = total ? groupsHoy.map(k=>R[k].label).join(' + ') : 'Descanso';
+  /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
+  try{
+    FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
+    const rc = FORJARacha.etiqueta();
+    document.getElementById('stStreak').innerHTML = rc.numero + ' <span>' + rc.unidad + '</span>';
+    const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
+    if(rlbl) rlbl.textContent = 'Racha activa · ' + rc.pie;
+  }catch(e){}
 }
 
 /* ----------- RUTINAS ----------- */
@@ -2107,6 +2114,8 @@ calc(); renderDiet();
 renderCoachList(); openChat();
 applyPlan();
 if(checkVigenciaPro()) invitarAPro();
+/* Cada vez que cambia el historial de racha, se sube a la nube */
+try{ FORJARacha.alCambiar = () => cloudSync(); }catch(e){}
 /* Vigilante de medianoche: reinicia aunque la app quede abierta o vuelvas de segundo plano */
 setInterval(()=>{ checkNuevoDia(true); if(checkVigenciaPro()) invitarAPro(); }, 60000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkNuevoDia(true); });
@@ -2118,7 +2127,9 @@ function cloudSync(){
   cloudSync._t=setTimeout(()=>{
     fbDB.collection('usuarios').doc(fbUser.uid).set({
       name:displayName, logs:logs, plan:plan, proHasta:(proHasta||''), doneToday:doneToday, doneDate:doneDate, dietTarget:dietTarget,
-      prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null), updated:Date.now()
+      prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null),
+      dias:(typeof FORJARacha!=='undefined'? FORJARacha.datos() : {}),
+      updated:Date.now()
     },{merge:true}).catch(()=>{});
   },800);
 }
@@ -2185,6 +2196,7 @@ if(FB_ON){
       if(d.exset) exset=d.exset;
       if(d.mode) mode=d.mode;
       if(d.goal!==undefined) goal=d.goal;
+      if(d.dias) FORJARacha.fusionar(d.dias);
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
