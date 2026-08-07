@@ -154,6 +154,32 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#0A0A0C;border-color:transparent;font-weight:600}
 .hoy-chip.reset{color:var(--muted);font-size:12px}
 .hoy-hint{width:100%;font-size:11.5px;color:var(--muted-2);margin-top:4px}
+/* ---- Calendario de entrenamientos ---- */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 14px;gap:10px}
+.cal-mes{font-family:Anton,Impact,sans-serif;font-size:20px;letter-spacing:.03em;text-transform:capitalize}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+  width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:15px;line-height:1}
+.cal-nav button:hover{border-color:var(--orange);color:var(--orange)}
+.cal-nav button:disabled{opacity:.35;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{font-size:11px;color:var(--muted-2);text-align:center;letter-spacing:.08em;padding-bottom:4px}
+.cal-day{aspect-ratio:1;display:grid;place-items:center;border-radius:10px;font-size:13px;
+  border:1px solid var(--line);background:var(--surface-2);color:var(--muted);position:relative}
+.cal-day.vacio{border:0;background:transparent}
+.cal-day.descanso{background:transparent;border-style:dashed;opacity:.55}
+.cal-day.futuro{opacity:.35}
+.cal-day.parcial{border-color:var(--orange);color:var(--text)}
+.cal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#0A0A0C;
+  border-color:transparent;font-weight:700}
+.cal-day.hoy{outline:2px solid var(--text);outline-offset:1px}
+.cal-pie{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
+.cal-pie i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.cal-pie .k1{background:linear-gradient(135deg,var(--orange),var(--magenta))}
+.cal-pie .k2{border:1px solid var(--orange)}
+.cal-pie .k3{border:1px dashed var(--line)}
+.cal-total{font-size:12.5px;color:var(--muted)}
+.cal-total b{color:var(--text)}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
   background:conic-gradient(#FF2D78 calc(var(--pct)*1%), #202027 0);
   display:grid;place-items:center;transition:background 1s ease;box-shadow:var(--glow)}
@@ -696,6 +722,24 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <span class="eyebrow">Split semanal</span>
             <h2 style="font-size:26px;margin:8px 0 16px">Tu semana</h2>
             <div class="day-list" id="weekList"></div>
+
+            <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:18px">
+              <span class="eyebrow">Calendario</span>
+              <div class="cal-head">
+                <div class="cal-mes" id="calMes">—</div>
+                <div class="cal-nav">
+                  <button id="calPrev" title="Mes anterior">‹</button>
+                  <button id="calNext" title="Mes siguiente">›</button>
+                </div>
+              </div>
+              <div class="cal-grid" id="calGrid"></div>
+              <div class="cal-pie">
+                <span class="cal-total" id="calTotal"></span>
+                <span><i class="k1"></i>Entrenado</span>
+                <span><i class="k2"></i>A medias</span>
+                <span><i class="k3"></i>Descanso</span>
+              </div>
+            </div>
           </div>
           <div class="playlist">
             <div>
@@ -1677,6 +1721,7 @@ function renderHome(){
   const ringLbl=ringEl.querySelector('.lbl');
   if(ringLbl) ringLbl.textContent = total ? groupsHoy.map(k=>R[k].label).join(' + ') : 'Descanso';
   renderHoyPicker();
+  try{ renderCalendario(); }catch(e){}
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
     FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
@@ -1685,6 +1730,39 @@ function renderHome(){
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
     if(rlbl) rlbl.textContent = 'Racha activa · ' + rc.pie;
   }catch(e){}
+}
+
+/* ----------- Calendario de entrenamientos ----------- */
+let calOffset = 0;   /* 0 = mes actual, -1 = mes pasado, ... */
+
+function renderCalendario(){
+  const grid=document.getElementById('calGrid'); if(!grid || typeof FORJARacha==='undefined') return;
+  const base=new Date();
+  const m=FORJARacha.mes(base.getFullYear(), base.getMonth()+calOffset);
+
+  document.getElementById('calMes').textContent=m.etiqueta;
+  document.getElementById('calTotal').innerHTML='<b>'+m.total+'</b> '+(m.total===1?'dia entrenado':'dias entrenados');
+
+  const DOW=['L','M','M','J','V','S','D'];
+  let html=DOW.map(d=>'<div class="cal-dow">'+d+'</div>').join('');
+  html+=m.celdas.map(c=>{
+    if(!c) return '<div class="cal-day vacio"></div>';
+    const cls=['cal-day'];
+    if(c.entrenado) cls.push('on');
+    else if(c.parcial) cls.push('parcial');
+    if(c.descanso && !c.entrenado) cls.push('descanso');
+    if(c.futuro) cls.push('futuro');
+    if(c.hoy) cls.push('hoy');
+    const tip=c.entrenado||c.parcial
+      ? c.dia+': '+(c.grupos.length?c.grupos.join(' + '):'entrenamiento')+' ('+c.hechos+'/'+c.total+')'
+      : (c.descanso?'Descanso':'Sin entrenar');
+    return '<div class="'+cls.join(' ')+'" title="'+tip+'">'+c.dia+'</div>';
+  }).join('');
+  grid.innerHTML=html;
+
+  document.getElementById('calNext').disabled = calOffset>=0;
+  document.getElementById('calPrev').onclick=()=>{ calOffset--; renderCalendario(); };
+  document.getElementById('calNext').onclick=()=>{ if(calOffset<0){ calOffset++; renderCalendario(); } };
 }
 
 /* ----------- Selector: que entreno hoy ----------- */
