@@ -1,0 +1,49 @@
+{
+  "name": "FORJA — Entrenamiento en casa",
+  "short_name": "FORJA",
+  "description": "Rutinas, progreso y volumen de entrenamiento. Funciona sin conexión.",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "/forja/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0C0908",
+  "theme_color": "#0C0908",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "forja-icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "forja-icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "forja-icono-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Entrenar hoy",
+      "short_name": "Entrenar",
+      "url": "./#rutinas",
+      "icons": [{ "src": "forja-icono-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ver progreso",
+      "short_name": "Progreso",
+      "url": "./#progreso",
+      "icons": [{ "src": "forja-icono-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
