@@ -140,6 +140,20 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* Anillo de progreso */
 .ring-wrap{display:grid;place-items:center;position:relative}
+.hoy-pick{width:100%;max-width:320px;margin-top:14px}
+.hoy-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hoy-txt{font-size:13px;color:var(--muted)}
+.hoy-txt b{color:var(--text)}
+.hoy-btn{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:999px;
+         padding:6px 14px;font-size:12px;cursor:pointer;letter-spacing:.04em}
+.hoy-btn:hover{border-color:var(--orange);color:var(--orange)}
+.hoy-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.hoy-chip{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:999px;
+          padding:7px 14px;font-size:12.5px;cursor:pointer}
+.hoy-chip:hover{border-color:var(--orange)}
+.hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#0A0A0C;border-color:transparent;font-weight:600}
+.hoy-chip.reset{color:var(--muted);font-size:12px}
+.hoy-hint{width:100%;font-size:11.5px;color:var(--muted-2);margin-top:4px}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
   background:conic-gradient(#FF2D78 calc(var(--pct)*1%), #202027 0);
   display:grid;place-items:center;transition:background 1s ease;box-shadow:var(--glow)}
@@ -667,6 +681,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
                   <div class="lbl">Rutina de hoy</div>
                 </div>
               </div>
+              <div class="hoy-pick" id="hoyPick"></div>
             </div>
           </div>
           <div class="stat-row">
@@ -1207,6 +1222,9 @@ function hoyKey(){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 let doneDate = load('forja_done_date','');
+/* Rutina elegida a mano para hoy (hasta 2 grupos). Se borra al cambiar el dia. */
+let hoyGrupos = load('forja_hoy_grupos', null);
+let hoyFecha  = load('forja_hoy_fecha','');
 
 /* Limpia los "Hecho" si cambio el dia. rerender=true vuelve a pintar la UI. */
 function checkNuevoDia(rerender){
@@ -1216,6 +1234,9 @@ function checkNuevoDia(rerender){
   doneToday = {};
   store.set('forja_done', JSON.stringify(doneToday));
   store.set('forja_done_date', JSON.stringify(doneDate));
+  hoyGrupos=null; hoyFecha=hoy;
+  store.set('forja_hoy_grupos', JSON.stringify(hoyGrupos));
+  store.set('forja_hoy_fecha', JSON.stringify(hoyFecha));
   cloudSync();
   if(rerender){ try{ renderHome(); renderExercises(); }catch(e){} }
   return true;
@@ -1600,6 +1621,34 @@ document.getElementById('adContactBtn').href='https://wa.me/'+CONFIG.WHATSAPP+'?
 const howTo = name => 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' técnica correcta ejercicio');
 
 /* ----------- INICIO ----------- */
+/* Split por dia de la semana (0=domingo). Es solo la sugerencia: el usuario
+   puede cambiar la rutina de hoy desde el selector del anillo. */
+const DAY_GROUPS = {1:['brazo','hombro'], 2:['pierna'], 3:['espalda','pecho'], 4:['pierna'], 5:['abs','abdomen'], 6:[], 0:[]};
+
+/* Resuelve alias entre juegos de rutinas (abs <-> abdomen) */
+function resolverGrupo(k){
+  const keys=Object.keys(getRoutines());
+  if(keys.includes(k)) return k;
+  if(k==='abs' && keys.includes('abdomen')) return 'abdomen';
+  if(k==='abdomen' && keys.includes('abs')) return 'abs';
+  return null;
+}
+function gruposDelSplit(){ return (DAY_GROUPS[new Date().getDay()]||[]).map(resolverGrupo).filter(Boolean); }
+function gruposElegidosHoy(){
+  return (hoyFecha===hoyKey() && Array.isArray(hoyGrupos) && hoyGrupos.length)
+    ? hoyGrupos.map(resolverGrupo).filter(Boolean) : null;
+}
+/* Guarda la rutina de hoy. arr vacio o null = volver al split del dia. */
+function setGruposHoy(arr){
+  hoyGrupos = (arr && arr.length) ? arr.slice(0,2) : null;
+  hoyFecha  = hoyKey();
+  save('forja_hoy_grupos', hoyGrupos);
+  save('forja_hoy_fecha', hoyFecha);
+  if(hoyGrupos && hoyGrupos.length) currentMuscle = hoyGrupos[0];
+  renderHome();
+  try{ renderExercises(); }catch(e){}
+}
+
 function renderHome(){
   const wl=document.getElementById('weekList'); wl.innerHTML='';
   WEEK.forEach((d,i)=>{
@@ -1612,15 +1661,9 @@ function renderHome(){
   const vol=logs.reduce((a,l)=>a+(l.weight*l.reps||0),0);
   document.getElementById('stVolume').innerHTML=vol.toLocaleString('es-MX')+' <span>kg</span>';
   // ring = % de la rutina de HOY: el split del dia + cualquier grupo que YA estes marcando hoy
-  const DAY_GROUPS = {1:['brazo','hombro'], 2:['pierna'], 3:['espalda','pecho'], 4:['pierna'], 5:['abs','abdomen'], 6:[], 0:[]};
   const R=getRoutines();
   const keysR=Object.keys(R);
-  // resuelve alias entre sets (abs <-> abdomen) y descarta grupos que no existan en el set activo
-  const resolver = k => keysR.includes(k) ? k
-                      : (k==='abs'     && keysR.includes('abdomen')) ? 'abdomen'
-                      : (k==='abdomen' && keysR.includes('abs'))     ? 'abs'
-                      : null;
-  const programados=(DAY_GROUPS[new Date().getDay()]||[]).map(resolver).filter(Boolean);
+  const programados = gruposElegidosHoy() || gruposDelSplit();
   // grupos que estas trabajando hoy aunque no toquen por calendario (fin de semana, dia recorrido)
   const marcados=keysR.filter(k=>R[k].ex.some(e=>doneToday[e.n]));
   const groupsHoy=[...new Set([...programados,...marcados])];
@@ -1633,6 +1676,7 @@ function renderHome(){
   document.getElementById('ringPct').textContent=pct;
   const ringLbl=ringEl.querySelector('.lbl');
   if(ringLbl) ringLbl.textContent = total ? groupsHoy.map(k=>R[k].label).join(' + ') : 'Descanso';
+  renderHoyPicker();
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
     FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
@@ -1641,6 +1685,42 @@ function renderHome(){
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
     if(rlbl) rlbl.textContent = 'Racha activa · ' + rc.pie;
   }catch(e){}
+}
+
+/* ----------- Selector: que entreno hoy ----------- */
+function renderHoyPicker(){
+  const box=document.getElementById('hoyPick'); if(!box) return;
+  const R=getRoutines(), keys=Object.keys(R);
+  const sel=(gruposElegidosHoy()||[]);
+  const abierto = box.dataset.open==='1';
+  const actuales = sel.length ? sel : gruposDelSplit();
+  const nombres = actuales.length ? actuales.map(k=>R[k].label).join(' + ') : 'Descanso';
+
+  box.innerHTML =
+    '<div class="hoy-top">'+
+      '<span class="hoy-txt">Hoy: <b>'+nombres+'</b>'+(sel.length?' (a tu gusto)':'')+'</span>'+
+      '<button class="hoy-btn" id="hoyToggle">'+(abierto?'Cerrar':'Cambiar')+'</button>'+
+    '</div>'+
+    (abierto ?
+      '<div class="hoy-chips">'+
+        keys.map(k=>'<button class="hoy-chip'+(actuales.includes(k)?' on':'')+'" data-g="'+k+'">'+R[k].label+'</button>').join('')+
+        (sel.length?'<button class="hoy-chip reset" data-g="__split">Volver al split</button>':'')+
+        '<div class="hoy-hint">Toca hasta 2 grupos. Si eliges un tercero, se quita el mas antiguo.</div>'+
+      '</div>' : '');
+
+  box.querySelector('#hoyToggle').onclick=()=>{
+    box.dataset.open = abierto ? '0' : '1';
+    renderHoyPicker();
+  };
+  box.querySelectorAll('.hoy-chip').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g;
+    if(g==='__split'){ setGruposHoy(null); return; }
+    let nuevo=[...actuales];
+    const i=nuevo.indexOf(g);
+    if(i>=0) nuevo.splice(i,1);
+    else { nuevo.push(g); if(nuevo.length>2) nuevo.shift(); }
+    setGruposHoy(nuevo);
+  });
 }
 
 /* ----------- RUTINAS ----------- */
@@ -2129,6 +2209,7 @@ function cloudSync(){
       name:displayName, logs:logs, plan:plan, proHasta:(proHasta||''), doneToday:doneToday, doneDate:doneDate, dietTarget:dietTarget,
       prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null),
       dias:(typeof FORJARacha!=='undefined'? FORJARacha.datos() : {}),
+      hoyGrupos:(hoyGrupos||null), hoyFecha:(hoyFecha||''),
       updated:Date.now()
     },{merge:true}).catch(()=>{});
   },800);
@@ -2197,6 +2278,9 @@ if(FB_ON){
       if(d.mode) mode=d.mode;
       if(d.goal!==undefined) goal=d.goal;
       if(d.dias) FORJARacha.fusionar(d.dias);
+      /* La rutina elegida a mano solo vale si es de HOY */
+      if(d.hoyFecha === hoyKey() && Array.isArray(d.hoyGrupos)){ hoyGrupos=d.hoyGrupos; hoyFecha=d.hoyFecha; }
+      else { hoyGrupos=null; hoyFecha=hoyKey(); }
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
