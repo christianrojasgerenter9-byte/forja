@@ -217,8 +217,75 @@ const FORJARacha = (() => {
     if (typeof umbral === 'number') UMBRAL = umbral;
   }
 
+  /* Rejilla de un mes para pintar el calendario.
+     Devuelve celdas de lunes a domingo, con huecos al inicio para cuadrar. */
+  function mes(anio, mesIdx) {
+    const dias = leer();
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const primero = new Date(anio, mesIdx, 1);
+    const ultimoDia = new Date(anio, mesIdx + 1, 0).getDate();
+    const huecos = (primero.getDay() + 6) % 7;   // lunes primero
+
+    const celdas = [];
+    for (let i = 0; i < huecos; i++) celdas.push(null);
+
+    let total = 0;
+    for (let d = 1; d <= ultimoDia; d++) {
+      const fecha = new Date(anio, mesIdx, d);
+      const k = clave(fecha);
+      const r = dias[k];
+      const ok = entrenado(dias, fecha);
+      if (ok) total++;
+      celdas.push({
+        fecha: k,
+        dia: d,
+        entrenado: ok,
+        parcial: !!r && !ok,
+        descanso: esDescanso(fecha),
+        hoy: fecha.getTime() === hoy.getTime(),
+        futuro: fecha > hoy,
+        grupos: (r && r.g) || [],
+        hechos: (r && r.h) || 0,
+        total: (r && r.t) || 0
+      });
+    }
+
+    const NOMBRES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                     'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    return {
+      anio, mes: mesIdx, celdas, total,
+      etiqueta: NOMBRES[mesIdx] + ' ' + anio,
+      esMesActual: anio === hoy.getFullYear() && mesIdx === hoy.getMonth()
+    };
+  }
+
+  /* Cuando se entrenó cada grupo muscular por última vez.
+     Devuelve { pecho:{hace:0, ultima:'2026-08-06', semana:2}, ... }
+     'hace' son días completos: 0 = hoy. */
+  function porGrupo() {
+    const dias = leer();
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const out = {};
+
+    Object.keys(dias).forEach(k => {
+      const r = dias[k];
+      if (!r || !Array.isArray(r.g)) return;
+      const f = desdeClave(k); f.setHours(0, 0, 0, 0);
+      const hace = Math.round((hoy.getTime() - f.getTime()) / DIA_MS);
+      if (hace < 0) return;
+
+      r.g.forEach(bruto => {
+        const g = bruto === 'abdomen' ? 'abs' : bruto;
+        if (!out[g]) out[g] = { hace: hace, ultima: k, semana: 0 };
+        if (hace < out[g].hace) { out[g].hace = hace; out[g].ultima = k; }
+        if (hace <= 6) out[g].semana++;
+      });
+    });
+    return out;
+  }
+
   const api = {
-    registrarHoy, marcarDia, borrarDia, calcular, semana, etiqueta,
+    registrarHoy, marcarDia, borrarDia, calcular, semana, mes, porGrupo, etiqueta,
     datos, fusionar, configurar, clave, desdeClave,
     alCambiar: null
   };
