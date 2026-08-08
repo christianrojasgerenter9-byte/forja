@@ -189,6 +189,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-total b{color:var(--text)}
 /* ---- Registro de series ---- */
 .muscle-pista{font-size:11.5px;color:var(--muted-2);margin:8px 0 2px}
+.btn-descanso{margin-top:10px;background:transparent;border:1px solid var(--line);color:var(--muted);
+              border-radius:999px;padding:8px 16px;font-size:12.5px;cursor:pointer}
+.btn-descanso:hover{border-color:var(--orange);color:var(--orange)}
+.btn-descanso.on{border-color:#3D7FD1;color:#8CC4EA;background:rgba(61,127,209,.10)}
+.fjcal-day.descansomarcado{border-style:dashed;border-color:#3D7FD1;color:#8CC4EA;opacity:.9}
 .ex-grp{display:inline-block;margin-left:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
         color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:2px 7px;vertical-align:2px}
 .serie-box{margin-top:10px;border-top:1px solid var(--line);padding-top:11px}
@@ -899,6 +904,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="enfoque-banner" id="enfoqueBanner" style="display:none"></div>
         <div class="muscle-tabs" id="muscleTabs"></div>
         <div class="muscle-pista" id="musclePista"></div>
+        <button type="button" class="btn-descanso" id="btnDescansoHoy">Hoy descanso</button>
         <div class="ex-grid" id="exGrid"></div>
       </section>
 
@@ -1922,7 +1928,7 @@ function renderHome(){
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
     const recHoy = rachaDias()[rachaClave(new Date())];
-    if(!(recHoy && recHoy.m)) FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
+    if(!(recHoy && (recHoy.m || recHoy.d))) FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
     const rc = FORJARacha.etiqueta();
     document.getElementById('stStreak').innerHTML = rc.numero + ' <span>' + rc.unidad + '</span>';
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
@@ -1958,7 +1964,7 @@ function rachaMes(anio, mesIdx){
     const f=new Date(anio, mesIdx, d), k=rachaClave(f), r=dias[k], ok=rachaEntrenado(dias,f);
     if(ok) total++;
     celdas.push({fecha:k, dia:d, entrenado:ok, parcial:!!r&&!!r.h&&!ok,
-      descanso:[0,6].indexOf(f.getDay())!==-1, hoy:f.getTime()===hoy.getTime(), futuro:f>hoy,
+      descanso:[0,6].indexOf(f.getDay())!==-1 || !!(r&&r.d), marcado:!!(r&&r.d), hoy:f.getTime()===hoy.getTime(), futuro:f>hoy,
       grupos:(r&&r.g)||[], hechos:(r&&r.h)||0, total:(r&&r.t)||0});
   }
   const N=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -2073,6 +2079,21 @@ function rachaGuardar(fecha, grupos){
   try{ if(typeof FORJARacha!=='undefined' && FORJARacha.alCambiar) FORJARacha.alCambiar(dias); }catch(e){}
   cloudSync();
 }
+/* Marca (o desmarca) un dia como descanso: no cuenta como entrenado,
+   pero tampoco rompe la racha. */
+function rachaDescanso(fecha, activar){
+  const dias=rachaDias();
+  if(activar){ dias[fecha]={h:0, t:0, g:[], d:1, m:1}; }
+  else { delete dias[fecha]; }
+  try{ store.set('forja_dias', JSON.stringify(dias)); }catch(e){}
+  try{ if(typeof FORJARacha!=='undefined' && FORJARacha.alCambiar) FORJARacha.alCambiar(dias); }catch(e){}
+  cloudSync();
+}
+function esDescansoMarcado(fecha){
+  const r=rachaDias()[fecha];
+  return !!(r && r.d);
+}
+
 function rachaBorrar(fecha){
   const dias=rachaDias();
   delete dias[fecha];
@@ -2105,6 +2126,7 @@ function renderCalEditor(){
       '</div>'+
       '<div class="fjcal-acc">'+
         '<button class="ok" id="calOk">Guardar</button>'+
+        '<button id="calRest">'+(esDescansoMarcado(calDiaSel)?'Quitar descanso':'Marcar descanso')+'</button>'+
         (r?'<button class="del" id="calDel">Borrar dia</button>':'')+
         '<button id="calCancel">Cancelar</button>'+
       '</div>'+
@@ -2119,6 +2141,10 @@ function renderCalEditor(){
   });
   caja.querySelector('#calOk').onclick=()=>{
     if(!elegidos.length){ rachaBorrar(calDiaSel); } else { rachaGuardar(calDiaSel, elegidos); }
+    calDiaSel=null; renderHome();
+  };
+  caja.querySelector('#calRest').onclick=()=>{
+    rachaDescanso(calDiaSel, !esDescansoMarcado(calDiaSel));
     calDiaSel=null; renderHome();
   };
   const del=caja.querySelector('#calDel');
@@ -2154,12 +2180,13 @@ function renderCalendario(){
     if(c.entrenado) cls.push('on');
     else if(c.parcial) cls.push('parcial');
     if(c.descanso && !c.entrenado) cls.push('descanso');
+    if(c.marcado && !c.entrenado) cls.push('descansomarcado');
     if(c.futuro) cls.push('futuro'); else cls.push('editable');
     if(c.hoy) cls.push('hoy');
     if(c.fecha===calDiaSel) cls.push('sel');
     const tip=c.entrenado||c.parcial
       ? c.dia+': '+(c.grupos.length?c.grupos.join(' + '):'entrenamiento')+' ('+c.hechos+'/'+c.total+')'
-      : (c.descanso?'Descanso':'Sin entrenar');
+      : (c.marcado?'Descanso marcado por ti' : c.descanso?'Descanso':'Sin entrenar');
     return '<div class="'+cls.join(' ')+'" title="'+tip+'" data-f="'+c.fecha+'">'+c.dia+'</div>';
   }).join('');
   grid.innerHTML=html;
@@ -2294,6 +2321,16 @@ function renderMuscleTabs(){
     t.appendChild(b);
   });
 
+  const bd=document.getElementById('btnDescansoHoy');
+  if(bd){
+    const activo=esDescansoMarcado(hoyKey());
+    bd.textContent = activo ? '✓ Hoy es descanso' : 'Hoy descanso';
+    bd.classList.toggle('on', activo);
+    bd.onclick=()=>{
+      rachaDescanso(hoyKey(), !esDescansoMarcado(hoyKey()));
+      renderMuscleTabs(); renderHome();
+    };
+  }
   const pista=document.getElementById('musclePista');
   if(pista) pista.textContent = musculosSel.length>1
     ? 'Rutina unida: '+musculosSel.map(k=>R[k].label).join(' + ')
