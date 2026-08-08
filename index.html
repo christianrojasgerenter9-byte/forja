@@ -81,7 +81,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   display:flex;flex-direction:column;padding:26px 18px;gap:6px;
 }
 .brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
-.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:22px;box-shadow:var(--glow)}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--surface-2);
+            border:1px solid rgba(255,90,31,.38);display:grid;place-items:center;padding:5px;
+            box-shadow:0 0 16px rgba(255,90,31,.16)}
+.brand-svg{width:100%;height:100%;display:block}
 .brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
 .brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand-sub{font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
@@ -444,7 +447,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   background:radial-gradient(700px 400px at 80% 0%,rgba(255,45,120,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(255,90,31,.18),transparent 60%),var(--bg)}
 .auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
-.auth-brand .brand-mark{width:44px;height:44px;font-size:24px}
+.auth-brand .brand-mark{width:44px;height:44px;padding:6px}
 .auth-brand .brand-name{font-size:30px}
 .auth-title{text-align:center;color:var(--muted);font-size:13px;margin-bottom:22px}
 .auth-tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:20px}
@@ -658,7 +661,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 <div class="auth-gate" id="authGate">
   <div class="auth-card">
     <div class="auth-brand">
-      <div class="brand-mark">F</div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarca" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarca)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarca)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarca)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div class="brand-name">FOR<span style="background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent">JA</span></div>
     </div>
     <div class="auth-title">Tu sistema de entrenamiento</div>
@@ -694,7 +697,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <!-- ===================== SIDEBAR (PC) ===================== -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark">F</div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarca" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarca)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarca)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarca)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div>
         <div class="brand-name">FOR<span>JA</span></div>
         <div class="brand-sub">Training System</div>
@@ -741,7 +744,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <div class="main">
     <div class="topbar">
       <div class="brand" style="padding:0;border:none">
-        <div class="brand-mark" style="width:32px;height:32px;font-size:18px">F</div>
+        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarca" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarca)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarca)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarca)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
       <div class="tb-right">
