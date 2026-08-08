@@ -187,6 +187,21 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-pie .k3{border:1px dashed var(--line)}
 .fjcal-total{font-size:12.5px;color:var(--muted)}
 .fjcal-total b{color:var(--text)}
+/* ---- Registro de series ---- */
+.serie-box{margin-top:10px;border-top:1px solid var(--line);padding-top:11px}
+.serie-hist{font-size:11.5px;color:var(--muted-2);margin-bottom:8px}
+.serie-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+.serie-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
+            border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px}
+.serie-chip button{background:none;border:0;color:var(--muted-2);cursor:pointer;font-size:14px;line-height:1;padding:0}
+.serie-chip button:hover{color:#FF6B6B}
+.serie-vacio{font-size:12px;color:var(--muted-2)}
+.serie-add{display:flex;gap:6px}
+.serie-in{flex:1 1 0;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+          padding:9px 10px;color:var(--text);font-size:14px;text-align:center}
+.serie-in:focus{outline:2px solid var(--orange);outline-offset:1px}
+.serie-btn{flex:0 0 auto;border:0;border-radius:9px;padding:9px 15px;cursor:pointer;font-size:12.5px;
+           font-weight:600;color:#0A0A0C;background:linear-gradient(90deg,var(--orange),var(--magenta))}
 .sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
          background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
          padding:8px 16px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
@@ -1360,6 +1375,8 @@ let doneToday = load('forja_done', {});          // {ejercicio:true}
 let dietTarget = load('forja_diet', 2000);
 let prs = load('forja_prs', {});
 let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usuario
+/* Series reales de cada entrenamiento: {'AAAA-MM-DD':{ejercicio:[{p:kg,r:reps}]}} */
+let series = load('forja_series', {});
 let mode = load('forja_mode','gym');   // 'gym' | 'home'
 let goal = load('forja_goal',null);   // null | 'definicion' | 'volumen' (solo PRO)                 // {ejercicio: kg récord}
 let users = load('forja_users', {});             // {correo:{name,pass}}
@@ -1433,6 +1450,52 @@ function invitarAPro(){
     if(typeof applyPlan==='function') applyPlan();
     if(typeof openPro==='function') openPro();
   }catch(e){}
+}
+
+/* ----------- Series registradas ----------- */
+function seriesDe(fecha, ex){ return (series[fecha] && series[fecha][ex]) || []; }
+function seriesHoy(ex){ return seriesDe(hoyKey(), ex); }
+
+function agregarSerie(ex, peso, reps){
+  const k=hoyKey();
+  if(!series[k]) series[k]={};
+  if(!series[k][ex]) series[k][ex]=[];
+  series[k][ex].push({p:peso, r:reps});
+  /* Se recortan los meses viejos para no llenar el almacenamiento */
+  const claves=Object.keys(series).sort();
+  while(claves.length>200) delete series[claves.shift()];
+  save('forja_series', series);
+  /* Si el peso supera el record, se actualiza solo */
+  if(peso && (!prs[ex] || peso > prs[ex])){ prs[ex]=peso; save('forja_prs', prs); }
+}
+
+function quitarSerie(ex, i){
+  const k=hoyKey();
+  if(!series[k] || !series[k][ex]) return;
+  series[k][ex].splice(i,1);
+  if(!series[k][ex].length) delete series[k][ex];
+  if(!Object.keys(series[k]).length) delete series[k];
+  save('forja_series', series);
+}
+
+/* La sesion anterior de ese ejercicio: es la referencia para superarse hoy */
+function sesionAnterior(ex){
+  const hoy=hoyKey();
+  const fechas=Object.keys(series).filter(f=>f<hoy && series[f][ex] && series[f][ex].length).sort();
+  if(!fechas.length) return null;
+  const f=fechas[fechas.length-1];
+  const p=f.split('-').map(Number);
+  const dias=Math.round((new Date().setHours(0,0,0,0) - new Date(p[0],p[1]-1,p[2]).getTime())/86400000);
+  return {fecha:f, dias:dias, sets:series[f][ex]};
+}
+
+function textoAnterior(ex){
+  const a=sesionAnterior(ex);
+  if(!a) return 'Primera vez que lo registras';
+  const pesos=[...new Set(a.sets.map(x=>x.p).filter(Boolean))];
+  const reps=a.sets.map(x=>x.r).join(', ');
+  const cuando = a.dias===1 ? 'ayer' : 'hace '+a.dias+' dias';
+  return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' kg × ' : '') + reps;
 }
 
 /* ----------- Datos: rutinas ----------- */
@@ -2197,6 +2260,20 @@ function renderMuscleTabs(){
     t.appendChild(b);
   });
 }
+/* Arranca los campos con lo ultimo que hiciste: casi siempre es lo correcto */
+function sugPeso(ex){
+  const hoy=seriesHoy(ex);
+  if(hoy.length) return hoy[hoy.length-1].p ?? '';
+  const a=sesionAnterior(ex);
+  return a ? (a.sets[a.sets.length-1].p ?? '') : '';
+}
+function sugReps(ex){
+  const hoy=seriesHoy(ex);
+  if(hoy.length) return hoy[hoy.length-1].r ?? '';
+  const a=sesionAnterior(ex);
+  return a ? (a.sets[a.sets.length-1].r ?? '') : '';
+}
+
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
@@ -2228,7 +2305,19 @@ function renderExercises(){
         </a>
         <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
       </div>
-      <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>`;
+      <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>
+      <div class="serie-box">
+        <div class="serie-hist">${textoAnterior(e.n)}</div>
+        <div class="serie-chips">${
+          seriesHoy(e.n).map((x,n)=>'<span class="serie-chip">'+(n+1)+'· '+(x.p?x.p+'kg × ':'')+x.r+
+            '<button data-sdel="'+e.n+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>').join('')
+          || '<span class="serie-vacio">Aun sin series hoy</span>'}</div>
+        <div class="serie-add">
+          <input class="serie-in" inputmode="decimal" placeholder="kg" data-sp="${e.n}" value="${sugPeso(e.n)}">
+          <input class="serie-in" inputmode="numeric" placeholder="reps" data-sr="${e.n}" value="${sugReps(e.n)}">
+          <button class="serie-btn" data-sadd="${e.n}">+ Serie</button>
+        </div>
+      </div>`;
     g.appendChild(c);
   });
   g.querySelectorAll('.ex-set').forEach(inp=>{
@@ -2242,6 +2331,32 @@ function renderExercises(){
     // evitar que Enter recargue/pierda foco de forma rara
     inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') inp.blur(); });
   });
+  g.querySelectorAll('[data-sadd]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.sadd;
+    const cp=g.querySelector('[data-sp="'+CSS.escape(k)+'"]');
+    const cr=g.querySelector('[data-sr="'+CSS.escape(k)+'"]');
+    const reps=parseInt(cr.value,10);
+    if(!reps){ cr.focus(); return; }
+    const peso=parseFloat(String(cp.value).replace(',','.'));
+    agregarSerie(k, isNaN(peso)?null:peso, reps);
+    /* Al completar las series planeadas, el ejercicio se marca solo */
+    const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
+    if(objetivo && seriesHoy(k).length>=objetivo && !doneToday[k]){
+      doneToday[k]=true; save('forja_done',doneToday);
+    }
+    renderExercises(); renderHome();
+  });
+  g.querySelectorAll('[data-sdel]').forEach(b=>b.onclick=()=>{
+    quitarSerie(b.dataset.sdel, parseInt(b.dataset.i,10));
+    renderExercises(); renderHome();
+  });
+  g.querySelectorAll('.serie-in').forEach(inp=>inp.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'){
+      const k=inp.dataset.sp||inp.dataset.sr;
+      const btn=g.querySelector('[data-sadd="'+CSS.escape(k)+'"]');
+      if(btn) btn.click();
+    }
+  }));
   g.querySelectorAll('.ex-done').forEach(b=>b.onclick=()=>{
     const k=b.dataset.ex; doneToday[k]=!doneToday[k]; save('forja_done',doneToday);
     renderExercises(); renderHome();
@@ -2667,7 +2782,7 @@ function cloudSync(){
   cloudSync._t=setTimeout(()=>{
     fbDB.collection('usuarios').doc(fbUser.uid).set({
       name:displayName, logs:logs, plan:plan, proHasta:(proHasta||''), doneToday:doneToday, doneDate:doneDate, dietTarget:dietTarget,
-      prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null),
+      prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null), series:series,
       dias:(typeof FORJARacha!=='undefined'? FORJARacha.datos() : {}),
       hoyGrupos:(hoyGrupos||null), hoyFecha:(hoyFecha||''),
       updated:Date.now()
@@ -2735,6 +2850,7 @@ if(FB_ON){
       if(d.prs) prs=d.prs;
       if(Array.isArray(d.measures)) measures=d.measures;
       if(d.exset) exset=d.exset;
+      if(d.series) series=d.series;
       if(d.mode) mode=d.mode;
       if(d.goal!==undefined) goal=d.goal;
       if(d.dias) FORJARacha.fusionar(d.dias);
