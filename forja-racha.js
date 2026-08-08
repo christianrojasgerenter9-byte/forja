@@ -84,6 +84,7 @@ const FORJARacha = (() => {
     }
 
     const previo = dias[k] || {};
+    if (previo.d) return calcular();   // hoy esta marcado como descanso
     dias[k] = {
       h: hechos,
       t: total || previo.t || hechos,
@@ -112,7 +113,7 @@ const FORJARacha = (() => {
 
   function entrenado(dias, fecha) {
     const r = dias[clave(fecha)];
-    if (!r) return false;
+    if (!r || r.d) return false;   // r.d = descanso marcado por el usuario
     const total = r.t || 0;
     if (!total) return r.h > 0;
     return (r.h / total) >= UMBRAL;
@@ -132,8 +133,11 @@ const FORJARacha = (() => {
     let esHoy = true;
 
     for (let i = 0; i < MAX_DIAS; i++) {
+      const rec = dias[clave(cursor)];
       if (entrenado(dias, cursor)) {
         actual++;
+      } else if (rec && rec.d) {
+        // descanso marcado a mano: se salta sin cortar la racha
       } else if (esDescanso(cursor)) {
         // descanso programado: no suma pero no rompe
       } else if (esHoy) {
@@ -241,7 +245,8 @@ const FORJARacha = (() => {
         dia: d,
         entrenado: ok,
         parcial: !!r && !ok,
-        descanso: esDescanso(fecha),
+        descanso: esDescanso(fecha) || !!(r && r.d),
+        marcado: !!(r && r.d),
         hoy: fecha.getTime() === hoy.getTime(),
         futuro: fecha > hoy,
         grupos: (r && r.g) || [],
