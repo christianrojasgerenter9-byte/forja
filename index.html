@@ -188,6 +188,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-total{font-size:12.5px;color:var(--muted)}
 .fjcal-total b{color:var(--text)}
 /* ---- Registro de series ---- */
+.muscle-pista{font-size:11.5px;color:var(--muted-2);margin:8px 0 2px}
+.ex-grp{display:inline-block;margin-left:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+        color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:2px 7px;vertical-align:2px}
 .serie-box{margin-top:10px;border-top:1px solid var(--line);padding-top:11px}
 .serie-hist{font-size:11.5px;color:var(--muted-2);margin-bottom:8px}
 .serie-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
@@ -895,6 +898,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         </div>
         <div class="enfoque-banner" id="enfoqueBanner" style="display:none"></div>
         <div class="muscle-tabs" id="muscleTabs"></div>
+        <div class="muscle-pista" id="musclePista"></div>
         <div class="ex-grid" id="exGrid"></div>
       </section>
 
@@ -1880,6 +1884,7 @@ function setGruposHoy(arr){
   save('forja_hoy_grupos', hoyGrupos);
   save('forja_hoy_fecha', hoyFecha);
   if(hoyGrupos && hoyGrupos.length) currentMuscle = hoyGrupos[0];
+  try{ sincronizarSeleccion(); }catch(e){}
   renderHome();
   try{ renderExercises(); }catch(e){}
 }
@@ -2211,6 +2216,16 @@ function renderHoyPicker(){
 
 /* ----------- RUTINAS ----------- */
 let currentMuscle='brazo';
+/* Grupos abiertos en Rutinas: hasta 2 a la vez, con los ejercicios unificados */
+let musculosSel=['brazo'];
+
+/* Toma los grupos del dia (los que elegiste a mano o los del split) */
+function sincronizarSeleccion(){
+  const R=getRoutines();
+  const g=(gruposElegidosHoy() || gruposDelSplit() || []).filter(k=>R[k]);
+  musculosSel = g.length ? g.slice(0,2) : (R[currentMuscle] ? [currentMuscle] : [Object.keys(R)[0]]);
+  currentMuscle = musculosSel[0];
+}
 function renderModeToggle(){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
 }
@@ -2251,14 +2266,38 @@ document.querySelectorAll('.goal-opt').forEach(b=>b.addEventListener('click',()=
 document.getElementById('goalClose').onclick=closeGoal;
 document.getElementById('goalModal').addEventListener('click',e=>{ if(e.target.id==='goalModal') closeGoal(); });
 function renderMuscleTabs(){
-  const t=document.getElementById('muscleTabs'); t.innerHTML='';
-  Object.keys(getRoutines()).forEach(k=>{
+  const t=document.getElementById('muscleTabs'); if(!t) return;
+  t.innerHTML='';
+  const R=getRoutines();
+  musculosSel = musculosSel.filter(k=>R[k]);
+  if(!musculosSel.length) musculosSel=[Object.keys(R)[0]];
+  currentMuscle = musculosSel[0];
+
+  Object.keys(R).forEach(k=>{
     const b=document.createElement('button');
-    b.className='muscle-tab'+(k===currentMuscle?' active':'');
-    b.textContent=getRoutines()[k].label;
-    b.onclick=()=>{currentMuscle=k;renderMuscleTabs();renderExercises();};
+    b.className='muscle-tab'+(musculosSel.includes(k)?' active':'');
+    b.textContent=R[k].label;
+    b.onclick=()=>{
+      const i=musculosSel.indexOf(k);
+      if(i>=0){
+        /* Siempre queda al menos uno abierto */
+        if(musculosSel.length>1) musculosSel.splice(i,1);
+      }else{
+        musculosSel.push(k);
+        if(musculosSel.length>2) musculosSel.shift();   // el tercero desplaza al mas viejo
+      }
+      currentMuscle=musculosSel[0];
+      /* Lo que abres aqui es lo que entrenas hoy: se unifica con Inicio */
+      setGruposHoy([...musculosSel]);
+      renderMuscleTabs(); renderExercises();
+    };
     t.appendChild(b);
   });
+
+  const pista=document.getElementById('musclePista');
+  if(pista) pista.textContent = musculosSel.length>1
+    ? 'Rutina unida: '+musculosSel.map(k=>R[k].label).join(' + ')
+    : 'Toca otro grupo para unir dos rutinas';
 }
 /* Arranca los campos con lo ultimo que hiciste: casi siempre es lo correcto */
 function sugPeso(ex){
@@ -2277,8 +2316,21 @@ function sugReps(ex){
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
-  const ex=getRoutines()[currentMuscle].ex;
-  document.getElementById('exCountPill').textContent=ex.length+' ejercicios';
+  const R=getRoutines();
+  musculosSel = musculosSel.filter(k=>R[k]);
+  if(!musculosSel.length) musculosSel=[currentMuscle && R[currentMuscle] ? currentMuscle : Object.keys(R)[0]];
+  /* Se juntan los ejercicios de los grupos abiertos, sin repetir nombres */
+  const vistos={}, ex=[];
+  musculosSel.forEach(k=>{
+    R[k].ex.forEach(e=>{
+      if(vistos[e.n]) return;
+      vistos[e.n]=1;
+      ex.push(Object.assign({}, e, {_g:R[k].label}));
+    });
+  });
+  const varios = musculosSel.length>1;
+  document.getElementById('exCountPill').textContent =
+    ex.length+' ejercicios'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
     const ov=exset[e.n]||{};
@@ -2286,7 +2338,7 @@ function renderExercises(){
     const c=document.createElement('div');c.className='ex-card';
     c.innerHTML=`
       <div class="ex-top">
-        <div class="ex-name">${e.n}</div>
+        <div class="ex-name">${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
         <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
       </div>
       <div class="ex-meta">
