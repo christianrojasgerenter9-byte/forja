@@ -1289,9 +1289,12 @@ const CONFIG = {
   WHATSAPP: "525646463204",   // 👈 tu número para recibir pagos
   // 👇 Códigos PRO. Cada código se cierra solo al terminar su mes.
   //    'vence' = ultimo dia en que funciona (formato AAAA-MM-DD, ese dia todavia sirve).
+  // Se guarda el SHA-256 del codigo EN MAYUSCULAS, no el codigo. Asi no se lee
+  // abriendo el fuente. Para sacar el hash del mes que viene:
+  //   forjaHash('TUCODIGO').then(console.log)   <- en la consola
   CODIGOS_PRO: [
-    { code: "kaio-ken", vence: "2026-07-31" },   // JULIO - deja de funcionar el 1 de agosto
-    { code: "bankai", vence: "2026-08-31" },      // AGOSTO - deja de funcionar el 1 de septiembre
+    { hash: "e02c98590353d25fbc957c86f9c41fcc92cd32c4e944c09c022ff3477795a4c1", vence: "2026-07-31" },  // JULIO
+    { hash: "a306ebe447b8d3d1a4eaa16e923849602cf814ca9ffecbef8252920dff883936", vence: "2026-08-31" },  // AGOSTO
   ],
   PRECIO_PRO: 199 // MXN / mes
 };
@@ -1393,8 +1396,29 @@ checkNuevoDia(false);
 
 /* El PRO dura solo el mes que pagaron. Si ya vencio (o nunca tuvo fecha,
    como los que activaron antes de este sistema), regresa al plan gratuito. */
+/* SHA-256 en hexadecimal. Sirve para comparar codigos sin guardarlos en claro. */
+async function forjaHash(txt){
+  const datos=new TextEncoder().encode(String(txt).trim().toUpperCase());
+  const buf=await crypto.subtle.digest('SHA-256', datos);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+window.forjaHash = forjaHash;
+
+/* El tiempo nunca corre hacia atras: si la fecha del aparato aparece muy
+   atrasada respecto a la ultima vista, es que la movieron para estirar el PRO. */
+function relojAtrasado(){
+  const TOLERANCIA = 12*60*60*1000;
+  let max = 0;
+  try{ max = Number(store.get('forja_reloj')) || 0; }catch(e){}
+  const ahora = Date.now();
+  if(max && ahora < max - TOLERANCIA) return true;
+  if(ahora > max){ try{ store.set('forja_reloj', String(ahora)); }catch(e){} }
+  return false;
+}
+
 function checkVigenciaPro(){
   if(plan!=='pro') return false;
+  if(relojAtrasado()){ plan='free'; store.set('forja_plan', JSON.stringify(plan)); return true; }
   if(proHasta && String(proHasta) >= hoyKey()) return false;
   plan='free'; proHasta='';
   store.set('forja_plan', JSON.stringify(plan));
@@ -2485,20 +2509,25 @@ document.getElementById('proActivate').onclick=()=>{
   window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(msg),'_blank');
   closePro();
 };
-document.getElementById('codeActivate').onclick=()=>{
+document.getElementById('codeActivate').onclick=async ()=>{
   const val=(document.getElementById('codeInput').value||'').trim().toUpperCase();
   const msg=document.getElementById('codeMsg');
+  if(!val){ msg.style.color='var(--amber)'; msg.textContent='Escribe tu código.'; return; }
+
   /* Solo cuentan los codigos vigentes hoy; los vencidos se cierran solos. */
   const hoy=hoyKey();
-  const validos=(CONFIG.CODIGOS_PRO||[])
+  const lista=(CONFIG.CODIGOS_PRO||[])
     .map(c=> typeof c==='string' ? {code:c, vence:null} : c)
-    .filter(c=> c && c.code && (!c.vence || String(c.vence) >= hoy))
-    .map(c=>String(c.code).trim().toUpperCase());
-  if(!val){ msg.style.color='var(--amber)'; msg.textContent='Escribe tu código.'; return; }
-  if(validos.includes(val)){
-    const elegido=(CONFIG.CODIGOS_PRO||[])
-      .map(c=> typeof c==='string' ? {code:c, vence:null} : c)
-      .find(c=> c && String(c.code).trim().toUpperCase()===val);
+    .filter(c=> c && (c.hash || c.code) && (!c.vence || String(c.vence) >= hoy));
+
+  let hashVal='';
+  try{ hashVal = await forjaHash(val); }catch(e){}
+
+  const elegido = lista.find(c =>
+    (c.hash && hashVal && c.hash === hashVal) ||
+    (c.code && String(c.code).trim().toUpperCase() === val));
+
+  if(elegido){
     plan='pro'; proHasta=(elegido && elegido.vence) ? String(elegido.vence) : '';
     save('forja_plan',plan); save('forja_pro_hasta',proHasta);
     const av=document.getElementById('proAviso'); if(av) av.style.display='none';
