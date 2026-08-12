@@ -282,6 +282,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ad-copy{font-size:13.5px;line-height:1.5;color:#D6D6DC;font-weight:500;letter-spacing:.01em;margin:0}
 .ad-copy b{color:#25D366;font-weight:700}
 .btn-wa{background:#25D366;color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.25);box-shadow:0 0 30px rgba(37,211,102,.25)}
+/* --- Cobranding Percha --- */
+.percha-card{border-color:rgba(108,173,222,.5);background:linear-gradient(90deg, rgba(58,118,169,.16), rgba(58,118,169,.03) 45%, transparent),linear-gradient(180deg,#17171d,#111116)}
+.percha-card h2{color:#6CADDE}
+.percha-card .ad-copy b{color:#6CADDE}
+.percha-card .ad-badge{background:transparent;overflow:hidden;box-shadow:0 0 30px rgba(58,118,169,.35)}
+.percha-card .ad-badge img{width:100%;height:100%;display:block;border-radius:12px}
+.btn-percha{background:linear-gradient(120deg,#3A76A9,#6CADDE);color:#0A0A0C;font-weight:800;box-shadow:0 0 30px rgba(58,118,169,.3)}
+.ad-card .btn-percha{width:auto;white-space:nowrap;padding:11px 20px;font-size:13px;flex:none}
 .btn-wa:hover{filter:brightness(1.08)}
 .yt-badge svg{width:24px;height:24px;fill:#fff}
 .day-list{display:flex;flex-direction:column;gap:10px}
@@ -507,6 +515,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   .home-2col,.prog-grid,.cal-grid,.coach-grid,.plans{grid-template-columns:1fr}
   .ad-card{grid-column:auto;flex-wrap:wrap}
   .ad-card .btn-wa{width:100%}
+  .ad-card .btn-percha{width:100%}
   .chat-box{height:460px}
 }
 @media (max-width:760px){
@@ -887,6 +896,16 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
                 <p class="ad-copy">¿Tienes un negocio, marca o proyecto? Ponlo frente a la <b>comunidad FORJA</b>.</p>
               </div>
               <a class="btn btn-wa" id="adContactBtn" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+          </div>
+          <div class="playlist ad-card percha-card">
+              <div class="yt-badge ad-badge">
+                <img src="https://christianrojasgerenter9-byte.github.io/percha/icon-192.png" alt="Percha">
+              </div>
+              <div class="ad-text">
+                <h2 style="font-size:18px;margin:0 0 3px">Tu clóset tiene dinero parado</h2>
+                <p class="ad-copy">Sube una foto y ponle precio. <b>Percha</b> la publica en el bazar y tú cobras.</p>
+              </div>
+              <a class="btn btn-percha" href="https://christianrojasgerenter9-byte.github.io/percha/?ref=forja" target="_blank" rel="noopener">Vender ropa</a>
           </div>
         </div>
       </section>
