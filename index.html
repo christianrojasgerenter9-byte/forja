@@ -338,6 +338,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bar:hover::after{content:attr(data-v);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line);font-size:11px;padding:3px 7px;border-radius:6px;white-space:nowrap}
 .chart-x{display:flex;gap:10px;margin-top:8px}
 .chart-x span{flex:1;text-align:center;font-size:10.5px;color:var(--muted)}
+.bar .delta{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+.bar .delta.up{color:var(--green)}
+.bar .delta.down{color:var(--magenta)}
+.bar .delta.flat{color:var(--muted)}
+.week-note{display:flex;align-items:center;gap:8px;margin-top:14px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;font-size:13px;line-height:1.45}
+.week-note b{font-weight:800}
+.week-note.up b{color:var(--green)}
+.week-note.down b{color:var(--magenta)}
 .log-list{display:flex;flex-direction:column;gap:9px;max-height:340px;overflow-y:auto;margin-top:16px}
 .log-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;font-size:13.5px}
 .log-row .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
@@ -970,10 +978,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <button class="btn btn-molten" id="pSave" style="width:100%">Guardar registro</button>
           </div>
           <div class="card">
-            <h3 style="font-size:22px;margin-bottom:6px">Volumen por sesión</h3>
-            <p class="muted" style="font-size:12.5px;margin-bottom:14px">Peso × reps de tus últimos registros</p>
+            <h3 style="font-size:22px;margin-bottom:6px">Volumen por semana</h3>
+            <p class="muted" style="font-size:12.5px;margin-bottom:14px">Peso × reps sumados semana a semana — mira en qué semana subiste y en cuál bajaste</p>
             <div class="chart" id="chart"></div>
             <div class="chart-x" id="chartX"></div>
+            <div id="weekNote"></div>
             <div class="log-list" id="logList"></div>
           </div>
         </div>
@@ -2500,7 +2509,7 @@ document.getElementById('pSave').onclick=()=>{
   /* Validación: reps enteras 1-200, peso 0-500 kg (0 = peso corporal) */
   if(!Number.isInteger(r) || r<1 || r>200){alert('⚠️ Las repeticiones deben ser un número entero entre 1 y 200.');return;}
   if(w<0 || w>500){alert('⚠️ El peso debe estar entre 0 y 500 kg (deja 0 si es con peso corporal).');return;}
-  logs.push({date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'}),
+  logs.push({date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'}), ts:Date.now(),
     muscle:document.getElementById('pMuscle').value,
     exercise:document.getElementById('pExercise').value,
     weight:w, reps:r, notes:document.getElementById('pNotes').value});
@@ -2508,28 +2517,88 @@ document.getElementById('pSave').onclick=()=>{
   document.getElementById('pWeight').value='';document.getElementById('pReps').value='';document.getElementById('pNotes').value='';
   renderProgress(); renderHome();
 };
+/* Fecha real de un registro: usa ts si existe, si no interpreta "dd/mm" (registros viejos) */
+function logFecha(l){
+  if(l.ts) return new Date(l.ts);
+  const m=String(l.date||'').match(/^(\d{1,2})\/(\d{1,2})/);
+  const hoy=new Date();
+  if(!m) return hoy;
+  let d=new Date(hoy.getFullYear(), +m[2]-1, +m[1]);
+  if(d-hoy>86400000*2) d.setFullYear(hoy.getFullYear()-1); // fecha futura ⇒ es del año pasado
+  return d;
+}
+/* Lunes 00:00 de la semana de una fecha */
+function inicioSemana(d){
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  x.setDate(x.getDate()-((x.getDay()+6)%7));
+  return x;
+}
+/* Agrupa los registros en semanas consecutivas (incluye semanas vacías intermedias) */
+function groupLogsByWeek(list){
+  const map={};
+  list.forEach(l=>{
+    const ini=inicioSemana(logFecha(l)), k=ini.getTime();
+    if(!map[k]) map[k]={ini, vol:0, dias:{}};
+    map[k].vol += (l.weight*l.reps||l.reps);
+    map[k].dias[logFecha(l).toDateString()]=1;
+  });
+  const keys=Object.keys(map).map(Number).sort((a,b)=>a-b);
+  const hoy=inicioSemana(new Date()).getTime();
+  const fin=Math.max(keys[keys.length-1], hoy);
+  const SEM=604800000, out=[];
+  for(let t=keys[0]; t<=fin; t+=SEM){
+    const w=map[t]||{ini:new Date(t), vol:0, dias:{}};
+    out.push({
+      vol:w.vol,
+      sesiones:Object.keys(w.dias).length,
+      esActual:t===hoy,
+      label:w.ini.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'})
+    });
+  }
+  return out;
+}
 function renderProgress(){
   const chart=document.getElementById('chart'), cx=document.getElementById('chartX');
   chart.innerHTML=''; cx.innerHTML='';
+  const note=document.getElementById('weekNote'); if(note) note.innerHTML='';
   if(!logs.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. ¡Guarda tu primera serie!</div>'; }
   else{
-    // Agrupar por fecha: una barra = una sesión (suma de peso × reps del día)
-    const byDate={}, order=[];
-    logs.forEach(l=>{
-      const v=l.weight*l.reps||l.reps;
-      if(!(l.date in byDate)){ byDate[l.date]=0; order.push(l.date); }
-      byDate[l.date]+=v;
-    });
-    const lastDates=order.slice(-8);
-    const vols=lastDates.map(d=>byDate[d]);
-    const max=Math.max(...vols,1);
-    lastDates.forEach((d,i)=>{
+    // Una barra = una SEMANA (lunes a domingo): suma de peso × reps de esa semana
+    const weeks=groupLogsByWeek(logs).slice(-8);
+    const max=Math.max(...weeks.map(w=>w.vol),1);
+    const fmt=n=>n.toLocaleString('es-MX');
+    weeks.forEach((w,i)=>{
       const bar=document.createElement('div');bar.className='bar';
-      bar.style.height=Math.max(vols[i]/max*100,4)+'%';
-      bar.dataset.v=vols[i].toLocaleString('es-MX')+' kg·rep';
+      bar.style.height=Math.max(w.vol/max*100,4)+'%';
+      const prev=i>0?weeks[i-1].vol:null;
+      const diff=prev!==null?w.vol-prev:null;
+      const pct=prev?Math.round(diff/prev*100):null;
+      bar.dataset.v=fmt(w.vol)+' kg·rep · '+w.sesiones+(w.sesiones===1?' sesión':' sesiones')+(pct!==null?' · '+(pct>0?'+':'')+pct+'% vs semana previa':'');
+      if(diff!==null&&w.vol>0){
+        const d=document.createElement('span');
+        const dir=diff>0?'up':diff<0?'down':'flat';
+        d.className='delta '+dir;
+        d.textContent=(diff>0?'▲ +':diff<0?'▼ ':'= ')+(pct!==null?Math.abs(pct)+'%':fmt(Math.abs(diff)));
+        bar.appendChild(d);
+      }
       chart.appendChild(bar);
-      const s=document.createElement('span');s.textContent=d;cx.appendChild(s);
+      const s=document.createElement('span');
+      s.textContent=(i===weeks.length-1&&w.esActual)?'Esta sem.':w.label;
+      cx.appendChild(s);
     });
+    if(note){
+      const last=weeks[weeks.length-1], prev=weeks[weeks.length-2];
+      if(prev&&prev.vol){
+        const diff=last.vol-prev.vol, pct=Math.round(diff/prev.vol*100);
+        const dir=diff>0?'up':diff<0?'down':'';
+        note.innerHTML='<div class="week-note '+dir+'">'+(diff>0?'🔥':diff<0?'🪨':'➖')+
+          ' <span>'+(last.esActual?'Esta semana':'Semana '+last.label)+' llevas <b>'+fmt(last.vol)+' kg·rep</b> — '+
+          (diff>0?'<b>subiste '+pct+'%</b>':diff<0?'<b>bajaste '+Math.abs(pct)+'%</b>':'<b>igual</b>')+
+          ' vs la semana del '+prev.label+' ('+fmt(prev.vol)+' kg·rep).</span></div>';
+      } else {
+        note.innerHTML='<div class="week-note"><span>Primera semana registrada: <b>'+fmt(last.vol)+' kg·rep</b>. La próxima semana verás si subiste o bajaste.</span></div>';
+      }
+    }
   }
   const ll=document.getElementById('logList'); ll.innerHTML='';
   if(!logs.length){ll.innerHTML='<div class="empty">Tu historial aparecerá aquí.</div>';return;}
