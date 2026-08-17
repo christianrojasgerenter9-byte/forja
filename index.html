@@ -391,7 +391,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .coach-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);transition:.16s;width:100%;text-align:left}
 .coach-card:hover{border-color:var(--muted-2)}
 .coach-card.active{border-color:var(--orange);background:var(--molten-soft)}
-.avatar{width:46px;height:46px;border-radius:50%;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:19px;flex-shrink:0;position:relative}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:19px;flex-shrink:0;position:relative;overflow:hidden;color:#fff}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .avatar .on{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--surface)}
 .coach-card .nm{font-weight:700;font-size:14.5px}
 .coach-card .sp{font-size:11.5px;color:var(--muted)}
@@ -592,6 +593,21 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .coach-help .ch-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
 .coach-help .ch-go{background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;padding:10px 16px;border-radius:99px;white-space:nowrap}
 .coach-help .ch-go:hover{border-color:var(--orange);color:var(--orange)}
+/* ===== Fotos de perfil ===== */
+.me-box{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.me-box .me-tx{flex:1;min-width:0}
+.nav-plan .pfp-edit{width:auto;flex:0 0 auto;padding:0;margin:0;background:none;border:none}
+.pfp{position:relative;flex-shrink:0;border-radius:50%;overflow:hidden;background:var(--molten);display:grid;place-items:center;
+  font-family:'Anton';color:#fff;line-height:1;border:2px solid rgba(255,255,255,.14)}
+.pfp img{width:100%;height:100%;object-fit:cover;display:block}
+.pfp.lg{width:58px;height:58px;font-size:23px}
+.pfp.sm{width:36px;height:36px;font-size:15px}
+.pfp-edit{position:relative;flex-shrink:0}
+.pfp-edit .pen{position:absolute;right:-2px;bottom:-2px;width:22px;height:22px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:grid;place-items:center;font-size:11px;line-height:1}
+.pfp-edit:hover .pen{border-color:var(--orange)}
+.pfp-quitar{display:block;margin-top:8px;font-size:11.5px;color:var(--muted);text-decoration:underline}
+.pfp-quitar:hover{color:var(--text)}
 /* ===== Caja de código PRO (agregado) ===== */
 .code-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
 .code-box>span{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
@@ -783,8 +799,18 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg> Suscripción
     </button>
     <div class="nav-plan">
-      <div class="lbl">Sesión iniciada</div>
-      <div class="val" id="userName" style="font-size:16px">—</div>
+      <div class="me-box">
+        <button type="button" class="pfp-edit" id="pfpBtn" title="Cambiar foto de perfil">
+          <span class="pfp lg" id="pfpBig">—</span>
+          <span class="pen">📷</span>
+        </button>
+        <div class="me-tx">
+          <div class="lbl">Sesión iniciada</div>
+          <div class="val" id="userName" style="font-size:16px">—</div>
+        </div>
+      </div>
+      <input type="file" id="pfpFile" accept="image/*" style="display:none">
+      <button type="button" class="pfp-quitar" id="pfpQuitar" style="display:none">Quitar foto</button>
       <div class="lbl" style="margin-top:12px">Tu plan</div>
       <div class="val" id="planLabel">Gratis</div>
       <button data-go="suscripcion">Mejorar a PRO</button>
@@ -800,6 +826,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
       <div class="tb-right">
+        <button type="button" class="pfp sm" id="pfpTop" title="Cambiar foto de perfil">—</button>
         <span class="pill" id="planPillTop">Gratis</span>
         <button class="tb-logout" data-go="privacidad" title="Aviso de privacidad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button>
         <button class="tb-logout" id="logoutBtnTop" title="Cerrar sesión"><svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5v3H9v4h7v3zM4 5h8V3H4a2 2 0 00-2 2v14a2 2 0 002 2h8v-2H4z"/></svg></button>
@@ -1477,6 +1504,7 @@ let mode = load('forja_mode','gym');   // 'gym' | 'home'
 let goal = load('forja_goal',null);   // null | 'definicion' | 'volumen' (solo PRO)                 // {ejercicio: kg récord}
 let trialInicio = load('forja_trial_inicio','');  // AAAA-MM-DD en que empezó la prueba gratis
 const TRIAL_DIAS = 21;
+let avatars = load('forja_avatars', {});         // {correo o coach_id: dataURL}
 let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
@@ -1929,8 +1957,8 @@ const WEEK = [
   ['DOM','Descanso','Recuperación'],
 ];
 const COACHES = [
-  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', wa:'525646463204', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
-  {id:'c2', n:'Diego Garfias', sp:'Coach FORJA · Fuerza y técnica', a:'D', wa:'525611840254', reply:'¡Qué tal! Soy Diego, coach en FORJA. Dime qué necesitas ajustar de tu rutina. 💪'},
+  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', foto:'', /* 👈 ruta o URL de su foto, ej. 'coach-christian.jpg' */ wa:'525646463204', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
+  {id:'c2', n:'Diego Garfias', sp:'Coach FORJA · Fuerza y técnica', a:'D', foto:'', /* 👈 ruta o URL de su foto */ wa:'525611840254', reply:'¡Qué tal! Soy Diego, coach en FORJA. Dime qué necesitas ajustar de tu rutina. 💪'},
 ];
 
 /* ----------- Navegación ----------- */
@@ -2800,7 +2828,7 @@ function renderCoachList(){
   COACHES.forEach(c=>{
     const b=document.createElement('button');
     b.className='coach-card'+(c.id===currentCoach.id?' active':'');
-    b.innerHTML=`<div class="avatar">${c.a}<span class="on"></span></div>
+    b.innerHTML=`<div class="avatar">${avatarCoachHTML(c,true)}</div>
       <div><div class="nm">${c.n}</div><div class="sp">${c.sp}</div></div>`;
     b.onclick=()=>{currentCoach=c;renderCoachList();openChat();};
     cl.appendChild(b);
@@ -2808,7 +2836,13 @@ function renderCoachList(){
 }
 function openChat(){
   document.getElementById('chatName').textContent=currentCoach.n;
-  document.getElementById('chatAvatar').innerHTML=currentCoach.a+'<span class="on"></span>';
+  document.getElementById('chatAvatar').innerHTML=avatarCoachHTML(currentCoach,true);
+  const mio=coachDelUsuario();
+  const ca=document.getElementById('chatAvatar');
+  if(mio && mio.id===currentCoach.id){
+    ca.style.cursor='pointer'; ca.title='Cambiar mi foto de coach';
+    ca.onclick=()=>window.__pfpCoach && window.__pfpCoach();
+  } else { ca.style.cursor=''; ca.title=''; ca.onclick=null; }
   if(!chats[currentCoach.id]) chats[currentCoach.id]=[{who:'them',t:`¡Hola! Soy ${currentCoach.n}, tu ${currentCoach.sp.toLowerCase()}. ¿En qué te apoyo hoy?`}];
   renderMsgs();
 }
@@ -2933,6 +2967,64 @@ document.getElementById('btnCam').onclick=()=>document.getElementById('chatCam')
 document.getElementById('chatFile').onchange=e=>{ adjuntar(e.target.files[0],false); e.target.value=''; };
 document.getElementById('chatCam').onchange=e=>{ adjuntar(e.target.files[0],true); e.target.value=''; };
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+
+/* ----------- Fotos de perfil ----------- */
+function miFoto(){ return avatars[session||'invitado']||''; }
+function inicialUsuario(){
+  const u=users[session]; const n=(u&&u.name)||displayName||session||'';
+  return (n.trim()[0]||'—').toUpperCase();
+}
+function pintarPfp(el, foto, inicial){
+  if(!el) return;
+  el.innerHTML = foto ? '<img alt="Foto de perfil" src="'+foto+'">' : '';
+  if(!foto) el.textContent=inicial;
+}
+function renderPfp(){
+  const f=miFoto(), i=inicialUsuario();
+  pintarPfp(document.getElementById('pfpBig'), f, i);
+  pintarPfp(document.getElementById('pfpTop'), f, i);
+  const q=document.getElementById('pfpQuitar'); if(q) q.style.display = f?'block':'none';
+}
+function fotoDeCoach(c){ return avatars['coach_'+c.id] || c.foto || ''; }
+/* La letra queda detrás: si la foto no existe, la imagen se quita y se ve la inicial */
+function avatarCoachHTML(c, conPunto){
+  const f=fotoDeCoach(c);
+  return (f?'<img alt="'+c.n+'" src="'+f+'" onerror="this.remove()">':'')+c.a+(conPunto?'<span class="on"></span>':'');
+}
+/* Si el usuario que entró se llama igual que un coach, puede cambiar la foto de ese coach */
+function coachDelUsuario(){
+  const u=users[session]; const n=((u&&u.name)||displayName||'').trim().toLowerCase();
+  if(!n) return null;
+  return COACHES.find(c=>c.n.toLowerCase()===n)||null;
+}
+async function elegirFoto(file, clave){
+  if(!file) return;
+  try{
+    const img=await comprimirImagen(file, 320, .8);
+    avatars[clave]=img;
+    save('forja_avatars',avatars);
+  }catch(e){ alert('No pude leer esa imagen. Intenta con otra foto.'); return; }
+  renderPfp();
+  try{ renderCoachList(); openChat(); }catch(e){}
+}
+(function initPfp(){
+  const btnBig=document.getElementById('pfpBtn'), btnTop=document.getElementById('pfpTop'),
+        file=document.getElementById('pfpFile'), quitar=document.getElementById('pfpQuitar');
+  let destino='usuario';
+  const abrir=()=>{ destino='usuario'; file.click(); };
+  if(btnBig) btnBig.onclick=abrir;
+  if(btnTop) btnTop.onclick=abrir;
+  window.__pfpCoach=()=>{ destino='coach'; file.click(); };
+  if(file) file.onchange=e=>{
+    const f=e.target.files[0]; e.target.value='';
+    if(destino==='coach'){
+      const c=coachDelUsuario(); if(c) elegirFoto(f,'coach_'+c.id);
+    } else elegirFoto(f, session||'invitado');
+  };
+  if(quitar) quitar.onclick=()=>{
+    delete avatars[session||'invitado']; save('forja_avatars',avatars); renderPfp();
+  };
+})();
 
 /* ----------- Videollamada / llamada ----------- */
 let callTimer=null, callSecs=0;
@@ -3083,6 +3175,7 @@ function enterApp(){
   document.querySelector('.app').style.display='flex';
   if(u) document.getElementById('userName').textContent=u.name;
   else if(displayName) document.getElementById('userName').textContent=displayName;
+  renderPfp();
 }
 function showGate(){
   document.getElementById('authGate').style.display='grid';
@@ -3129,6 +3222,7 @@ renderHome(); renderMuscleTabs(); renderExercises();
 fillProgSelects(); renderProgress(); renderMeasures();
 calc(); renderDiet();
 renderCoachList(); openChat();
+renderPfp();
 applyPlan();
 if(checkVigenciaPro()) invitarAPro();
 /* Cada vez que cambia el historial de racha, se sube a la nube */
