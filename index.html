@@ -408,10 +408,27 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .msg{max-width:78%;padding:11px 15px;border-radius:15px;font-size:14px;line-height:1.45}
 .msg.them{background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
 .msg.me{background:var(--molten);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
-.chat-input{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}
-.chat-input input{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:var(--text);font-size:14px}
+.chat-input{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);align-items:center}
+.chat-input .tool{width:42px;height:42px;flex-shrink:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;font-size:19px;line-height:1}
+.chat-input .tool svg{width:19px;height:19px;fill:var(--muted)}
+.chat-input .tool:hover{border-color:var(--orange)}
+.chat-input .tool:hover svg{fill:var(--orange)}
+.chat-input .tool.on{border-color:var(--orange);background:var(--molten-soft)}
+.emoji-bar{display:none;gap:6px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);background:var(--surface-2)}
+.emoji-bar.open{display:flex}
+.emoji-bar button{font-size:21px;line-height:1;width:38px;height:38px;border-radius:10px}
+.emoji-bar button:hover{background:var(--surface)}
+.msg img{display:block;max-width:100%;width:210px;border-radius:11px;margin-top:2px}
+.msg .cap{font-size:12.5px;margin-top:7px;opacity:.85}
+.msg .wa-send{display:inline-flex;align-items:center;gap:6px;margin-top:9px;background:#25D366;color:#0b0b0f;font-weight:800;font-size:12px;padding:8px 12px;border-radius:99px}
+.chat-input input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:var(--text);font-size:14px}
 .chat-input input:focus{outline:none;border-color:var(--orange)}
-.chat-input button{width:46px;border-radius:12px;background:var(--molten);display:grid;place-items:center}
+.chat-input button{width:46px;height:46px;flex-shrink:0;border-radius:12px;background:var(--molten);display:grid;place-items:center}
+@media(max-width:520px){
+  .chat-input{gap:7px;padding:11px}
+  .chat-input .tool{width:38px;height:38px}
+  .chat-input button{width:42px;height:42px}
+}
 .chat-input button svg{width:19px;height:19px;fill:#fff}
 .lock-note{font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px;margin-top:10px}
 .join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(255,45,120,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
@@ -557,6 +574,24 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .goal-opt:hover{border-color:var(--orange);box-shadow:var(--glow)}
 .goal-opt b{display:block;font-size:17px;margin-bottom:3px}
 .goal-opt span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
+/* ===== Prueba de 21 días + consulta al coach ===== */
+.trial-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:var(--radius-sm);
+  background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);margin-bottom:14px}
+.trial-banner .tb-ic{font-size:22px;line-height:1}
+.trial-banner .tb-tx{flex:1;min-width:180px}
+.trial-banner .tb-t{font-weight:800;font-size:15px}
+.trial-banner .tb-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.trial-banner .tb-go{background:var(--molten);color:#fff;font-weight:800;font-size:13px;padding:10px 16px;border-radius:99px;white-space:nowrap}
+.coach-help{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:15px 17px;margin-bottom:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.coach-help:hover{border-color:var(--muted-2)}
+.coach-help .ch-ic{width:42px;height:42px;border-radius:50%;background:var(--molten);display:grid;place-items:center;flex-shrink:0}
+.coach-help .ch-ic svg{width:21px;height:21px;fill:#fff}
+.coach-help .ch-tx{flex:1;min-width:190px}
+.coach-help .ch-t{font-weight:800;font-size:15.5px}
+.coach-help .ch-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.coach-help .ch-go{background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;padding:10px 16px;border-radius:99px;white-space:nowrap}
+.coach-help .ch-go:hover{border-color:var(--orange);color:var(--orange)}
 /* ===== Caja de código PRO (agregado) ===== */
 .code-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
 .code-box>span{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
@@ -931,6 +966,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
         </div>
+        <div class="trial-banner" id="trialBanner" style="display:none"></div>
+        <div class="coach-help">
+          <div class="ch-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <div class="ch-tx">
+            <div class="ch-t">¿Tienes dudas de la rutina? Consulta a tu coach</div>
+            <div class="ch-d">Técnica, pesos, series o cómo adaptar un ejercicio: escríbele y te responde directo.</div>
+          </div>
+          <button type="button" class="ch-go" data-go="coaches">Hablar con mi coach →</button>
+        </div>
         <div class="enfoque-banner" id="enfoqueBanner" style="display:none"></div>
         <div class="muscle-tabs" id="muscleTabs"></div>
         <div class="muscle-pista" id="musclePista"></div>
@@ -1129,12 +1173,19 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
                   </div>
                 </div>
                 <div class="call-btns">
+                  <button id="btnWa" title="Escribir por WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 2a8 8 0 11-4.1 14.9l-.4-.2-2.7.7.7-2.6-.2-.4A8 8 0 0112 4zm-3.3 4.3c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 1.9 0 1 .7 2 .8 2.1.1.2 1.4 2.2 3.4 3 .5.2 1 .3 1.3.4.6.1 1.1.1 1.5 0 .5-.1 1.4-.6 1.6-1.2.2-.6.2-1 .1-1.1 0-.1-.2-.2-.4-.3l-1.5-.7c-.2-.1-.4-.1-.6.1l-.6.8c-.1.2-.3.2-.5.1-.3-.1-1-.4-1.7-1.1-.6-.6-.9-1.1-1-1.3-.1-.2 0-.4.1-.5l.4-.5c.1-.2.1-.3 0-.5l-.6-1.4c-.1-.3-.3-.3-.5-.3z"/></svg></button>
                   <button id="btnVoice" title="Llamada de voz"><svg viewBox="0 0 24 24"><path d="M20 15.5a12.5 12.5 0 01-4-.6 1 1 0 00-1 .2l-1.8 1.8a15 15 0 01-6.6-6.6l1.8-1.8a1 1 0 00.2-1 12.5 12.5 0 01-.6-4 1 1 0 00-1-1H4a1 1 0 00-1 1A17 17 0 0020 21a1 1 0 001-1v-3.5a1 1 0 00-1-1z"/></svg></button>
                   <button id="btnVideo" title="Videollamada"><svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11z"/></svg></button>
                 </div>
               </div>
               <div class="chat-msgs" id="chatMsgs"></div>
+              <div class="emoji-bar" id="emojiBar"></div>
               <div class="chat-input">
+                <button type="button" class="tool" id="btnEmoji" title="Emojis">😀</button>
+                <button type="button" class="tool" id="btnFile" title="Adjuntar archivo"><svg viewBox="0 0 24 24"><path d="M16.5 6.5l-7 7a2.5 2.5 0 003.5 3.5l7-7a4.5 4.5 0 00-6.4-6.4l-7.5 7.5a6.5 6.5 0 009.2 9.2l6.2-6.2-1.4-1.4-6.2 6.2a4.5 4.5 0 01-6.4-6.4l7.5-7.5a2.5 2.5 0 013.5 3.5l-7 7a.5.5 0 01-.7-.7l7-7-1.4-1.4z"/></svg></button>
+                <button type="button" class="tool" id="btnCam" title="Tomar foto"><svg viewBox="0 0 24 24"><path d="M20 6h-3l-1.5-2h-5L9 6H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2zm-8 12a5 5 0 110-10 5 5 0 010 10zm0-2a3 3 0 100-6 3 3 0 000 6z"/></svg></button>
+                <input type="file" id="chatFile" accept="image/*,application/pdf" style="display:none">
+                <input type="file" id="chatCam" accept="image/*" capture="environment" style="display:none">
                 <input type="text" id="chatInput" placeholder="Escríbeme y te respondo por WhatsApp...">
                 <button id="chatSend"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
               </div>
@@ -1142,6 +1193,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="lock-note" id="callLock">
               <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--amber)"><path d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm3 8H9V7a3 3 0 016 0z"/></svg>
               Las videollamadas y llamadas de voz son exclusivas del plan PRO.
+            </div>
+            <div class="lock-note" id="waNote" style="display:none">
+              <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--green)"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>
+              Las llamadas y videollamadas se hacen por WhatsApp con tu coach.
             </div>
           </div>
         </div>
@@ -1420,6 +1475,8 @@ let exset = load('forja_exset', {});   // {ejercicio:{s,r,max}} ajustes del usua
 let series = load('forja_series', {});
 let mode = load('forja_mode','gym');   // 'gym' | 'home'
 let goal = load('forja_goal',null);   // null | 'definicion' | 'volumen' (solo PRO)                 // {ejercicio: kg récord}
+let trialInicio = load('forja_trial_inicio','');  // AAAA-MM-DD en que empezó la prueba gratis
+const TRIAL_DIAS = 21;
 let users = load('forja_users', {});             // {correo:{name,pass}}
 let session = load('forja_session', null);       // correo activo
 let measures = load('forja_measures', []);       // [{date,peso,brazo,pierna,abdomen}]
@@ -1483,6 +1540,34 @@ function checkVigenciaPro(){
   store.set('forja_pro_hasta', JSON.stringify(proHasta));
   cloudSync();
   return true;
+}
+/* ----------- Prueba gratuita de 21 días ----------- */
+function iniciarPrueba(){
+  if(!trialInicio){ trialInicio=hoyKey(); save('forja_trial_inicio',trialInicio); }
+}
+function diasRestantesPrueba(){
+  if(!trialInicio) return TRIAL_DIAS;
+  const a=new Date(trialInicio+'T00:00:00'), b=new Date(hoyKey()+'T00:00:00');
+  return Math.max(0, TRIAL_DIAS - Math.floor((b-a)/86400000));
+}
+function pruebaActiva(){ return plan!=='pro' && diasRestantesPrueba()>0; }
+function renderTrial(){
+  const b=document.getElementById('trialBanner'); if(!b) return;
+  if(plan==='pro'){ b.style.display='none'; return; }
+  const d=diasRestantesPrueba();
+  b.style.display='flex';
+  if(d>0){
+    b.innerHTML='<div class="tb-ic">🔥</div><div class="tb-tx">'+
+      '<div class="tb-t">Prueba gratis: te quedan '+d+(d===1?' día':' días')+'</div>'+
+      '<div class="tb-d">Entrena con todo el plan Gratis durante '+TRIAL_DIAS+' días. Al terminar pasas a Modo PRO para seguir con coach, dieta y analítica.</div></div>'+
+      '<button type="button" class="tb-go" data-go="suscripcion">Ver Modo PRO</button>';
+  } else {
+    b.innerHTML='<div class="tb-ic">⭐</div><div class="tb-tx">'+
+      '<div class="tb-t">Terminaron tus '+TRIAL_DIAS+' días gratis — activa Modo PRO</div>'+
+      '<div class="tb-d">Sigue entrenando con rutinas premium, videollamadas con tu coach y dieta personalizada.</div></div>'+
+      '<button type="button" class="tb-go" data-go="suscripcion">Activar Modo PRO</button>';
+  }
+  b.querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
 }
 function invitarAPro(){
   try{
@@ -1844,7 +1929,8 @@ const WEEK = [
   ['DOM','Descanso','Recuperación'],
 ];
 const COACHES = [
-  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
+  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', wa:'525646463204', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
+  {id:'c2', n:'Diego Garfias', sp:'Coach FORJA · Fuerza y técnica', a:'D', wa:'525611840254', reply:'¡Qué tal! Soy Diego, coach en FORJA. Dime qué necesitas ajustar de tu rutina. 💪'},
 ];
 
 /* ----------- Navegación ----------- */
@@ -2729,19 +2815,123 @@ function openChat(){
 function renderMsgs(){
   const box=document.getElementById('chatMsgs'); box.innerHTML='';
   chats[currentCoach.id].forEach(m=>{
-    const d=document.createElement('div');d.className='msg '+m.who;d.textContent=m.t;box.appendChild(d);
+    const d=document.createElement('div'); d.className='msg '+m.who;
+    if(m.img){
+      const im=document.createElement('img'); im.src=m.img; im.alt=m.t||'Archivo'; d.appendChild(im);
+      const cap=document.createElement('div'); cap.className='cap'; cap.textContent=m.t||'📸 Foto'; d.appendChild(cap);
+      if(m.who==='me'){
+        const b=document.createElement('button'); b.type='button'; b.className='wa-send';
+        b.textContent='Enviar por WhatsApp';
+        b.onclick=()=>abrirWaConAdjunto(m);
+        d.appendChild(b);
+      }
+    } else if(m.file){
+      const cap=document.createElement('div'); cap.textContent='📎 '+m.file; d.appendChild(cap);
+      if(m.who==='me'){
+        const b=document.createElement('button'); b.type='button'; b.className='wa-send';
+        b.textContent='Enviar por WhatsApp';
+        b.onclick=()=>abrirWaConAdjunto(m);
+        d.appendChild(b);
+      }
+    } else d.textContent=m.t;
+    box.appendChild(d);
   });
   box.scrollTop=box.scrollHeight;
 }
+/* Guarda la conversación sin las fotos (las imágenes se quedan solo en esta sesión:
+   así nunca se llena el almacenamiento ni se rompe el envío del mensaje) */
+function saveChats(){
+  try{
+    const limpio={};
+    Object.keys(chats).forEach(k=>{
+      limpio[k]=chats[k].map(m=> m.img ? {who:m.who, t:m.t, foto:true} : m);
+    });
+    save('forja_chats',limpio);
+  }catch(e){}
+}
+function abrirWa(url){
+  try{
+    const w=window.open(url,'_blank');
+    if(!w) location.href=url;
+  }catch(e){ location.href=url; }
+}
 function sendMsg(){
   const inp=document.getElementById('chatInput'); const v=inp.value.trim(); if(!v)return;
-  chats[currentCoach.id].push({who:'me',t:v}); inp.value=''; renderMsgs();
-  // Envía el mensaje de verdad al WhatsApp del coach (Christian)
-  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(v),'_blank');
-  chats[currentCoach.id].push({who:'them',t:'📲 Te abrí WhatsApp para enviarme tu mensaje. Ahí te respondo directo. 💪'});
-  save('forja_chats',chats); renderMsgs();
+  const wa=currentCoach.wa;
+  chats[currentCoach.id].push({who:'me',t:v});
+  inp.value='';
+  if(!wa){
+    chats[currentCoach.id].push({who:'them',t:'Aún no tengo mi WhatsApp configurado en la app. Escríbele a Christian y te contacta conmigo. 💪'});
+    renderMsgs(); saveChats(); return;
+  }
+  chats[currentCoach.id].push({who:'them',t:'📲 Te abrí WhatsApp con tu mensaje listo para enviar. Ahí seguimos y te respondo directo. 💪'});
+  renderMsgs(); saveChats();
+  abrirWa('https://wa.me/'+wa+'?text='+encodeURIComponent(v));
 }
 document.getElementById('chatSend').onclick=sendMsg;
+
+/* ----------- Emojis, archivos y fotos en el chat ----------- */
+const EMOJIS=['💪','🔥','🥇','🎯','✅','😅','😤','😂','🙌','👊','🏃','🦵','🥩','🥚','🥗','💧','😴','😎','📈','🤝','🙏','👍','🍗','❓'];
+(function initEmojis(){
+  const bar=document.getElementById('emojiBar'), inp=document.getElementById('chatInput');
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=e;
+    b.onclick=()=>{ inp.value+=e; inp.focus(); };
+    bar.appendChild(b);
+  });
+  document.getElementById('btnEmoji').onclick=function(){
+    bar.classList.toggle('open');
+    this.classList.toggle('on', bar.classList.contains('open'));
+  };
+})();
+
+function abrirWaConAdjunto(m){
+  const wa=currentCoach.wa;
+  const nom=currentCoach.n.split(' ')[0];
+  if(!wa){ alert('Todavía no está configurado el WhatsApp de '+nom+'.'); return; }
+  const txt='Hola '+nom+', te mando '+(m.img?'una foto':'un archivo')+' desde FORJA'+(m.t?': '+m.t:'')+' 💪 (te lo adjunto aquí mismo)';
+  abrirWa('https://wa.me/'+wa+'?text='+encodeURIComponent(txt));
+}
+
+/* Comprime la imagen para que no llene el almacenamiento del teléfono */
+function comprimirImagen(file, max=900, calidad=.72){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const esc=Math.min(1, max/Math.max(im.width,im.height));
+        const c=document.createElement('canvas');
+        c.width=Math.round(im.width*esc); c.height=Math.round(im.height*esc);
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg',calidad));
+      };
+      im.onerror=rej; im.src=fr.result;
+    };
+    fr.onerror=rej; fr.readAsDataURL(file);
+  });
+}
+
+async function adjuntar(file, esFoto){
+  if(!file) return;
+  const nota=(document.getElementById('chatInput').value||'').trim();
+  document.getElementById('chatInput').value='';
+  chats[currentCoach.id]=chats[currentCoach.id]||[];
+  if(file.type.startsWith('image/')){
+    try{
+      const img=await comprimirImagen(file);
+      chats[currentCoach.id].push({who:'me', img, t:nota||(esFoto?'📸 Foto de hoy':'🖼️ Imagen')});
+    }catch(e){ chats[currentCoach.id].push({who:'me', file:file.name, t:nota}); }
+  } else {
+    chats[currentCoach.id].push({who:'me', file:file.name, t:nota});
+  }
+  chats[currentCoach.id].push({who:'them', t:'👀 Ya lo veo aquí. Toca “Enviar por WhatsApp” y me lo adjuntas ahí para revisarlo a detalle. 💪'});
+  renderMsgs(); saveChats();
+}
+document.getElementById('btnFile').onclick=()=>document.getElementById('chatFile').click();
+document.getElementById('btnCam').onclick=()=>document.getElementById('chatCam').click();
+document.getElementById('chatFile').onchange=e=>{ adjuntar(e.target.files[0],false); e.target.value=''; };
+document.getElementById('chatCam').onchange=e=>{ adjuntar(e.target.files[0],true); e.target.value=''; };
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
 
 /* ----------- Videollamada / llamada ----------- */
@@ -2765,24 +2955,47 @@ function startCall(video){
   },1000);
 }
 function endCall(){ clearInterval(callTimer); document.getElementById('callModal').classList.remove('open'); }
-function contactCoach(){
+function contactCoach(video){
+  const wa=currentCoach.wa;
+  const nom=currentCoach.n.split(' ')[0];
+  if(!wa){ alert('Todavía no está configurado el WhatsApp de '+nom+'. Escríbele a Christian y te canaliza. 💪'); return; }
   if(plan!=='pro'){ openPro(); return; }
-  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent('Hola Christian, soy usuario PRO de FORJA y quiero asesoría 💪'),'_blank');
+  const txt = video
+    ? '📹 Hola '+nom+', soy usuario PRO de FORJA. Te marco por videollamada de WhatsApp ahora ¿me contestas?'
+    : '📞 Hola '+nom+', soy usuario PRO de FORJA. Te marco por llamada de WhatsApp ahora ¿me contestas?';
+  abrirWa('https://wa.me/'+wa+'?text='+encodeURIComponent(txt));
+  chats[currentCoach.id]=chats[currentCoach.id]||[];
+  chats[currentCoach.id].push({who:'them',t:(video?'📹':'📞')+' Te abrí mi chat de WhatsApp: toca el icono de '+(video?'videollamada':'llamada')+' arriba a la derecha y te contesto. 💪'});
+  renderMsgs(); saveChats();
 }
-document.getElementById('btnVideo').onclick=contactCoach;
-document.getElementById('btnVoice').onclick=contactCoach;
+document.getElementById('btnWa').onclick=()=>{
+  const wa=currentCoach.wa;
+  const nom=currentCoach.n.split(' ')[0];
+  if(!wa){
+    alert('Todavía no está configurado el WhatsApp de '+nom+'. Escríbele a Christian y te canaliza. 💪');
+    return;
+  }
+  abrirWa('https://wa.me/'+wa+'?text='+encodeURIComponent('Hola '+nom+', te escribo desde FORJA. Tengo una duda de mi rutina 💪'));
+};
+document.getElementById('btnVideo').onclick=()=>contactCoach(true);
+document.getElementById('btnVoice').onclick=()=>contactCoach(false);
 document.getElementById('cEnd').onclick=endCall;
 document.getElementById('cMute').onclick=function(){this.style.background=this.style.background?'':'var(--orange)';};
 
 /* ----------- Suscripción ----------- */
 function applyPlan(){
-  const label = plan==='pro'?'FORJA PRO':'Gratis';
+  const dias = diasRestantesPrueba();
+  const label = plan==='pro' ? 'FORJA PRO'
+              : dias>0 ? 'Gratis · '+dias+(dias===1?' día':' días')
+              : 'Modo PRO';
   document.getElementById('planLabel').textContent=label;
   document.getElementById('planPillTop').textContent=label;
   document.getElementById('callLock').style.display = plan==='pro'?'none':'flex';
+  const wn=document.getElementById('waNote'); if(wn) wn.style.display = plan==='pro'?'flex':'none';
   document.getElementById('btnFree').textContent = plan==='free'?'Plan actual':'Cambiar a Gratis';
   document.getElementById('btnPro').textContent = plan==='pro'?'✓ Ya eres PRO':'Suscribirme a PRO';
   if(typeof renderEnfoque==='function') renderEnfoque();
+  if(typeof renderTrial==='function') renderTrial();
 }
 /* Abrir el paquete de pago (modal PRO) */
 function openPro(){
@@ -2801,7 +3014,7 @@ document.getElementById('btnFree').onclick=openPro;
 
 document.getElementById('proActivate').onclick=()=>{
   const msg='Hola Christian 🔥 Quiero activar FORJA PRO ($'+CONFIG.PRECIO_PRO+'/mes). ¿Me pasas los datos para el pago? Puedo por transferencia BBVA o Banco Azteca.';
-  window.open('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(msg),'_blank');
+  abrirWa('https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent(msg));
   closePro();
 };
 document.getElementById('codeActivate').onclick=async ()=>{
@@ -2865,6 +3078,7 @@ document.querySelectorAll('[data-auth]').forEach(el=>el.addEventListener('click'
 
 function enterApp(){
   const u=users[session];
+  iniciarPrueba();
   document.getElementById('authGate').style.display='none';
   document.querySelector('.app').style.display='flex';
   if(u) document.getElementById('userName').textContent=u.name;
