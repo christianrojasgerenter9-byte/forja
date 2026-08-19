@@ -33,16 +33,16 @@
   --surface:#0A151E;
   --surface-2:#102232;
   --line:#1E4258;
-  --text:#E8F7FF;
+  --text:#DCEAF2;
   --muted:#8FB8CC;
   --muted-2:#5A8698;
-  --orange:#31D3F7;
-  --magenta:#1C7FD8;
-  --amber:#7BE6FF;
+  --orange:#1F9BC4;
+  --magenta:#175FA8;
+  --amber:#63BEDA;
   --green:#2FD07A;
-  --molten:linear-gradient(120deg,#1C8FE0 0%,#5CE6FF 100%);
-  --molten-soft:linear-gradient(120deg,rgba(49,211,247,.16),rgba(28,127,216,.16));
-  --glow:0 0 34px rgba(49,211,247,.42);
+  --molten:linear-gradient(120deg,#12639E 0%,#2CA6CC 100%);
+  --molten-soft:linear-gradient(120deg,rgba(31,155,196,.16),rgba(23,95,168,.16));
+  --glow:0 0 30px rgba(31,155,196,.34);
   --radius:18px;
   --radius-sm:12px;
   --nav-w:248px;
@@ -62,10 +62,10 @@ body{
 body::before{ /* atmósfera molten de fondo */
   content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    linear-gradient(rgba(49,211,247,.055) 1px, transparent 1px) 0 0/100% 46px,
-    linear-gradient(90deg, rgba(49,211,247,.055) 1px, transparent 1px) 0 0/46px 100%,
-    radial-gradient(700px 460px at 82% -6%, rgba(28,127,216,.22), transparent 62%),
-    radial-gradient(760px 520px at 4% 10%, rgba(49,211,247,.16), transparent 58%);
+    linear-gradient(rgba(31,155,196,.055) 1px, transparent 1px) 0 0/100% 46px,
+    linear-gradient(90deg, rgba(31,155,196,.055) 1px, transparent 1px) 0 0/46px 100%,
+    radial-gradient(700px 460px at 82% -6%, rgba(23,95,168,.22), transparent 62%),
+    radial-gradient(760px 520px at 4% 10%, rgba(31,155,196,.16), transparent 58%);
 }
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -84,8 +84,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 }
 .brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
 .brand-mark{width:38px;height:38px;border-radius:11px;background:var(--surface-2);
-            border:1px solid rgba(49,211,247,.38);display:grid;place-items:center;padding:5px;
-            box-shadow:0 0 16px rgba(49,211,247,.16)}
+            border:1px solid rgba(31,155,196,.38);display:grid;place-items:center;padding:5px;
+            box-shadow:0 0 16px rgba(31,155,196,.16)}
 .brand-svg{width:100%;height:100%;display:block}
 .brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
 .brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -122,7 +122,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .section-head h2{font-size:clamp(30px,5vw,46px)}
 .muted{color:var(--muted)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
-  box-shadow:inset 0 0 0 1px rgba(49,211,247,.07), 0 0 22px rgba(6,24,38,.5)}
+  box-shadow:inset 0 0 0 1px rgba(31,155,196,.07), 0 0 22px rgba(6,24,38,.5)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;transition:.18s}
 .btn-molten{background:var(--molten);color:#fff;box-shadow:var(--glow)}
@@ -140,8 +140,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hero{
   position:relative;border-radius:24px;overflow:hidden;padding:clamp(26px,5vw,48px);
   background:
-    radial-gradient(700px 300px at 90% 0%, rgba(28,127,216,.28), transparent 62%),
-    radial-gradient(600px 340px at 0% 100%, rgba(49,211,247,.24), transparent 60%),
+    radial-gradient(700px 300px at 90% 0%, rgba(23,95,168,.28), transparent 62%),
+    radial-gradient(600px 340px at 0% 100%, rgba(31,155,196,.24), transparent 60%),
     #081220;
   border:1px solid var(--line);
 }
@@ -256,13 +256,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bm-row .dot.s3{background:transparent;border:1px dashed var(--muted-2)}
 .bm-pie{font-size:11.5px;color:var(--muted-2);margin-top:12px;line-height:1.6}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
-  background:conic-gradient(#7BF4FF calc(var(--pct)*1%), #162E3E 0);
+  background:conic-gradient(#4FC3DE calc(var(--pct)*1%), #162E3E 0);
   display:grid;place-items:center;transition:background 1s ease;
-  box-shadow:0 0 26px rgba(90,225,255,.42), 0 0 62px rgba(90,225,255,.2), inset 0 0 18px rgba(120,235,255,.14)}
+  box-shadow:0 0 26px rgba(60,165,195,.34), 0 0 62px rgba(60,165,195,.16), inset 0 0 18px rgba(90,190,215,.12)}
 .ring::before{content:"";position:absolute;width:176px;height:176px;border-radius:50%;background:#081220;border:1px solid var(--line)}
 .ring-inner{position:relative;text-align:center}
 .ring-inner .big{font-family:'Anton';font-size:52px;line-height:1}
-.ring-inner .lbl{font-size:11px;letter-spacing:2px;color:#8FD9E6;text-transform:uppercase;margin-top:4px}
+.ring-inner .lbl{font-size:11px;letter-spacing:2px;color:#7FB6C4;text-transform:uppercase;margin-top:4px}
 
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}
@@ -273,7 +273,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .home-2col{display:grid;grid-template-columns:1.3fr .8fr;gap:16px;margin-top:16px}
 .playlist{
   background:
-    radial-gradient(400px 200px at 100% 0%, rgba(28,127,216,.3), transparent 60%),
+    radial-gradient(400px 200px at 100% 0%, rgba(23,95,168,.3), transparent 60%),
     linear-gradient(180deg,#0C1B28,#07111B);
   border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-height:180px
 }
@@ -315,7 +315,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-card.is-hecho:hover{opacity:1}
 .ex-card.es-siguiente{border-color:var(--orange);box-shadow:var(--glow);animation:sube .32s ease-out}
 .ex-card.es-siguiente::before{content:"SIGUE ESTE";align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.09em;
-  color:var(--orange);background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);padding:4px 9px;border-radius:99px}
+  color:var(--orange);background:var(--molten-soft);border:1px solid rgba(31,155,196,.35);padding:4px 9px;border-radius:99px}
 @keyframes sube{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
 .ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .ex-name{font-weight:700;font-size:16px}
@@ -341,7 +341,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .field{margin-bottom:13px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
 .field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14.5px;transition:.16s}
-.field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(49,211,247,.15)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(31,155,196,.15)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding:12px 4px 0;border-bottom:1px solid var(--line)}
 .bar{flex:1;min-width:14px;background:var(--molten);border-radius:8px 8px 0 0;position:relative;transition:height .5s ease;min-height:4px}
@@ -372,7 +372,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ---------- CALORÍAS ---------- */
 .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(28,127,216,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
+.cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(23,95,168,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
 .cal-big{font-family:'Anton';font-size:clamp(56px,10vw,88px);line-height:.9;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cal-big-lbl{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
 .macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
@@ -445,7 +445,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 }
 .chat-input button svg{width:19px;height:19px;fill:#fff}
 .lock-note{font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px;margin-top:10px}
-.join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(28,127,216,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
+.join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(23,95,168,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
 .join-ic{font-size:30px;line-height:1}
 .join-tx{flex:1;min-width:190px}
 .join-t{font-family:'Anton';font-size:21px;letter-spacing:.5px}
@@ -457,7 +457,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 /* ---------- SUSCRIPCIÓN ---------- */
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
 .plan{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:flex;flex-direction:column}
-.plan.pro{background:radial-gradient(500px 300px at 100% 0%,rgba(28,127,216,.22),transparent 60%),#141418;border-color:var(--orange);position:relative}
+.plan.pro{background:radial-gradient(500px 300px at 100% 0%,rgba(23,95,168,.22),transparent 60%),#141418;border-color:var(--orange);position:relative}
 .plan.pro::after{content:"MÁS POPULAR";position:absolute;top:18px;right:18px;font-size:10px;font-weight:800;letter-spacing:2px;background:var(--molten);color:#fff;padding:5px 11px;border-radius:99px}
 .plan .pn{font-family:'Anton';font-size:26px}
 .plan .price{font-family:'Anton';font-size:clamp(40px,6vw,58px);margin:10px 0 2px}
@@ -491,7 +491,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ---------- Auth (login / registro) ---------- */
 .auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;
-  background:radial-gradient(700px 400px at 80% 0%,rgba(28,127,216,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(49,211,247,.18),transparent 60%),var(--bg)}
+  background:radial-gradient(700px 400px at 80% 0%,rgba(23,95,168,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(31,155,196,.18),transparent 60%),var(--bg)}
 .auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
 .auth-brand .brand-mark{width:44px;height:44px;padding:6px}
@@ -523,7 +523,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .auth-swap b{color:var(--orange);cursor:pointer}
 
 /* ---------- Modal PRO (paquete de pago) ---------- */
-.pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(28,127,216,.3),transparent 62%),#141418;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
+.pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(23,95,168,.3),transparent 62%),#141418;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
 .pro-close{position:absolute;top:14px;right:16px;font-size:18px;color:var(--muted);width:34px;height:34px;border-radius:9px}
 .pro-close:hover{color:var(--text);background:var(--surface-2)}
 .pro-badge{display:inline-block;font-family:'Anton';font-size:24px;letter-spacing:1.5px;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -576,7 +576,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ===== Enfoque PRO (Volumen/Definición) (agregado) ===== */
 .enfoque-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;
-  background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);border-radius:var(--radius-sm);
+  background:var(--molten-soft);border:1px solid rgba(31,155,196,.35);border-radius:var(--radius-sm);
   padding:12px 16px;margin-bottom:16px}
 .enfoque-banner b{display:block;font-size:14px}
 .enfoque-banner span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
@@ -590,7 +590,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .goal-opt span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
 /* ===== Prueba de 21 días + consulta al coach ===== */
 .trial-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:var(--radius-sm);
-  background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);margin-bottom:14px}
+  background:var(--molten-soft);border:1px solid rgba(31,155,196,.35);margin-bottom:14px}
 .trial-banner .tb-ic{font-size:22px;line-height:1}
 .trial-banner .tb-tx{flex:1;min-width:180px}
 .trial-banner .tb-t{font-weight:800;font-size:15px}
@@ -623,7 +623,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .pfp-quitar:hover{color:var(--text)}
 /* ===== Instalar la app (PWA) ===== */
 .install-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;margin-bottom:16px;position:relative;
-  border-radius:var(--radius);background:var(--molten-soft);border:1px solid rgba(49,211,247,.35)}
+  border-radius:var(--radius);background:var(--molten-soft);border:1px solid rgba(31,155,196,.35)}
 .install-card .ins-ic{font-size:26px;line-height:1}
 .install-card .ins-tx{flex:1;min-width:200px;padding-right:22px}
 .install-card .ins-t{font-family:'Anton';font-size:19px;letter-spacing:.03em}
@@ -755,7 +755,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 <div class="auth-gate" id="authGate">
   <div class="auth-card">
     <div class="auth-brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaAuth" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaAuth)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaAuth)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaAuth)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaAuth" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaAuth)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaAuth)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaAuth)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div class="brand-name">FOR<span style="background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent">JA</span></div>
     </div>
     <div class="auth-title">Tu sistema de entrenamiento</div>
@@ -791,7 +791,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <!-- ===================== SIDEBAR (PC) ===================== -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaNav" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaNav)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaNav)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaNav)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaNav" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaNav)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaNav)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaNav)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div>
         <div class="brand-name">FOR<span>JA</span></div>
         <div class="brand-sub">Training System</div>
@@ -848,7 +848,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <div class="main">
     <div class="topbar">
       <div class="brand" style="padding:0;border:none">
-        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaTop" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaTop)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaTop)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaTop)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaTop" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaTop)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaTop)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaTop)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
       <div class="tb-right">
@@ -912,7 +912,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <svg class="bm-svg" id="bodyMap" viewBox="0 0 260 212" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de musculos entrenados">
               <defs>
                 <linearGradient id="bmHot" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/>
+                  <stop offset="0%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/>
                 </linearGradient>
               </defs>
 
@@ -3685,16 +3685,16 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     bg.addColorStop(0,'#050A10'); bg.addColorStop(1,'#0C2A3C');
     x.fillStyle = bg; x.fillRect(0,0,1080,1350);
     const glow = x.createLinearGradient(0,1050,1080,1350);
-    glow.addColorStop(0,'rgba(49,211,247,0)'); glow.addColorStop(1,'rgba(28,127,216,.35)');
+    glow.addColorStop(0,'rgba(31,155,196,0)'); glow.addColorStop(1,'rgba(23,95,168,.35)');
     x.fillStyle = glow; x.fillRect(0,1050,1080,300);
     x.textAlign='center';
-    x.fillStyle='#31D3F7'; x.font='900 64px Anton, sans-serif';
+    x.fillStyle='#1F9BC4'; x.font='900 64px Anton, sans-serif';
     x.fillText('F O R J A', 540, 150);
-    x.fillStyle='#E8F7FF'; x.font='900 150px Anton, sans-serif';
+    x.fillStyle='#DCEAF2'; x.font='900 150px Anton, sans-serif';
     x.fillText('SESIÓN '+s.num, 540, 620);
     x.fillStyle='#8FB8CC'; x.font='600 44px Inter, sans-serif';
     x.fillText(phFmt(s.date), 540, 700);
-    x.fillStyle='#7BE6FF'; x.font='900 58px Anton, sans-serif';
+    x.fillStyle='#63BEDA'; x.font='900 58px Anton, sans-serif';
     x.fillText(s.num > 1 ? ((s.num-1)*CYCLE_DAYS)+'+ DÍAS FORJANDO' : 'EL PUNTO DE PARTIDA', 540, 850);
     x.fillStyle='#8FB8CC'; x.font='600 36px Inter, sans-serif';
     x.fillText('El hierro se forja golpe a golpe.', 540, 1240);
