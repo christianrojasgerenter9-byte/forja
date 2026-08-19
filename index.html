@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FORJA · Entrenamiento</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0C0908">
+<meta name="theme-color" content="#050A10">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -29,20 +29,20 @@
 /* ---------- CONFIG editable rápido (busca CONFIG en el JS también) ---------- */
 
 :root{
-  --bg:#0A0A0C;
-  --surface:#141418;
-  --surface-2:#1B1B22;
-  --line:#26262F;
-  --text:#F5F5F0;
-  --muted:#8A8A92;
-  --muted-2:#5E5E68;
-  --orange:#FF5A1F;
-  --magenta:#FF2D78;
-  --amber:#FFD166;
+  --bg:#050A10;
+  --surface:#0A151E;
+  --surface-2:#102232;
+  --line:#1E4258;
+  --text:#E8F7FF;
+  --muted:#8FB8CC;
+  --muted-2:#5A8698;
+  --orange:#31D3F7;
+  --magenta:#1C7FD8;
+  --amber:#7BE6FF;
   --green:#2FD07A;
-  --molten:linear-gradient(120deg,#FF5A1F 0%,#FF2D78 100%);
-  --molten-soft:linear-gradient(120deg,rgba(255,90,31,.16),rgba(255,45,120,.16));
-  --glow:0 0 40px rgba(255,90,31,.35);
+  --molten:linear-gradient(120deg,#1C8FE0 0%,#5CE6FF 100%);
+  --molten-soft:linear-gradient(120deg,rgba(49,211,247,.16),rgba(28,127,216,.16));
+  --glow:0 0 34px rgba(49,211,247,.42);
   --radius:18px;
   --radius-sm:12px;
   --nav-w:248px;
@@ -62,8 +62,10 @@ body{
 body::before{ /* atmósfera molten de fondo */
   content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(600px 400px at 78% -5%, rgba(255,45,120,.14), transparent 60%),
-    radial-gradient(700px 500px at 8% 8%, rgba(255,90,31,.12), transparent 55%);
+    linear-gradient(rgba(49,211,247,.055) 1px, transparent 1px) 0 0/100% 46px,
+    linear-gradient(90deg, rgba(49,211,247,.055) 1px, transparent 1px) 0 0/46px 100%,
+    radial-gradient(700px 460px at 82% -6%, rgba(28,127,216,.22), transparent 62%),
+    radial-gradient(760px 520px at 4% 10%, rgba(49,211,247,.16), transparent 58%);
 }
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -82,8 +84,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 }
 .brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
 .brand-mark{width:38px;height:38px;border-radius:11px;background:var(--surface-2);
-            border:1px solid rgba(255,90,31,.38);display:grid;place-items:center;padding:5px;
-            box-shadow:0 0 16px rgba(255,90,31,.16)}
+            border:1px solid rgba(49,211,247,.38);display:grid;place-items:center;padding:5px;
+            box-shadow:0 0 16px rgba(49,211,247,.16)}
 .brand-svg{width:100%;height:100%;display:block}
 .brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
 .brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -119,7 +121,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
 .section-head h2{font-size:clamp(30px,5vw,46px)}
 .muted{color:var(--muted)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+  box-shadow:inset 0 0 0 1px rgba(49,211,247,.07), 0 0 22px rgba(6,24,38,.5)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;transition:.18s}
 .btn-molten{background:var(--molten);color:#fff;box-shadow:var(--glow)}
@@ -137,9 +140,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hero{
   position:relative;border-radius:24px;overflow:hidden;padding:clamp(26px,5vw,48px);
   background:
-    radial-gradient(700px 300px at 90% 0%, rgba(255,45,120,.28), transparent 62%),
-    radial-gradient(600px 340px at 0% 100%, rgba(255,90,31,.24), transparent 60%),
-    #101014;
+    radial-gradient(700px 300px at 90% 0%, rgba(28,127,216,.28), transparent 62%),
+    radial-gradient(600px 340px at 0% 100%, rgba(49,211,247,.24), transparent 60%),
+    #081220;
   border:1px solid var(--line);
 }
 .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:34px;align-items:center}
@@ -161,7 +164,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hoy-chip{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:999px;
           padding:7px 14px;font-size:12.5px;cursor:pointer}
 .hoy-chip:hover{border-color:var(--orange)}
-.hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#0A0A0C;border-color:transparent;font-weight:600}
+.hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#041018;border-color:transparent;font-weight:600}
 .hoy-chip.reset{color:var(--muted);font-size:12px}
 .hoy-hint{width:100%;font-size:11.5px;color:var(--muted-2);margin-top:4px}
 /* ---- Calendario de entrenamientos ---- */
@@ -180,7 +183,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-day.descanso{background:transparent;border-style:dashed;opacity:.55}
 .fjcal-day.futuro{opacity:.35}
 .fjcal-day.parcial{border-color:var(--orange);color:var(--text)}
-.fjcal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#0A0A0C;
+.fjcal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#041018;
   border-color:transparent;font-weight:700}
 .fjcal-day.hoy{outline:2px solid var(--text);outline-offset:1px}
 .fjcal-pie{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
@@ -212,7 +215,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           padding:9px 10px;color:var(--text);font-size:14px;text-align:center}
 .serie-in:focus{outline:2px solid var(--orange);outline-offset:1px}
 .serie-btn{flex:0 0 auto;border:0;border-radius:9px;padding:9px 15px;cursor:pointer;font-size:12.5px;
-           font-weight:600;color:#0A0A0C;background:linear-gradient(90deg,var(--orange),var(--magenta))}
+           font-weight:600;color:#041018;background:linear-gradient(90deg,var(--orange),var(--magenta))}
 .sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
          background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
          padding:8px 16px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
@@ -225,7 +228,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-acc{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
 .fjcal-acc button{border-radius:9px;padding:8px 16px;font-size:12.5px;cursor:pointer;border:1px solid var(--line);
                   background:transparent;color:var(--text)}
-.fjcal-acc .ok{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#0A0A0C;border:0;font-weight:600}
+.fjcal-acc .ok{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#041018;border:0;font-weight:600}
 .fjcal-acc .del{color:#FF6B6B}
 /* ---- Mapa corporal ---- */
 .bm-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
@@ -253,10 +256,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bm-row .dot.s3{background:transparent;border:1px dashed var(--muted-2)}
 .bm-pie{font-size:11.5px;color:var(--muted-2);margin-top:12px;line-height:1.6}
 .ring{--pct:0;width:230px;height:230px;border-radius:50%;
-  background:conic-gradient(#7BF4FF calc(var(--pct)*1%), #202027 0);
+  background:conic-gradient(#7BF4FF calc(var(--pct)*1%), #162E3E 0);
   display:grid;place-items:center;transition:background 1s ease;
   box-shadow:0 0 26px rgba(90,225,255,.42), 0 0 62px rgba(90,225,255,.2), inset 0 0 18px rgba(120,235,255,.14)}
-.ring::before{content:"";position:absolute;width:176px;height:176px;border-radius:50%;background:#101014;border:1px solid var(--line)}
+.ring::before{content:"";position:absolute;width:176px;height:176px;border-radius:50%;background:#081220;border:1px solid var(--line)}
 .ring-inner{position:relative;text-align:center}
 .ring-inner .big{font-family:'Anton';font-size:52px;line-height:1}
 .ring-inner .lbl{font-size:11px;letter-spacing:2px;color:#8FD9E6;text-transform:uppercase;margin-top:4px}
@@ -270,12 +273,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .home-2col{display:grid;grid-template-columns:1.3fr .8fr;gap:16px;margin-top:16px}
 .playlist{
   background:
-    radial-gradient(400px 200px at 100% 0%, rgba(255,45,120,.3), transparent 60%),
-    linear-gradient(180deg,#17171d,#111116);
+    radial-gradient(400px 200px at 100% 0%, rgba(28,127,216,.3), transparent 60%),
+    linear-gradient(180deg,#0C1B28,#07111B);
   border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-height:180px
 }
 .yt-badge{width:44px;height:44px;border-radius:12px;background:#FF0000;display:grid;place-items:center}
-.ad-card{grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;min-height:0;padding:14px 18px;border-color:rgba(37,211,102,.5);background:linear-gradient(90deg, rgba(37,211,102,.14), rgba(37,211,102,.03) 45%, transparent),linear-gradient(180deg,#17171d,#111116)}
+.ad-card{grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;min-height:0;padding:14px 18px;border-color:rgba(37,211,102,.5);background:linear-gradient(90deg, rgba(37,211,102,.14), rgba(37,211,102,.03) 45%, transparent),linear-gradient(180deg,#0C1B28,#07111B)}
 .ad-badge{width:40px;height:40px;flex:none}
 .ad-text{flex:1;min-width:0}
 .ad-card .btn-wa{width:auto;white-space:nowrap;padding:11px 20px;font-size:13px;flex:none}
@@ -284,12 +287,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ad-copy b{color:#25D366;font-weight:700}
 .btn-wa{background:#25D366;color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.25);box-shadow:0 0 30px rgba(37,211,102,.25)}
 /* --- Cobranding Percha --- */
-.percha-card{border-color:rgba(108,173,222,.5);background:linear-gradient(90deg, rgba(58,118,169,.16), rgba(58,118,169,.03) 45%, transparent),linear-gradient(180deg,#17171d,#111116)}
+.percha-card{border-color:rgba(108,173,222,.5);background:linear-gradient(90deg, rgba(58,118,169,.16), rgba(58,118,169,.03) 45%, transparent),linear-gradient(180deg,#0C1B28,#07111B)}
 .percha-card h2{color:#6CADDE}
 .percha-card .ad-copy b{color:#6CADDE}
 .percha-card .ad-badge{background:transparent;overflow:hidden;box-shadow:0 0 30px rgba(58,118,169,.35)}
 .percha-card .ad-badge img{width:100%;height:100%;display:block;border-radius:12px;object-fit:cover}
-.btn-percha{background:linear-gradient(120deg,#3A76A9,#6CADDE);color:#0A0A0C;font-weight:800;box-shadow:0 0 30px rgba(58,118,169,.3)}
+.btn-percha{background:linear-gradient(120deg,#3A76A9,#6CADDE);color:#041018;font-weight:800;box-shadow:0 0 30px rgba(58,118,169,.3)}
 .ad-card .btn-percha{width:auto;white-space:nowrap;padding:11px 20px;font-size:13px;flex:none}
 .btn-wa:hover{filter:brightness(1.08)}
 .yt-badge svg{width:24px;height:24px;fill:#fff}
@@ -312,7 +315,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-card.is-hecho:hover{opacity:1}
 .ex-card.es-siguiente{border-color:var(--orange);box-shadow:var(--glow);animation:sube .32s ease-out}
 .ex-card.es-siguiente::before{content:"SIGUE ESTE";align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.09em;
-  color:var(--orange);background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);padding:4px 9px;border-radius:99px}
+  color:var(--orange);background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);padding:4px 9px;border-radius:99px}
 @keyframes sube{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
 .ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .ex-name{font-weight:700;font-size:16px}
@@ -338,7 +341,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .field{margin-bottom:13px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
 .field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14.5px;transition:.16s}
-.field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,90,31,.15)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(49,211,247,.15)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding:12px 4px 0;border-bottom:1px solid var(--line)}
 .bar{flex:1;min-width:14px;background:var(--molten);border-radius:8px 8px 0 0;position:relative;transition:height .5s ease;min-height:4px}
@@ -369,7 +372,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ---------- CALORÍAS ---------- */
 .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(255,45,120,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
+.cal-result{background:radial-gradient(500px 260px at 100% 0%,rgba(28,127,216,.2),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;text-align:center}
 .cal-big{font-family:'Anton';font-size:clamp(56px,10vw,88px);line-height:.9;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cal-big-lbl{font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
 .macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
@@ -431,7 +434,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .emoji-bar button:hover{background:var(--surface)}
 .msg img{display:block;max-width:100%;width:210px;border-radius:11px;margin-top:2px}
 .msg .cap{font-size:12.5px;margin-top:7px;opacity:.85}
-.msg .wa-send{display:inline-flex;align-items:center;gap:6px;margin-top:9px;background:#25D366;color:#0b0b0f;font-weight:800;font-size:12px;padding:8px 12px;border-radius:99px}
+.msg .wa-send{display:inline-flex;align-items:center;gap:6px;margin-top:9px;background:#25D366;color:#041018;font-weight:800;font-size:12px;padding:8px 12px;border-radius:99px}
 .chat-input input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:var(--text);font-size:14px}
 .chat-input input:focus{outline:none;border-color:var(--orange)}
 .chat-input button{width:46px;height:46px;flex-shrink:0;border-radius:12px;background:var(--molten);display:grid;place-items:center}
@@ -442,7 +445,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 }
 .chat-input button svg{width:19px;height:19px;fill:#fff}
 .lock-note{font-size:12px;color:var(--amber);display:flex;align-items:center;gap:6px;margin-top:10px}
-.join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(255,45,120,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
+.join-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 22px;margin-bottom:18px;border-radius:var(--radius);background:radial-gradient(500px 200px at 100% 0%,rgba(28,127,216,.22),transparent 60%),var(--surface);border:1px solid var(--orange)}
 .join-ic{font-size:30px;line-height:1}
 .join-tx{flex:1;min-width:190px}
 .join-t{font-family:'Anton';font-size:21px;letter-spacing:.5px}
@@ -454,7 +457,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 /* ---------- SUSCRIPCIÓN ---------- */
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
 .plan{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;display:flex;flex-direction:column}
-.plan.pro{background:radial-gradient(500px 300px at 100% 0%,rgba(255,45,120,.22),transparent 60%),#121218;border-color:var(--orange);position:relative}
+.plan.pro{background:radial-gradient(500px 300px at 100% 0%,rgba(28,127,216,.22),transparent 60%),#141418;border-color:var(--orange);position:relative}
 .plan.pro::after{content:"MÁS POPULAR";position:absolute;top:18px;right:18px;font-size:10px;font-weight:800;letter-spacing:2px;background:var(--molten);color:#fff;padding:5px 11px;border-radius:99px}
 .plan .pn{font-family:'Anton';font-size:26px}
 .plan .price{font-family:'Anton';font-size:clamp(40px,6vw,58px);margin:10px 0 2px}
@@ -488,7 +491,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ---------- Auth (login / registro) ---------- */
 .auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;
-  background:radial-gradient(700px 400px at 80% 0%,rgba(255,45,120,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(255,90,31,.18),transparent 60%),var(--bg)}
+  background:radial-gradient(700px 400px at 80% 0%,rgba(28,127,216,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(49,211,247,.18),transparent 60%),var(--bg)}
 .auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
 .auth-brand .brand-mark{width:44px;height:44px;padding:6px}
@@ -520,7 +523,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .auth-swap b{color:var(--orange);cursor:pointer}
 
 /* ---------- Modal PRO (paquete de pago) ---------- */
-.pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(255,45,120,.3),transparent 62%),#121218;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
+.pro-modal{width:min(430px,100%);background:radial-gradient(500px 320px at 100% 0%,rgba(28,127,216,.3),transparent 62%),#141418;border:1px solid var(--orange);border-radius:24px;padding:clamp(26px,5vw,36px);text-align:center;position:relative;animation:pop .3s ease}
 .pro-close{position:absolute;top:14px;right:16px;font-size:18px;color:var(--muted);width:34px;height:34px;border-radius:9px}
 .pro-close:hover{color:var(--text);background:var(--surface-2)}
 .pro-badge{display:inline-block;font-family:'Anton';font-size:24px;letter-spacing:1.5px;background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -573,12 +576,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 /* ===== Enfoque PRO (Volumen/Definición) (agregado) ===== */
 .enfoque-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;
-  background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);border-radius:var(--radius-sm);
+  background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);border-radius:var(--radius-sm);
   padding:12px 16px;margin-bottom:16px}
 .enfoque-banner b{display:block;font-size:14px}
 .enfoque-banner span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .enfoque-banner button{flex-shrink:0;padding:8px 14px;border-radius:99px;background:var(--molten);
-  color:#170a02;font-weight:700;font-size:13px}
+  color:#041018;font-weight:700;font-size:13px}
 .enfoque-banner.choose{background:var(--surface-2);border-color:var(--line)}
 .goal-opt{display:block;width:100%;text-align:left;padding:16px;border-radius:14px;margin-bottom:12px;
   background:var(--surface-2);border:1px solid var(--line);color:var(--text);transition:.15s;cursor:pointer}
@@ -587,7 +590,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .goal-opt span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
 /* ===== Prueba de 21 días + consulta al coach ===== */
 .trial-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:var(--radius-sm);
-  background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);margin-bottom:14px}
+  background:var(--molten-soft);border:1px solid rgba(49,211,247,.35);margin-bottom:14px}
 .trial-banner .tb-ic{font-size:22px;line-height:1}
 .trial-banner .tb-tx{flex:1;min-width:180px}
 .trial-banner .tb-t{font-weight:800;font-size:15px}
@@ -620,7 +623,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .pfp-quitar:hover{color:var(--text)}
 /* ===== Instalar la app (PWA) ===== */
 .install-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;margin-bottom:16px;position:relative;
-  border-radius:var(--radius);background:var(--molten-soft);border:1px solid rgba(255,90,31,.35)}
+  border-radius:var(--radius);background:var(--molten-soft);border:1px solid rgba(49,211,247,.35)}
 .install-card .ins-ic{font-size:26px;line-height:1}
 .install-card .ins-tx{flex:1;min-width:200px;padding-right:22px}
 .install-card .ins-t{font-family:'Anton';font-size:19px;letter-spacing:.03em}
@@ -646,7 +649,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .mode-toggle{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:4px;margin-bottom:16px}
 .mode-btn{padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
-.mode-btn.active{background:var(--molten);color:#170a02}
+.mode-btn.active{background:var(--molten);color:#03131C}
 .mode-btn:hover:not(.active){color:var(--text)}
 /* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
 .ex-meta input.v{
@@ -693,7 +696,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .rest-presets button:hover{border-color:var(--orange);color:var(--text)}
 .rest-controls{display:flex;gap:10px}
 .rest-controls button{flex:1;padding:14px;border-radius:12px;font-weight:800;font-size:15px;transition:.15s}
-#restStart{background:var(--molten);color:#170a02}
+#restStart{background:var(--molten);color:#03131C}
 #restStart:hover{filter:brightness(1.08)}
 #restReset{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 #restReset:hover{border-color:var(--orange)}
@@ -752,7 +755,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 <div class="auth-gate" id="authGate">
   <div class="auth-card">
     <div class="auth-brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaAuth" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarcaAuth)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaAuth)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaAuth)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaAuth" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaAuth)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaAuth)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaAuth)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div class="brand-name">FOR<span style="background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent">JA</span></div>
     </div>
     <div class="auth-title">Tu sistema de entrenamiento</div>
@@ -788,7 +791,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <!-- ===================== SIDEBAR (PC) ===================== -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaNav" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarcaNav)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaNav)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaNav)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaNav" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaNav)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaNav)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaNav)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
       <div>
         <div class="brand-name">FOR<span>JA</span></div>
         <div class="brand-sub">Training System</div>
@@ -845,7 +848,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <div class="main">
     <div class="topbar">
       <div class="brand" style="padding:0;border:none">
-        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaTop" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/></linearGradient></defs><path fill="url(#fuegoMarcaTop)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaTop)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaTop)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaTop" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/></linearGradient></defs><path fill="url(#fuegoMarcaTop)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaTop)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaTop)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
       <div class="tb-right">
@@ -909,7 +912,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <svg class="bm-svg" id="bodyMap" viewBox="0 0 260 212" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa de musculos entrenados">
               <defs>
                 <linearGradient id="bmHot" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#FF5A1F"/><stop offset="100%" stop-color="#EE2D78"/>
+                  <stop offset="0%" stop-color="#31D3F7"/><stop offset="100%" stop-color="#1C7FD8"/>
                 </linearGradient>
               </defs>
 
@@ -3679,21 +3682,21 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     c.width = 1080; c.height = 1350;
     const x = c.getContext('2d');
     const bg = x.createLinearGradient(0,0,1080,1350);
-    bg.addColorStop(0,'#0A0A0C'); bg.addColorStop(1,'#1a0f14');
+    bg.addColorStop(0,'#050A10'); bg.addColorStop(1,'#0C2A3C');
     x.fillStyle = bg; x.fillRect(0,0,1080,1350);
     const glow = x.createLinearGradient(0,1050,1080,1350);
-    glow.addColorStop(0,'rgba(255,90,31,0)'); glow.addColorStop(1,'rgba(255,45,120,.35)');
+    glow.addColorStop(0,'rgba(49,211,247,0)'); glow.addColorStop(1,'rgba(28,127,216,.35)');
     x.fillStyle = glow; x.fillRect(0,1050,1080,300);
     x.textAlign='center';
-    x.fillStyle='#FF5A1F'; x.font='900 64px Anton, sans-serif';
+    x.fillStyle='#31D3F7'; x.font='900 64px Anton, sans-serif';
     x.fillText('F O R J A', 540, 150);
-    x.fillStyle='#F5F5F0'; x.font='900 150px Anton, sans-serif';
+    x.fillStyle='#E8F7FF'; x.font='900 150px Anton, sans-serif';
     x.fillText('SESIÓN '+s.num, 540, 620);
-    x.fillStyle='#8A8A92'; x.font='600 44px Inter, sans-serif';
+    x.fillStyle='#8FB8CC'; x.font='600 44px Inter, sans-serif';
     x.fillText(phFmt(s.date), 540, 700);
-    x.fillStyle='#FF2D78'; x.font='900 58px Anton, sans-serif';
+    x.fillStyle='#7BE6FF'; x.font='900 58px Anton, sans-serif';
     x.fillText(s.num > 1 ? ((s.num-1)*CYCLE_DAYS)+'+ DÍAS FORJANDO' : 'EL PUNTO DE PARTIDA', 540, 850);
-    x.fillStyle='#8A8A92'; x.font='600 36px Inter, sans-serif';
+    x.fillStyle='#8FB8CC'; x.font='600 36px Inter, sans-serif';
     x.fillText('El hierro se forja golpe a golpe.', 540, 1240);
 
     const blob = await new Promise(r => c.toBlob(r,'image/jpeg',.9));
