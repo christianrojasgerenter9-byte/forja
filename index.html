@@ -40,7 +40,7 @@
   --magenta:#175FA8;
   --amber:#63BEDA;
   --green:#2FD07A;
-  --molten:linear-gradient(120deg,#12639E 0%,#2CA6CC 100%);
+  --molten:linear-gradient(120deg,#0E5285 0%,#1E85A8 100%);
   --molten-soft:linear-gradient(120deg,rgba(31,155,196,.16),rgba(23,95,168,.16));
   --glow:0 0 30px rgba(31,155,196,.34);
   --radius:18px;
@@ -164,7 +164,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .hoy-chip{background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:999px;
           padding:7px 14px;font-size:12.5px;cursor:pointer}
 .hoy-chip:hover{border-color:var(--orange)}
-.hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#041018;border-color:transparent;font-weight:600}
+.hoy-chip.on{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#EAF6FB;border-color:transparent;font-weight:600}
 .hoy-chip.reset{color:var(--muted);font-size:12px}
 .hoy-hint{width:100%;font-size:11.5px;color:var(--muted-2);margin-top:4px}
 /* ---- Calendario de entrenamientos ---- */
@@ -183,7 +183,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-day.descanso{background:transparent;border-style:dashed;opacity:.55}
 .fjcal-day.futuro{opacity:.35}
 .fjcal-day.parcial{border-color:var(--orange);color:var(--text)}
-.fjcal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#041018;
+.fjcal-day.on{background:linear-gradient(135deg,var(--orange),var(--magenta));color:#EAF6FB;
   border-color:transparent;font-weight:700}
 .fjcal-day.hoy{outline:2px solid var(--text);outline-offset:1px}
 .fjcal-pie{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:11.5px;color:var(--muted-2)}
@@ -202,7 +202,18 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-day.descansomarcado{border-style:dashed;border-color:#3D7FD1;color:#8CC4EA;opacity:.9}
 .ex-grp{display:inline-block;margin-left:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
         color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:2px 7px;vertical-align:2px}
-.serie-box{margin-top:10px;border-top:1px solid var(--line);padding-top:11px}
+.serie-box{margin-top:2px;border-bottom:1px solid var(--line);padding-bottom:13px}
+.serie-box .serie-add{margin-top:2px}
+.serie-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.serie-add .sm-pr{flex:0 0 auto;border-radius:9px;padding:7px 11px;background:var(--bg)}
+.sm-pr{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:10px;padding:7px 12px;font-size:11.5px;color:var(--muted);letter-spacing:.04em;cursor:text}
+.sm-pr:focus-within{border-color:var(--amber)}
+.sm-pr span{text-transform:uppercase;font-weight:700}
+.sm-prin{width:auto;min-width:32px;max-width:80px;field-sizing:content;background:none;border:none;padding:0;
+  font-family:'Anton';font-size:15px;color:var(--amber);text-align:center;letter-spacing:.4px}
+.sm-prin:focus{outline:none}
+.sm-prin::placeholder{color:var(--muted-2)}
 .serie-hist{font-size:11.5px;color:var(--muted-2);margin-bottom:8px}
 .serie-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
 .serie-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
@@ -210,12 +221,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-chip button{background:none;border:0;color:var(--muted-2);cursor:pointer;font-size:14px;line-height:1;padding:0}
 .serie-chip button:hover{color:#FF6B6B}
 .serie-vacio{font-size:12px;color:var(--muted-2)}
-.serie-add{display:flex;gap:6px}
+.serie-add{display:flex;gap:6px;flex-wrap:wrap;align-items:stretch}
 .serie-in{flex:1 1 0;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
           padding:9px 10px;color:var(--text);font-size:14px;text-align:center}
 .serie-in:focus{outline:2px solid var(--orange);outline-offset:1px}
 .serie-btn{flex:0 0 auto;border:0;border-radius:9px;padding:9px 15px;cursor:pointer;font-size:12.5px;
-           font-weight:600;color:#041018;background:linear-gradient(90deg,var(--orange),var(--magenta))}
+           font-weight:600;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta))}
 .sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
          background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
          padding:8px 16px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
@@ -228,7 +239,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-acc{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
 .fjcal-acc button{border-radius:9px;padding:8px 16px;font-size:12.5px;cursor:pointer;border:1px solid var(--line);
                   background:transparent;color:var(--text)}
-.fjcal-acc .ok{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#041018;border:0;font-weight:600}
+.fjcal-acc .ok{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#EAF6FB;border:0;font-weight:600}
 .fjcal-acc .del{color:#FF6B6B}
 /* ---- Mapa corporal ---- */
 .bm-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
@@ -292,7 +303,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .percha-card .ad-copy b{color:#6CADDE}
 .percha-card .ad-badge{background:transparent;overflow:hidden;box-shadow:0 0 30px rgba(58,118,169,.35)}
 .percha-card .ad-badge img{width:100%;height:100%;display:block;border-radius:12px;object-fit:cover}
-.btn-percha{background:linear-gradient(120deg,#3A76A9,#6CADDE);color:#041018;font-weight:800;box-shadow:0 0 30px rgba(58,118,169,.3)}
+.btn-percha{background:linear-gradient(120deg,#3A76A9,#6CADDE);color:#EAF6FB;font-weight:800;box-shadow:0 0 30px rgba(58,118,169,.3)}
 .ad-card .btn-percha{width:auto;white-space:nowrap;padding:11px 20px;font-size:13px;flex:none}
 .btn-wa:hover{filter:brightness(1.08)}
 .yt-badge svg{width:24px;height:24px;fill:#fff}
@@ -434,7 +445,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .emoji-bar button:hover{background:var(--surface)}
 .msg img{display:block;max-width:100%;width:210px;border-radius:11px;margin-top:2px}
 .msg .cap{font-size:12.5px;margin-top:7px;opacity:.85}
-.msg .wa-send{display:inline-flex;align-items:center;gap:6px;margin-top:9px;background:#25D366;color:#041018;font-weight:800;font-size:12px;padding:8px 12px;border-radius:99px}
+.msg .wa-send{display:inline-flex;align-items:center;gap:6px;margin-top:9px;background:#25D366;color:#052913;font-weight:800;font-size:12px;padding:8px 12px;border-radius:99px}
 .chat-input input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:var(--text);font-size:14px}
 .chat-input input:focus{outline:none;border-color:var(--orange)}
 .chat-input button{width:46px;height:46px;flex-shrink:0;border-radius:12px;background:var(--molten);display:grid;place-items:center}
@@ -581,7 +592,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .enfoque-banner b{display:block;font-size:14px}
 .enfoque-banner span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .enfoque-banner button{flex-shrink:0;padding:8px 14px;border-radius:99px;background:var(--molten);
-  color:#041018;font-weight:700;font-size:13px}
+  color:#EAF6FB;font-weight:700;font-size:13px}
 .enfoque-banner.choose{background:var(--surface-2);border-color:var(--line)}
 .goal-opt{display:block;width:100%;text-align:left;padding:16px;border-radius:14px;margin-bottom:12px;
   background:var(--surface-2);border:1px solid var(--line);color:var(--text);transition:.15s;cursor:pointer}
@@ -649,7 +660,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .mode-toggle{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:4px;margin-bottom:16px}
 .mode-btn{padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
-.mode-btn.active{background:var(--molten);color:#03131C}
+.mode-btn.active{background:var(--molten);color:#EAF6FB}
 .mode-btn:hover:not(.active){color:var(--text)}
 /* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
 .ex-meta input.v{
@@ -696,7 +707,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .rest-presets button:hover{border-color:var(--orange);color:var(--text)}
 .rest-controls{display:flex;gap:10px}
 .rest-controls button{flex:1;padding:14px;border-radius:12px;font-weight:800;font-size:15px;transition:.15s}
-#restStart{background:var(--molten);color:#03131C}
+#restStart{background:var(--molten);color:#EAF6FB}
 #restStart:hover{filter:brightness(1.08)}
 #restReset{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 #restReset:hover{border-color:var(--orange)}
@@ -2581,23 +2592,6 @@ function renderExercises(){
         <div class="ex-name">${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
         <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
       </div>
-      <div class="ex-meta">
-        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="s" value="${sVal}" aria-label="Series"><div class="k">Series</div></div>
-        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="r" value="${rVal}" style="font-size:16px" aria-label="Reps"><div class="k">Reps</div></div>
-        <div class="m"><input class="v ex-set" data-ex="${e.n}" data-f="max" value="${mVal}" style="font-size:16px" aria-label="Máx reps"><div class="k">Máx reps</div></div>
-      </div>
-      <button class="ex-pr" data-pr="${e.n}">
-        <span class="pr-k">🏆 Récord personal (PR)</span>
-        <span class="pr-v">${prs[e.n]?prs[e.n]+' kg':'Registrar'}</span>
-      </button>
-      <div class="ex-actions">
-        <a class="ex-video" href="${howTo(e.n)}" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
-          Cómo se hace
-        </a>
-        <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
-      </div>
-      <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>
       <div class="serie-box">
         <div class="serie-hist">${textoAnterior(e.n)}</div>
         <div class="serie-chips">${
@@ -2605,11 +2599,23 @@ function renderExercises(){
             '<button data-sdel="'+e.n+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>').join('')
           || '<span class="serie-vacio">Aun sin series hoy</span>'}</div>
         <div class="serie-add">
+          <label class="sm-pr">🏆 <span>PR</span>
+            <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal en kg">
+            <span>kg</span>
+          </label>
           <input class="serie-in" inputmode="decimal" placeholder="kg" data-sp="${e.n}" value="${sugPeso(e.n)}">
           <input class="serie-in" inputmode="numeric" placeholder="reps" data-sr="${e.n}" value="${sugReps(e.n)}">
           <button class="serie-btn" data-sadd="${e.n}">+ Serie</button>
         </div>
-      </div>`;
+      </div>
+      <div class="ex-actions">
+        <a class="ex-video" href="${howTo(e.n)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
+          Cómo se hace
+        </a>
+        <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
+      </div>
+      <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>`;
     g.appendChild(c);
   });
   g.querySelectorAll('.ex-set').forEach(inp=>{
@@ -2655,14 +2661,16 @@ function renderExercises(){
     renderExercises(); renderHome();
     if(doneToday[k]) subirAlSiguiente();
   });
-  g.querySelectorAll('.ex-pr').forEach(b=>b.onclick=()=>{
-    const k=b.dataset.pr; const cur=prs[k]||'';
-    const val=prompt('Tu récord personal (PR) en "'+k+'"\n\nPeso máximo levantado (kg):', cur);
-    if(val===null) return;
-    if(val.trim()===''){ delete prs[k]; save('forja_prs',prs); renderExercises(); return; }
-    const num=parseFloat(val);
-    if(isNaN(num)||num<0){ alert('Pon un número válido en kg 💪'); return; }
-    prs[k]=num; save('forja_prs',prs); renderExercises();
+  /* El PR se escribe directo en su casilla */
+  g.querySelectorAll('[data-prin]').forEach(inp=>{
+    inp.onchange=()=>{
+      const k=inp.dataset.prin, v=inp.value.trim();
+      if(v===''){ delete prs[k]; save('forja_prs',prs); return; }
+      const num=parseFloat(v.replace(',','.'));
+      if(isNaN(num)||num<0){ inp.value=prs[k]||''; return; }
+      prs[k]=num; inp.value=num; save('forja_prs',prs);
+    };
+    inp.onkeydown=ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); inp.blur(); } };
   });
 }
 
