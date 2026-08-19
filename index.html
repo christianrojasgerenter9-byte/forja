@@ -634,6 +634,26 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .nav-plan .pfp-quitar{display:block;margin-top:8px;padding:0;background:none;border:none;box-shadow:none;
   font-size:11.5px;font-weight:400;color:var(--muted);text-decoration:underline;width:auto}
 .nav-plan .pfp-quitar:hover{color:var(--text)}
+/* ===== Jornada / dia que se registra ===== */
+.dia-banner{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:13px 16px;margin-bottom:14px;
+  border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--amber)}
+.dia-banner .db-ic{font-size:21px;line-height:1}
+.dia-banner .db-tx{flex:1;min-width:190px;display:flex;flex-direction:column;gap:2px}
+.dia-banner .db-tx b{font-size:14.5px;color:var(--amber)}
+.dia-banner .db-tx span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.dia-banner .db-go{background:transparent;border:1px solid var(--line);color:var(--text);font-weight:700;
+  font-size:12.5px;padding:9px 15px;border-radius:99px;white-space:nowrap}
+.dia-banner .db-go:hover{border-color:var(--amber);color:var(--amber)}
+/* ===== Recordatorios ===== */
+.rec-card{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:15px 17px;margin-bottom:16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.rec-card .rc-ic{font-size:23px;line-height:1}
+.rec-card .rc-tx{flex:1;min-width:200px}
+.rec-card .rc-t{font-weight:800;font-size:15px}
+.rec-card .rc-d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.rec-card .rc-btn{background:var(--molten);color:#EAF6FB;font-weight:800;font-size:13px;padding:11px 18px;border-radius:99px;white-space:nowrap}
+.rec-card .rc-btn.off{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.rec-card .rc-btn.off:hover{border-color:var(--orange);color:var(--orange)}
 /* ===== Instalar la app (PWA) ===== */
 .install-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;margin-bottom:16px;position:relative;
   border-radius:var(--radius);background:var(--molten-soft);border:1px solid rgba(31,155,196,.35)}
@@ -876,6 +896,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
       <!-- ============ INICIO ============ -->
       <section class="view active" id="view-inicio">
+        <div class="rec-card" id="recCard" style="display:none">
+          <div class="rc-ic">🔔</div>
+          <div class="rc-tx">
+            <div class="rc-t" id="recT">¿Te recordamos entrenar?</div>
+            <div class="rc-d" id="recD">Tres avisos al día — mañana, tarde y noche — preguntándote si ya entrenaste.</div>
+          </div>
+          <button type="button" class="rc-btn" id="recBtn">Activar avisos</button>
+        </div>
         <div class="install-card" id="installCard" style="display:none">
           <div class="ins-ic">⬇️</div>
           <div class="ins-tx">
@@ -1041,6 +1069,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
         </div>
+        <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
         <div class="coach-help">
           <div class="ch-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
@@ -1558,9 +1587,55 @@ let measures = load('forja_measures', []);       // [{date,peso,abdomen,brazoI,b
 
 /* Reinicio diario: los "Hecho" de ayer se limpian para que el anillo empiece en 0% cada dia */
 /* Clave de fecha estable (YYYY-MM-DD): no depende del formato del navegador */
-function hoyKey(){
-  const d=new Date();
+function fechaKey(d){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+/* Dia natural real (el del reloj) */
+function diaReal(){ return fechaKey(new Date()); }
+/* Dia que se esta registrando: el elegido a mano en el calendario, o el de la
+   "jornada": antes de las 4 a.m. sigue contando el dia anterior, porque mucha
+   gente entrena de noche y no debe perder lo que le falta capturar. */
+let diaReg = load('forja_dia_reg','');   // 'AAAA-MM-DD' elegido a mano, o ''
+const HORA_CORTE = 4;                    // hasta esta hora la noche sigue siendo "ayer"
+function diaJornada(){
+  const d=new Date();
+  if(d.getHours() < HORA_CORTE) d.setDate(d.getDate()-1);
+  return fechaKey(d);
+}
+function hoyKey(){
+  if(diaReg && diasDesde(diaReg)>=0 && diasDesde(diaReg)<=14) return diaReg;
+  return diaJornada();
+}
+function fechaDeKey(k){ const p=String(k).split('-').map(Number); return new Date(p[0],(p[1]||1)-1,p[2]||1); }
+function diasDesde(k){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((hoy - fechaDeKey(k))/86400000);
+}
+function nombreDia(k){
+  const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const f=fechaDeKey(k);
+  return DIAS[f.getDay()]+' '+f.getDate()+' '+MES[f.getMonth()];
+}
+/* Cambia el dia al que se van los registros */
+function setDiaReg(k){
+  diaReg = (k && k!==diaJornada()) ? k : '';
+  save('forja_dia_reg', diaReg);
+  checkNuevoDia(false);
+  try{ renderDiaBanner(); renderExercises(); renderHome(); renderProgress(); }catch(e){}
+}
+/* Aviso de en que dia estas capturando */
+function renderDiaBanner(){
+  const b=document.getElementById('diaBanner'); if(!b) return;
+  const k=hoyKey(), real=diaReal();
+  if(k===real){ b.style.display='none'; return; }
+  b.style.display='flex';
+  const dd=diasDesde(k);
+  b.innerHTML='<span class="db-ic">🌙</span><div class="db-tx">'+
+    '<b>Estás registrando el '+nombreDia(k)+'</b>'+
+    '<span>'+(dd===1?'Sigues en la jornada de anoche: termina de capturar lo que te faltó.':'Día elegido en el calendario. Todo lo que anotes se guarda en esa fecha.')+'</span></div>'+
+    '<button type="button" class="db-go" id="diaHoy">Ir a hoy</button>';
+  b.querySelector('#diaHoy').onclick=()=>setDiaReg('');
 }
 let doneDate = load('forja_done_date','');
 /* Rutina elegida a mano para hoy (hasta 2 grupos). Se borra al cambiar el dia. */
@@ -2071,7 +2146,7 @@ function resolverGrupo(k){
   if(k==='abdomen' && keys.includes('abs')) return 'abs';
   return null;
 }
-function gruposDelSplit(){ return (DAY_GROUPS[new Date().getDay()]||[]).map(resolverGrupo).filter(Boolean); }
+function gruposDelSplit(){ return (DAY_GROUPS[fechaDeKey(hoyKey()).getDay()]||[]).map(resolverGrupo).filter(Boolean); }
 function gruposElegidosHoy(){
   return (hoyFecha===hoyKey() && Array.isArray(hoyGrupos) && hoyGrupos.length)
     ? hoyGrupos.map(resolverGrupo).filter(Boolean) : null;
@@ -2120,8 +2195,8 @@ function renderHome(){
   try{ renderCuerpo(); }catch(e){ console.warn('mapa corporal:', e); }
   /* Racha real: guarda el dia de hoy y recalcula dias consecutivos */
   try{
-    const recHoy = rachaDias()[rachaClave(new Date())];
-    if(!(recHoy && (recHoy.m || recHoy.d))) FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy });
+    const recHoy = rachaDias()[hoyKey()];
+    if(!(recHoy && (recHoy.m || recHoy.d))) FORJARacha.registrarHoy({ hechos: done, total: total, grupos: groupsHoy, fecha: fechaDeKey(hoyKey()) });
     const rc = FORJARacha.etiqueta();
     document.getElementById('stStreak').innerHTML = rc.numero + ' <span>' + rc.unidad + '</span>';
     const rlbl = document.getElementById('stStreak').parentElement.querySelector('.l');
@@ -2319,6 +2394,7 @@ function renderCalEditor(){
       '</div>'+
       '<div class="fjcal-acc">'+
         '<button class="ok" id="calOk">Guardar</button>'+
+        (diasDesde(calDiaSel)>=0 && diasDesde(calDiaSel)<=14 ? '<button id="calReg">Capturar en este día</button>' : '')+
         '<button id="calRest">'+(esDescansoMarcado(calDiaSel)?'Quitar descanso':'Marcar descanso')+'</button>'+
         (r?'<button class="del" id="calDel">Borrar dia</button>':'')+
         '<button id="calCancel">Cancelar</button>'+
@@ -2340,6 +2416,8 @@ function renderCalEditor(){
     rachaDescanso(calDiaSel, !esDescansoMarcado(calDiaSel));
     calDiaSel=null; renderHome();
   };
+  const reg=caja.querySelector('#calReg');
+  if(reg) reg.onclick=()=>{ setDiaReg(calDiaSel); calDiaSel=null; go('rutinas'); };
   const del=caja.querySelector('#calDel');
   if(del) del.onclick=()=>{ rachaBorrar(calDiaSel); calDiaSel=null; renderHome(); };
   caja.querySelector('#calCancel').onclick=()=>{ calDiaSel=null; renderCalEditor(); renderCalendario(); };
@@ -3098,6 +3176,109 @@ async function elegirFoto(file, clave){
   };
 })();
 
+/* ----------- Recordatorios de entrenamiento ----------- */
+const REC_HORAS=[{h:9,  m:0, t:'mañana'},{h:17, m:0, t:'tarde'},{h:21, m:0, t:'noche'}];
+const REC_MSJ={
+  mañana:[['¡Buenos días, forjador! 🔥','Hoy toca {grupo}. ¿Le entras temprano?'],
+          ['Tu racha te está viendo 👀','{racha} sin fallar. No la rompas hoy.'],
+          ['Arranca el día fuerte 💪','15 minutos ya cuentan. Abre FORJA.']],
+  tarde:[['¿Ya entrenaste hoy? 🤔','Si ya fue, entra y marca tus series.'],
+         ['Media tarde, cero excusas 😤','Tu rutina de {grupo} sigue esperando.'],
+         ['Recordatorio amable 🙂','Nadie se arrepintió de haber entrenado.']],
+  noche:[['Última llamada de hoy 🌙','Aún puedes hacer que este día cuente.'],
+         ['No dejes el día en blanco ⏳','Marca lo que hiciste antes de dormir.'],
+         ['¿Cerramos el día bien? 🔥','Registra tu entrenamiento en FORJA.']]
+};
+let recOn = load('forja_rec_on', false);
+let recUlt = load('forja_rec_ult', {});   // {'AAAA-MM-DD_tanda': true}
+let recTimer=null;
+function recSoportado(){ return 'Notification' in window; }
+function grupoDeHoy(){
+  try{
+    const g=(gruposElegidosHoy()||gruposDelSplit());
+    const R=getRoutines();
+    return g.length ? g.map(k=>R[k]?R[k].label:k).join(' + ') : 'lo que elijas';
+  }catch(e){ return 'tu rutina'; }
+}
+function textoRacha(){
+  try{ const r=FORJARacha.etiqueta(); return r.numero+' '+r.unidad; }catch(e){ return 'Tu racha'; }
+}
+function recMensaje(tanda){
+  const lista=REC_MSJ[tanda]||REC_MSJ.tarde;
+  const p=lista[Math.floor(Math.random()*lista.length)];
+  const cuerpo=p[1].replace('{grupo}', grupoDeHoy()).replace('{racha}', textoRacha());
+  return {titulo:p[0], cuerpo};
+}
+function yaEntrenoHoy(){
+  try{ return Object.keys(doneToday||{}).length>0 || Object.keys((series[hoyKey()]||{})).length>0; }catch(e){ return false; }
+}
+function recAvisar(tanda){
+  const marca=diaReal()+'_'+tanda;
+  if(recUlt[marca]) return;
+  recUlt[marca]=true;
+  const claves=Object.keys(recUlt); while(claves.length>12) delete recUlt[claves.shift()];
+  save('forja_rec_ult', recUlt);
+  const m = yaEntrenoHoy()
+    ? {titulo:'¡Bien hecho hoy! 🏆', cuerpo:'Ya registraste entrenamiento. Sigue así mañana.'}
+    : recMensaje(tanda);
+  try{
+    if(navigator.serviceWorker && navigator.serviceWorker.ready){
+      navigator.serviceWorker.ready.then(reg=>reg.showNotification(m.titulo,{
+        body:m.cuerpo, icon:'forja-icono-192.png', badge:'forja-icono-192.png',
+        tag:'forja-'+tanda, vibrate:[90,50,90]
+      })).catch(()=>new Notification(m.titulo,{body:m.cuerpo, icon:'forja-icono-192.png'}));
+    } else new Notification(m.titulo,{body:m.cuerpo, icon:'forja-icono-192.png'});
+  }catch(e){}
+}
+/* Revisa cada minuto si toca un aviso. Al abrir la app recupera la tanda pendiente:
+   si abres de noche, te llega el "¿ya entrenaste?" que se quedo sin avisar. */
+function recRevisar(){
+  if(!recOn || !recSoportado() || Notification.permission!=='granted') return;
+  const ahora=new Date(), min=ahora.getHours()*60+ahora.getMinutes(), dia=diaReal();
+  const vencidas=REC_HORAS.filter(r=> min >= r.h*60+r.m && !recUlt[dia+'_'+r.t]);
+  if(!vencidas.length) return;
+  /* Solo se avisa la tanda mas reciente; las anteriores del dia se dan por vistas
+     para no soltar tres notificaciones seguidas al abrir la app de noche. */
+  vencidas.slice(0,-1).forEach(r=>{ recUlt[dia+'_'+r.t]=true; });
+  save('forja_rec_ult', recUlt);
+  recAvisar(vencidas[vencidas.length-1].t);
+}
+function recArrancar(){
+  if(recTimer) clearInterval(recTimer);
+  recRevisar();
+  recTimer=setInterval(recRevisar, 60000);
+}
+function renderRec(){
+  const card=document.getElementById('recCard'); if(!card) return;
+  if(!recSoportado()){ card.style.display='none'; return; }
+  card.style.display='flex';
+  const btn=document.getElementById('recBtn'), t=document.getElementById('recT'), d=document.getElementById('recD');
+  const activos = recOn && Notification.permission==='granted';
+  t.textContent = activos ? 'Avisos activados 🔔' : '¿Te recordamos entrenar?';
+  d.textContent = activos
+    ? 'Te aviso en la mañana, la tarde y la noche cuando abras FORJA o la tengas en segundo plano. Instálala en tu teléfono para que lleguen más seguido.'
+    : (Notification.permission==='denied'
+        ? 'Tu navegador tiene los avisos bloqueados: actívalos en los ajustes del sitio.'
+        : 'Tres avisos al día — mañana, tarde y noche — preguntando si ya entrenaste.');
+  btn.textContent = activos ? 'Desactivar' : 'Activar avisos';
+  btn.className = 'rc-btn'+(activos?' off':'');
+  btn.onclick=async()=>{
+    if(activos){ recOn=false; save('forja_rec_on',false); if(recTimer) clearInterval(recTimer); renderRec(); return; }
+    let permiso=Notification.permission;
+    if(permiso==='default'){ try{ permiso=await Notification.requestPermission(); }catch(e){} }
+    if(permiso!=='granted'){ renderRec(); alert('Para recibir avisos permite las notificaciones de FORJA en tu navegador 🔔'); return; }
+    recOn=true; save('forja_rec_on',true);
+    recArrancar(); renderRec();
+    try{
+      navigator.serviceWorker.ready.then(reg=>reg.showNotification('Listo, te recuerdo 🔥',{
+        body:'Mañana, tarde y noche te pregunto si ya entrenaste (con FORJA abierta o en segundo plano).', icon:'forja-icono-192.png', tag:'forja-ok'
+      }));
+    }catch(e){}
+  };
+}
+if(recOn) recArrancar();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) recRevisar(); });
+
 /* ----------- Instalar la app (Android e iOS) ----------- */
 let promptInstalar=null;
 const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -3354,7 +3535,7 @@ document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='E
 if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
 renderModeToggle();
 renderHome(); renderMuscleTabs(); renderExercises();
-fillProgSelects(); renderProgress(); renderMeasures();
+fillProgSelects(); renderProgress(); renderMeasures(); renderRec(); renderDiaBanner();
 calc(); renderDiet();
 renderCoachList(); openChat();
 renderPfp();
@@ -3483,7 +3664,7 @@ if(FB_ON){
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
-      try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); calc(); renderDiet(); applyPlan(); renderHome(); }catch(e){}
+      try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); renderRec(); renderDiaBanner(); calc(); renderDiet(); applyPlan(); renderHome(); }catch(e){}
       enterApp();
     } else {
       session=null;

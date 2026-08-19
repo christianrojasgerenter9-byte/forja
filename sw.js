@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v44';
+const VERSION = 'forja-v47';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -134,4 +134,17 @@ self.addEventListener('fetch', evento => {
 
 self.addEventListener('message', evento => {
   if (evento.data === 'actualizar-ya') self.skipWaiting();
+});
+
+/* ---------- Toque en un recordatorio: abre FORJA ---------- */
+
+self.addEventListener('notificationclick', evento => {
+  evento.notification.close();
+  evento.waitUntil((async () => {
+    const abiertas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of abiertas) {
+      if (c.url.includes('/forja') || c.url.includes('index.html')) return c.focus();
+    }
+    return self.clients.openWindow('./');
+  })());
 });
