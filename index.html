@@ -205,7 +205,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-box{margin-top:2px;border-bottom:1px solid var(--line);padding-bottom:13px}
 .serie-box .serie-add{margin-top:2px}
 .serie-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
-.serie-add .sm-pr{flex:0 0 auto;border-radius:9px;padding:7px 11px;background:var(--bg)}
+.serie-add .sm-pr{flex:0 1 auto;border-radius:9px;padding:7px 8px;gap:4px;background:var(--bg);letter-spacing:0}
+.serie-add .sm-prin{min-width:22px;max-width:46px;font-size:14px}
 .sm-pr{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);
   border-radius:10px;padding:7px 12px;font-size:11.5px;color:var(--muted);letter-spacing:.04em;cursor:text}
 .sm-pr:focus-within{border-color:var(--amber)}
@@ -221,11 +222,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-chip button{background:none;border:0;color:var(--muted-2);cursor:pointer;font-size:14px;line-height:1;padding:0}
 .serie-chip button:hover{color:#FF6B6B}
 .serie-vacio{font-size:12px;color:var(--muted-2)}
-.serie-add{display:flex;gap:6px;flex-wrap:wrap;align-items:stretch}
-.serie-in{flex:1 1 0;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
-          padding:9px 10px;color:var(--text);font-size:14px;text-align:center}
+.serie-add{display:flex;gap:5px;align-items:stretch}
+.serie-in{flex:1 1 44px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+          padding:9px 8px;color:var(--text);font-size:14px;text-align:center}
 .serie-in:focus{outline:2px solid var(--orange);outline-offset:1px}
-.serie-btn{flex:0 0 auto;border:0;border-radius:9px;padding:9px 15px;cursor:pointer;font-size:12.5px;
+.serie-btn{flex:0 1 auto;white-space:nowrap;border:0;border-radius:9px;padding:9px 12px;cursor:pointer;font-size:12.5px;
            font-weight:600;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta))}
 .sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
          background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
@@ -1076,24 +1077,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <div class="log-list" id="measureHist" style="max-height:220px;margin-top:16px"></div>
         </div>
 
-        <div class="prog-grid">
-          <div class="card">
-            <h3 style="font-size:22px;margin-bottom:16px">Registrar serie</h3>
-            <div class="field">
-              <label>Grupo muscular</label>
-              <select id="pMuscle"></select>
-            </div>
-            <div class="field">
-              <label>Ejercicio</label>
-              <select id="pExercise"></select>
-            </div>
-            <div class="two">
-              <div class="field"><label>Peso (kg)</label><input type="number" id="pWeight" min="0" max="500" placeholder="40"></div>
-              <div class="field"><label>Reps</label><input type="number" id="pReps" min="1" max="200" step="1" placeholder="12"></div>
-            </div>
-            <div class="field"><label>Notas (opcional)</label><input type="text" id="pNotes" placeholder="Me sentí fuerte 💪"></div>
-            <button class="btn btn-molten" id="pSave" style="width:100%">Guardar registro</button>
-          </div>
+        <div class="prog-grid" style="grid-template-columns:1fr">
           <div class="card">
             <h3 style="font-size:22px;margin-bottom:6px">Volumen por semana</h3>
             <p class="muted" style="font-size:12.5px;margin-bottom:14px">Peso × reps sumados semana a semana — mira en qué semana subiste y en cuál bajaste</p>
@@ -1677,7 +1661,7 @@ function agregarSerie(ex, peso, reps){
   const claves=Object.keys(series).sort();
   while(claves.length>200) delete series[claves.shift()];
   save('forja_series', series);
-  /* Si el peso supera el record, se actualiza solo */
+  if(typeof renderProgress==='function'){ try{ renderProgress(); }catch(e){} }
   if(peso && (!prs[ex] || peso > prs[ex])){ prs[ex]=peso; save('forja_prs', prs); }
 }
 
@@ -1688,6 +1672,7 @@ function quitarSerie(ex, i){
   if(!series[k][ex].length) delete series[k][ex];
   if(!Object.keys(series[k]).length) delete series[k];
   save('forja_series', series);
+  if(typeof renderProgress==='function'){ try{ renderProgress(); }catch(e){} }
 }
 
 /* La sesion anterior de ese ejercicio: es la referencia para superarse hoy */
@@ -2599,9 +2584,8 @@ function renderExercises(){
             '<button data-sdel="'+e.n+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>').join('')
           || '<span class="serie-vacio">Aun sin series hoy</span>'}</div>
         <div class="serie-add">
-          <label class="sm-pr">🏆 <span>PR</span>
-            <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal en kg">
-            <span>kg</span>
+          <label class="sm-pr"><span>PR</span>
+            <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal (PR) en kg" title="Tu récord personal en kg">
           </label>
           <input class="serie-in" inputmode="decimal" placeholder="kg" data-sp="${e.n}" value="${sugPeso(e.n)}">
           <input class="serie-in" inputmode="numeric" placeholder="reps" data-sr="${e.n}" value="${sugReps(e.n)}">
@@ -2675,30 +2659,22 @@ function renderExercises(){
 }
 
 /* ----------- PROGRESO ----------- */
-function fillProgSelects(){
-  const ms=document.getElementById('pMuscle');
-  ms.innerHTML=Object.keys(getRoutines()).map(k=>`<option value="${k}">${getRoutines()[k].label}</option>`).join('');
-  ms.onchange=fillExerciseSelect; fillExerciseSelect();
+/* La grafica se alimenta de las series que registras en Rutinas (+ Serie) */
+function seriesComoLogs(){
+  const out=[];
+  Object.keys(series).forEach(f=>{
+    const p=f.split('-').map(Number);
+    const ts=new Date(p[0],p[1]-1,p[2]).getTime();
+    const fecha=new Date(ts).toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'});
+    Object.keys(series[f]).forEach(ex=>{
+      series[f][ex].forEach(s=>out.push({ts, date:fecha, exercise:ex, weight:+s.p||0, reps:+s.r||0}));
+    });
+  });
+  /* Se suman los registros viejos del formulario manual para no perder historial */
+  logs.forEach(l=>out.push(l));
+  return out.sort((a,b)=>logFecha(a)-logFecha(b));
 }
-function fillExerciseSelect(){
-  const k=document.getElementById('pMuscle').value;
-  document.getElementById('pExercise').innerHTML=getRoutines()[k].ex.map(e=>`<option>${e.n}</option>`).join('');
-}
-document.getElementById('pSave').onclick=()=>{
-  const w=+document.getElementById('pWeight').value||0;
-  const r=+document.getElementById('pReps').value||0;
-  if(!r){alert('Pon al menos las repeticiones 💪');return;}
-  /* Validación: reps enteras 1-200, peso 0-500 kg (0 = peso corporal) */
-  if(!Number.isInteger(r) || r<1 || r>200){alert('⚠️ Las repeticiones deben ser un número entero entre 1 y 200.');return;}
-  if(w<0 || w>500){alert('⚠️ El peso debe estar entre 0 y 500 kg (deja 0 si es con peso corporal).');return;}
-  logs.push({date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'}), ts:Date.now(),
-    muscle:document.getElementById('pMuscle').value,
-    exercise:document.getElementById('pExercise').value,
-    weight:w, reps:r, notes:document.getElementById('pNotes').value});
-  save('forja_logs',logs);
-  document.getElementById('pWeight').value='';document.getElementById('pReps').value='';document.getElementById('pNotes').value='';
-  renderProgress(); renderHome();
-};
+function fillProgSelects(){}
 /* Fecha real de un registro: usa ts si existe, si no interpreta "dd/mm" (registros viejos) */
 function logFecha(l){
   if(l.ts) return new Date(l.ts);
@@ -2743,10 +2719,11 @@ function renderProgress(){
   const chart=document.getElementById('chart'), cx=document.getElementById('chartX');
   chart.innerHTML=''; cx.innerHTML='';
   const note=document.getElementById('weekNote'); if(note) note.innerHTML='';
-  if(!logs.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. ¡Guarda tu primera serie!</div>'; }
+  const registros=seriesComoLogs();
+  if(!registros.length){ chart.innerHTML='<div class="empty" style="margin:auto">Aún no hay registros. Anota tus series en Rutinas con “+ Serie”.</div>'; }
   else{
     // Una barra = una SEMANA (lunes a domingo): suma de peso × reps de esa semana
-    const weeks=groupLogsByWeek(logs).slice(-8);
+    const weeks=groupLogsByWeek(registros).slice(-8);
     const max=Math.max(...weeks.map(w=>w.vol),1);
     const fmt=n=>n.toLocaleString('es-MX');
     weeks.forEach((w,i)=>{
@@ -2783,8 +2760,8 @@ function renderProgress(){
     }
   }
   const ll=document.getElementById('logList'); ll.innerHTML='';
-  if(!logs.length){ll.innerHTML='<div class="empty">Tu historial aparecerá aquí.</div>';return;}
-  [...logs].reverse().slice(0,20).forEach(l=>{
+  if(!registros.length){ll.innerHTML='<div class="empty">Tu historial aparecerá aquí en cuanto registres series en Rutinas.</div>';return;}
+  [...registros].reverse().slice(0,20).forEach(l=>{
     const row=document.createElement('div');row.className='log-row';
     row.innerHTML=`<span class="dot"></span><span class="ex">${l.exercise}</span>
       <span class="stat2">${l.weight?l.weight+'kg × ':''}${l.reps} reps</span>
