@@ -307,6 +307,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
 .ex-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:14px;transition:.18s}
 .ex-card:hover{border-color:var(--muted-2);transform:translateY(-2px)}
+.ex-card.is-hecho{opacity:.6}
+.ex-card.is-hecho:hover{opacity:1}
+.ex-card.es-siguiente{border-color:var(--orange);box-shadow:var(--glow);animation:sube .32s ease-out}
+.ex-card.es-siguiente::before{content:"SIGUE ESTE";align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.09em;
+  color:var(--orange);background:var(--molten-soft);border:1px solid rgba(255,90,31,.35);padding:4px 9px;border-radius:99px}
+@keyframes sube{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
 .ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .ex-name{font-weight:700;font-size:16px}
 .ex-num{font-family:'Anton';font-size:26px;color:var(--line)}
@@ -2532,6 +2538,14 @@ function sugReps(ex){
   return a ? (a.sets[a.sets.length-1].r ?? '') : '';
 }
 
+/* Deja el siguiente ejercicio pendiente a la vista, arriba de la pantalla */
+function subirAlSiguiente(){
+  const card=document.querySelector('#exGrid .es-siguiente')||document.getElementById('exGrid');
+  if(!card) return;
+  const y=card.getBoundingClientRect().top+window.scrollY-90;
+  window.scrollTo({top:Math.max(0,y), behavior:'smooth'});
+}
+
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
@@ -2548,13 +2562,16 @@ function renderExercises(){
     });
   });
   const varios = musculosSel.length>1;
+  /* Los ya hechos se van al final: el siguiente ejercicio pendiente sube hasta arriba */
+  ex.sort((a,b)=>(doneToday[a.n]?1:0)-(doneToday[b.n]?1:0));
+  const idxSiguiente = ex.findIndex(e=>!doneToday[e.n]);
   document.getElementById('exCountPill').textContent =
     ex.length+' ejercicios'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
     const ov=exset[e.n]||{};
     const sVal=(ov.s??e.s), rVal=(ov.r??e.r), mVal=(ov.max??e.max);
-    const c=document.createElement('div');c.className='ex-card';
+    const c=document.createElement('div');c.className='ex-card'+(isDone?' is-hecho':'')+(i===idxSiguiente?' es-siguiente':'');
     c.innerHTML=`
       <div class="ex-top">
         <div class="ex-name">${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
@@ -2614,6 +2631,7 @@ function renderExercises(){
     const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
     if(objetivo && seriesHoy(k).length>=objetivo && !doneToday[k]){
       doneToday[k]=true; save('forja_done',doneToday);
+      renderExercises(); renderHome(); subirAlSiguiente(); return;
     }
     renderExercises(); renderHome();
   });
@@ -2631,6 +2649,7 @@ function renderExercises(){
   g.querySelectorAll('.ex-done').forEach(b=>b.onclick=()=>{
     const k=b.dataset.ex; doneToday[k]=!doneToday[k]; save('forja_done',doneToday);
     renderExercises(); renderHome();
+    if(doneToday[k]) subirAlSiguiente();
   });
   g.querySelectorAll('.ex-pr').forEach(b=>b.onclick=()=>{
     const k=b.dataset.pr; const cur=prs[k]||'';
