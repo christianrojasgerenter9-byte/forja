@@ -309,6 +309,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .btn-wa:hover{filter:brightness(1.08)}
 .yt-badge svg{width:24px;height:24px;fill:#fff}
 .day-list{display:flex;flex-direction:column;gap:10px}
+.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.week-chip{display:flex;flex-direction:column;gap:2px;min-width:0;padding:7px 5px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--line);text-align:center;align-items:center}
+.week-chip .d{font-family:'Anton';font-size:11px;letter-spacing:.04em;color:var(--orange)}
+.week-chip .g{font-size:9.5px;color:var(--text);line-height:1.2;overflow-wrap:anywhere}
+.week-chip.off{opacity:.5}
+.week-chip.off .d{color:var(--muted-2)}
+.week-chip.hoy{border-color:var(--orange);box-shadow:var(--glow)}
 .day-item{display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line);transition:.16s}
 .day-item:hover{border-color:var(--orange)}
 .day-item .idx{font-family:'Anton';font-size:20px;color:var(--orange);width:26px}
@@ -1000,8 +1008,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="home-2col">
           <div class="card">
             <span class="eyebrow">Split semanal</span>
-            <h2 style="font-size:26px;margin:8px 0 16px">Tu semana</h2>
-            <div class="day-list" id="weekList"></div>
+            <h2 style="font-size:20px;margin:8px 0 12px">Tu semana</h2>
+            <div class="week-strip" id="weekList"></div>
 
             <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:18px">
               <span class="eyebrow">Calendario</span>
@@ -2165,9 +2173,20 @@ function setGruposHoy(arr){
 
 function renderHome(){
   const wl=document.getElementById('weekList'); wl.innerHTML='';
+  /* Nombres cortos: en la tira de 7 columnas no cabe el texto largo */
+  const corto=s=>String(s)
+    .replace('Brazo + Hombro','Brazo+Hom')
+    .replace('Pierna completa','Pierna')
+    .replace('Espalda + Pecho','Esp+Pecho')
+    .replace('Pierna · 2ª sesión','Pierna 2ª')
+    .replace('Descanso','Rest');
+  const hoyDow=fechaDeKey(hoyKey()).getDay();
   WEEK.forEach((d,i)=>{
-    const el=document.createElement('div');el.className='day-item';
-    el.innerHTML=`<span class="idx">${d[0]}</span><span class="nm">${d[1]}</span><span class="rp">${d[2]}</span>`;
+    const dow=(i+1)%7;                     // WEEK arranca en lunes
+    const el=document.createElement('div');
+    el.className='week-chip'+(dow===hoyDow?' hoy':'')+(/descanso/i.test(d[1])?' off':'');
+    el.title=d[1]+' · '+d[2];
+    el.innerHTML='<span class="d">'+d[0]+'</span><span class="g">'+corto(d[1])+'</span>';
     wl.appendChild(el);
   });
   // stats
