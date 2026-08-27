@@ -447,6 +447,17 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .log-row .stat2{color:var(--muted);font-size:12.5px}
 .empty{text-align:center;color:var(--muted-2);padding:34px 10px;font-size:14px}
 .measure-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+.measure-inputs .field label{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.m-tip{position:relative;flex:0 0 auto;width:17px;height:17px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);
+  color:var(--muted);font-size:10.5px;font-weight:800;line-height:1;display:grid;place-items:center;cursor:help;transition:.15s;padding:0}
+.m-tip:hover,.m-tip:focus-visible{color:var(--text);border-color:var(--orange);background:var(--molten-soft);outline:none}
+.m-tip .m-tip-box{position:fixed;z-index:60;left:0;top:0;transform:scale(.97);transform-origin:center;
+  width:246px;max-width:calc(100vw - 24px);padding:11px 13px;border-radius:12px;background:#12131a;border:1px solid var(--line);box-shadow:0 14px 34px rgba(0,0,0,.55);
+  font-size:12px;font-weight:500;line-height:1.5;color:var(--muted);text-align:left;text-transform:none;letter-spacing:0;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,transform .15s}
+.m-tip .m-tip-box b{display:block;color:var(--text);font-size:12.5px;font-weight:800;margin-bottom:3px}
+.m-tip:hover .m-tip-box,.m-tip:focus-visible .m-tip-box,.field.tip-on .m-tip .m-tip-box{opacity:1;visibility:visible;transform:scale(1)}
+@media(max-width:620px){.m-tip .m-tip-box{width:220px}}
 .measure-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin-top:18px}
 .ms-tile{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
 .ms-tile .v{font-family:'Anton';font-size:26px;line-height:1}
@@ -1333,6 +1344,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <p class="muted" style="font-size:12.5px;margin-bottom:16px">Registra tu peso y medidas para ver tu evolución 📏</p>
           <div class="measure-inputs">
             <div class="field" style="margin:0"><label>Peso (kg)</label><input type="number" id="mPeso" min="20" max="400" step="0.1" placeholder="70"></div>
+            <div class="field" style="margin:0"><label>Pecho (cm)</label><input type="number" id="mPecho" min="40" max="250" step="0.1" placeholder="95"></div>
             <div class="field" style="margin:0"><label>Abdomen (cm)</label><input type="number" id="mAbdomen" min="30" max="250" step="0.1" placeholder="80"></div>
             <div class="field" style="margin:0"><label>Brazo izquierdo (cm)</label><input type="number" id="mBrazoI" min="10" max="100" step="0.1" placeholder="35"></div>
             <div class="field" style="margin:0"><label>Brazo derecho (cm)</label><input type="number" id="mBrazoD" min="10" max="100" step="0.1" placeholder="35"></div>
@@ -2075,7 +2087,6 @@ const HOME_ROUTINES = {
     {n:'Press de hombro con botellas/mochila', s:4, r:'12', max:'15'},
     {n:'Elevaciones laterales con botellas', s:4, r:'15', max:'20'},
     {n:'Elevaciones frontales con mochila', s:3, r:'12', max:'15'},
-    {n:'Pike push-ups (flexión en pica)', s:3, r:'10', max:'15'},
     {n:'Pájaros con botellas (deltoide posterior)', s:3, r:'15', max:'20'},
     {n:'Círculos de brazos', s:3, r:'30 seg', max:'60 seg'},
   ]},
@@ -2210,7 +2221,6 @@ const HOME_VOL = {
     {n:'Remo invertido bajo mesa (pies elevados)',s:4,r:'8',max:'12'},
     {n:'Remo a una mano pesado',s:3,r:'8 c/lado',max:'10'},
     {n:'Peso muerto rumano con mochila',s:3,r:'10',max:'12'},
-    {n:'Superman con pausa',s:3,r:'12',max:'15'},
   ]},
   hombro:{label:'Hombro',ex:[
     {n:'Press militar con ladrillos',s:4,r:'8-10',max:'12'},
@@ -3129,6 +3139,7 @@ function renderProgress(){
 /* Cada medida: id del campo, clave guardada, etiqueta, unidad y rango valido */
 const M_DEFS=[
   ['mPeso','peso','Peso','kg',20,400],
+  ['mPecho','pecho','Pecho','cm',40,250],
   ['mAbdomen','abdomen','Abdomen','cm',30,250],
   ['mBrazoI','brazoI','Brazo izq.','cm',10,100],
   ['mBrazoD','brazoD','Brazo der.','cm',10,100],
@@ -3137,6 +3148,50 @@ const M_DEFS=[
   ['mHombroI','hombroI','Hombro izq.','cm',20,200],
   ['mHombroD','hombroD','Hombro der.','cm',20,200],
 ];
+/* Guía de medición: burbuja de ayuda a la derecha de cada etiqueta */
+const M_TIPS={
+  mPeso:['Cómo pesarte bien','Pésate en la mañana, recién despertando, después de ir al baño y sin ropa. Usa siempre la misma báscula y ponla en piso duro (no en alfombra). Pésate el mismo día cada semana: el peso cambia mucho de un día a otro.'],
+  mPecho:['Cómo medir el pecho','Ponte de pie con los brazos sueltos. Pasa la cinta por toda la vuelta del pecho, a la altura de los pezones, y que quede derechita (igual de alta por delante y por atrás). Saca el aire normal, sin inflar el pecho, y ahí mide.'],
+  mAbdomen:['Cómo medir el abdomen','De pie y relajado. Pasa la cinta por toda la vuelta de la panza, justo a la altura del ombligo. Que quede derechita y no la aprietes. Saca el aire normal y mide sin meter la panza.'],
+  mBrazoI:['Cómo medir el brazo','Dobla el brazo como cuando sacas músculo y aprieta. Pasa la cinta por la parte más gorda del brazo, entre el hombro y el codo. Mide siempre igual: si un día lo mides apretando, mídelo apretando siempre.'],
+  mBrazoD:['Cómo medir el brazo','Dobla el brazo como cuando sacas músculo y aprieta. Pasa la cinta por la parte más gorda del brazo, entre el hombro y el codo. Mide siempre igual: si un día lo mides apretando, mídelo apretando siempre.'],
+  mPiernaI:['Cómo medir la pierna','De pie, con el peso repartido en los dos pies y la pierna suelta. Pasa la cinta por toda la vuelta del muslo, en la parte más gorda (como un palmo arriba de la rodilla). Mide siempre en el mismo punto.'],
+  mPiernaD:['Cómo medir la pierna','De pie, con el peso repartido en los dos pies y la pierna suelta. Pasa la cinta por toda la vuelta del muslo, en la parte más gorda (como un palmo arriba de la rodilla). Mide siempre en el mismo punto.'],
+  mHombroI:['Cómo medir el hombro','Párate derecho con los brazos sueltos. Mide en línea recta desde donde nace el cuello hasta la puntita del hombro (el huesito donde empieza el brazo). No subas ni encojas el hombro.'],
+  mHombroD:['Cómo medir el hombro','Párate derecho con los brazos sueltos. Mide en línea recta desde donde nace el cuello hasta la puntita del hombro (el huesito donde empieza el brazo). No subas ni encojas el hombro.'],
+};
+(function pintarTips(){
+  /* Coloca la burbuja con position:fixed y la mantiene dentro de la pantalla,
+     sin depender de cuantas columnas tenga la rejilla en ese ancho. */
+  function ubicar(b){
+    const box=b.querySelector('.m-tip-box'); if(!box) return;
+    const r=b.getBoundingClientRect(), bw=box.offsetWidth, bh=box.offsetHeight;
+    const W=document.documentElement.clientWidth, H=document.documentElement.clientHeight, m=10;
+    let left=r.right+9;
+    if(left+bw>W-m) left=r.left-9-bw;
+    if(left<m) left=Math.min(Math.max(m, r.left+r.width/2-bw/2), W-bw-m);
+    let top=r.top+r.height/2-bh/2;
+    if(top+bh>H-m) top=H-bh-m;
+    if(top<m) top=m;
+    box.style.left=Math.round(left)+'px';
+    box.style.top=Math.round(top)+'px';
+  }
+  Object.keys(M_TIPS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp) return;
+    const campo=inp.closest('.field'), lab=campo&&campo.querySelector('label');
+    if(!lab||lab.querySelector('.m-tip')) return;
+    const [t,d]=M_TIPS[id];
+    const b=document.createElement('button');
+    b.type='button'; b.className='m-tip'; b.setAttribute('aria-label',t);
+    b.innerHTML='?<span class="m-tip-box"><b>'+t+'</b>'+d+'</span>';
+    b.addEventListener('click',e=>{e.preventDefault();campo.classList.toggle('tip-on');ubicar(b);});
+    b.addEventListener('mouseenter',()=>ubicar(b));
+    b.addEventListener('focus',()=>ubicar(b));
+    lab.appendChild(b);
+    inp.addEventListener('focus',()=>{campo.classList.add('tip-on');ubicar(b);});
+    inp.addEventListener('blur',()=>campo.classList.remove('tip-on'));
+  });
+})();
 document.getElementById('mSave').onclick=()=>{
   const reg={date:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'2-digit'})};
   let algo=false, fuera=null;
@@ -3175,6 +3230,7 @@ function renderMeasures(){
     const parts=[];
     if(m.peso!=null)parts.push(m.peso+' kg');
     if(m.abdomen!=null)parts.push('Abd '+m.abdomen);
+    if(m.pecho!=null)parts.push('Pecho '+m.pecho);
     if(m.brazoI!=null||m.brazoD!=null||m.brazo!=null)parts.push('Brazo '+(m.brazoI??m.brazo??'—')+'/'+(m.brazoD??'—'));
     if(m.piernaI!=null||m.piernaD!=null||m.pierna!=null)parts.push('Pierna '+(m.piernaI??m.pierna??'—')+'/'+(m.piernaD??'—'));
     if(m.hombroI!=null||m.hombroD!=null)parts.push('Hombro '+(m.hombroI??'—')+'/'+(m.hombroD??'—'));
