@@ -9,8 +9,8 @@
   "id": "/forja/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0C0908",
-  "theme_color": "#0C0908",
+  "background_color": "#050A10",
+  "theme_color": "#050A10",
   "categories": ["health", "fitness", "lifestyle"],
   "icons": [
     {
