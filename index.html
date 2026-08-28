@@ -1053,9 +1053,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
         <div class="card" style="margin-bottom:18px">
           <span class="eyebrow">Mapa muscular</span>
-          <h2 style="font-size:26px;margin:8px 0 4px">Tu cuerpo esta semana</h2>
+          <h2 style="font-size:26px;margin:8px 0 4px">Tu cuerpo hoy</h2>
           <p class="muted" style="font-size:13.5px;margin:0 0 18px">
-            Cada músculo se enciende cuando lo entrenas y se va apagando con los días. Tócalo para ponerlo en la rutina de hoy.</p>
+            Solo se enciende en rojo lo que entrenas hoy. El mapa se reinicia cada día. Toca un músculo para meterlo en la rutina de hoy.</p>
           <div class="bm-wrap">
             <div class="bm-forja">
           <div class="bm-foto" id="bodyMap" aria-label="Mapa de musculos entrenados">
@@ -1109,10 +1109,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
             </div>
             <div class="bm-leyenda" style="margin-top:12px;font-size:11.5px;color:var(--muted);line-height:2">
-              <span class="bmp"><i style="background:#ff2f24;box-shadow:0 0 8px rgba(255,47,36,.8)"></i>Hoy y ayer</span>
-              <span class="bmp"><i style="background:#8f2a24"></i>3 a 5 días</span>
-              <span class="bmp"><i style="background:#c9a227"></i>6 días</span>
-              <span class="bmp"><i style="background:#2A3A46"></i>Apagado</span>
+              <span class="bmp"><i style="background:#ff2f24;box-shadow:0 0 8px rgba(255,47,36,.8)"></i>Lo que entrenas hoy</span>
+              <span class="bmp"><i style="background:#2A3A46"></i>Apagado · se reinicia cada día</span>
               <div id="bmAviso" style="margin-top:8px;line-height:1.6"></div>
             </div>
           </div>
@@ -2266,7 +2264,10 @@ function resolverGrupo(k){
   if(k==='abdomen' && keys.includes('abs')) return 'abs';
   return null;
 }
-function gruposDelSplit(){ return (DAY_GROUPS[fechaDeKey(hoyKey()).getDay()]||[]).map(resolverGrupo).filter(Boolean); }
+function gruposDelSplit(){
+  /* dedupe: 'abs' y 'abdomen' son el mismo grupo y no debe salir dos veces */
+  return [...new Set((DAY_GROUPS[fechaDeKey(hoyKey()).getDay()]||[]).map(resolverGrupo).filter(Boolean))];
+}
 function gruposElegidosHoy(){
   return (hoyFecha===hoyKey() && Array.isArray(hoyGrupos) && hoyGrupos.length)
     ? hoyGrupos.map(resolverGrupo).filter(Boolean) : null;
@@ -2416,12 +2417,17 @@ function renderCuerpo(){
   const R=getRoutines();
   const sel=(gruposElegidosHoy()||gruposDelSplit());
 
+  /* El mapa se reinicia cada dia: solo se enciende lo de HOY.
+     Lo demas queda apagado (s3), aunque lo hayas entrenado ayer. */
+  const activos=new Set(sel.map(k=>k==='abdomen'?'abs':k));
+  const estadoHoy=g=>activos.has(g==='abdomen'?'abs':g)?'s0':'s3';
+
   /* pinta cada pieza del muneco */
   document.querySelectorAll('.bm-part').forEach(el=>{
     const g=el.dataset.g;
     const d=info[g];
     const hace=d?d.hace:null;
-    el.setAttribute('class','bm-part '+bmEstado(hace));
+    el.setAttribute('class','bm-part '+estadoHoy(g));
     let t=el.querySelector('title');
     if(!t){ t=document.createElementNS('http://www.w3.org/2000/svg','title'); el.appendChild(t); }
     t.textContent=(BM_NOMBRES[g]||g)+' — '+bmTexto(hace)+(d?' · '+d.semana+' en la semana':'');
@@ -2430,16 +2436,14 @@ function renderCuerpo(){
 
   /* capas del maniqui: se encienden segun el estado del grupo */
   document.querySelectorAll('.bm-zona,.bm-on').forEach(el=>{
-    const d=info[el.dataset.g];
-    el.className=(el.classList.contains('bm-zona')?'bm-zona ':'bm-on ')+bmEstado(d?d.hace:null);
+    el.className=(el.classList.contains('bm-zona')?'bm-zona ':'bm-on ')+estadoHoy(el.dataset.g);
   });
 
-  /* pernos: siguen la articulacion mas encendida */
-  const BM_ART=[['hombro'],['hombro'],['brazo'],['brazo'],['pierna'],['pierna'],['pierna'],['pierna']];
+  /* pernos: se encienden si hoy toca una articulacion */
   const ordEst={s0:0,s1:1,s2:2,s4:3,s3:4};
   svg.querySelectorAll('.bm-perno').forEach(gp=>{
     let mejor='s3';
-    ['hombro','brazo','pierna'].forEach(k=>{ const e=bmEstado(info[k]?info[k].hace:null);
+    ['hombro','brazo','pierna'].forEach(k=>{ const e=estadoHoy(k);
       if(ordEst[e]<ordEst[mejor]) mejor=e; });
     gp.setAttribute('class','bm-perno '+mejor);
   });
@@ -2447,8 +2451,8 @@ function renderCuerpo(){
   /* anotaciones tecnicas */
   const BM_MES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
   svg.querySelectorAll('.bm-anot').forEach(a=>{
-    const g=a.dataset.g, d=info[g], hace=d?d.hace:null;
-    a.setAttribute('class','bm-anot '+bmEstado(hace));
+    const g=a.dataset.g, d=info[g];
+    a.setAttribute('class','bm-anot '+estadoHoy(g));
     const sub=a.querySelector('.bm-anot-s');
     if(sub){
       if(d){ const p=d.ultima.split('-');
@@ -2463,11 +2467,11 @@ function renderCuerpo(){
   if(lista){
     const orden=['pecho','espalda','hombro','brazo','pierna','abs'];
     lista.innerHTML=orden.map(g=>{
-      const d=info[g], hace=d?d.hace:null, st=bmEstado(hace);
-      const activo=sel.map(k=>k==='abdomen'?'abs':k).includes(g);
+      const d=info[g], hace=d?d.hace:null, st=estadoHoy(g);
+      const activo=activos.has(g);
       return '<div class="bm-row" data-g="'+g+'"'+(activo?' style="border-color:#ff3b30"':'')+'>'+
         '<span><i class="dot '+st+'"></i>'+(BM_NOMBRES[g]||g)+'</span>'+
-        '<span class="bm-est">'+bmTexto(hace)+'</span></div>';
+        '<span class="bm-est">'+(activo?'Hoy':bmTexto(hace))+'</span></div>';
     }).join('');
     lista.querySelectorAll('.bm-row').forEach(r=>r.onclick=()=>bmToggle(r.dataset.g));
   }
@@ -2475,12 +2479,15 @@ function renderCuerpo(){
   /* aviso de musculos abandonados */
   const av=document.getElementById('bmAviso');
   if(av){
+    const encendidos=['pecho','espalda','hombro','brazo','pierna','abs']
+      .filter(g=>activos.has(g)).map(g=>BM_NOMBRES[g]);
     const olvidados=['pecho','espalda','hombro','brazo','pierna','abs']
-      .filter(g=>!info[g] || info[g].hace>=7)
+      .filter(g=>!activos.has(g) && (!info[g] || info[g].hace>=7))
       .map(g=>BM_NOMBRES[g]);
-    av.innerHTML = olvidados.length
-      ? '<b style="color:#c9a227">Apagados:</b> '+olvidados.join(', ')+'. Elige uno y enciendelo hoy.'
-      : '<b style="color:#d4af37">Cuerpo completo encendido esta semana.</b> Asi se ve un split bien llevado.';
+    av.innerHTML = encendidos.length
+      ? '<b style="color:#ff3b30">Hoy encendido:</b> '+encendidos.join(' + ')+'.'+
+        (olvidados.length?' <span style="color:#c9a227">Sin tocar hace una semana: '+olvidados.join(', ')+'.</span>':'')
+      : '<b style="color:#c9a227">Dia de descanso.</b> Toca un musculo para encenderlo hoy.';
   }
 }
 
