@@ -20,7 +20,27 @@ const CASCARA = [
   './forja-icono-512.png',
   './forja-icono-maskable-512.png',
   './forja-emblema.png',
-  './forja-favicon.png'
+  './forja-favicon.png',
+  './mq-f.webp',
+  './mq-b.webp',
+  './mq-f-pecho.webp',
+  './mq-f-hombro.webp',
+  './mq-f-brazo.webp',
+  './mq-f-abs.webp',
+  './mq-f-pierna.webp',
+  './mq-b-hombro.webp',
+  './mq-b-brazo.webp',
+  './mq-b-espalda.webp',
+  './mq-b-pierna.webp',
+  './mq-f-pecho-on.webp',
+  './mq-f-hombro-on.webp',
+  './mq-f-brazo-on.webp',
+  './mq-f-abs-on.webp',
+  './mq-f-pierna-on.webp',
+  './mq-b-hombro-on.webp',
+  './mq-b-brazo-on.webp',
+  './mq-b-espalda-on.webp',
+  './mq-b-pierna-on.webp'
 ];
 
 // Librerias externas: no son datos del usuario, son codigo estatico.
