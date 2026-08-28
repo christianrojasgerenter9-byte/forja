@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v84';
+const VERSION = 'forja-v95';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -18,7 +18,8 @@ const CASCARA = [
   './manifest.json',
   './forja-icono-192.png',
   './forja-icono-512.png',
-  './forja-icono-maskable-512.png'
+  './forja-icono-maskable-512.png',
+  './forja-emblema.png'
 ];
 
 // Librerias externas: no son datos del usuario, son codigo estatico.

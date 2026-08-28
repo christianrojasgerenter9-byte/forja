@@ -30,12 +30,14 @@
 
 :root{
   --bg:#050A10;
-  --surface:#0A151E;
-  --surface-2:#102232;
+  --surface:rgba(10,21,30,.36);
+  --surface-2:rgba(16,34,50,.36);
+  --surface-solid:#0A151E;
+  --field-bg:#0E1B26;
   --line:#1E4258;
   --text:#DCEAF2;
   --muted:#8FB8CC;
-  --muted-2:#5A8698;
+  --muted-2:#86ADC0;
   --orange:#1F9BC4;
   --magenta:#175FA8;
   --amber:#63BEDA;
@@ -83,10 +85,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   display:flex;flex-direction:column;padding:26px 18px;gap:6px;
 }
 .brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:8px;border-bottom:1px solid var(--line)}
-.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--surface-2);
-            border:1px solid rgba(31,155,196,.38);display:grid;place-items:center;padding:5px;
-            box-shadow:0 0 16px rgba(31,155,196,.16)}
-.brand-svg{width:100%;height:100%;display:block}
+.brand-mark{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 50% 40%,rgba(31,155,196,.16),rgba(0,0,0,.35));
+            border:1px solid rgba(31,155,196,.38);display:grid;place-items:center;padding:1px;
+            box-shadow:0 0 16px rgba(31,155,196,.16);overflow:hidden}
+.brand-svg{width:100%;height:100%;display:block;object-fit:contain}
+/* Marca de agua: el emblema del martillo detrás de todo el contenido */
+.marca-agua{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.34;filter:brightness(.82) saturate(1.05);
+  background:url('forja-emblema.png') center 46% / min(72vmin,660px) no-repeat}
+.sidebar,.main,.footer{position:relative;z-index:1}
 .brand-name{font-family:'Anton';font-size:23px;letter-spacing:2px}
 .brand-name span{background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand-sub{font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
@@ -121,7 +127,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
 .section-head h2{font-size:clamp(30px,5vw,46px)}
 .muted{color:var(--muted)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
   box-shadow:inset 0 0 0 1px rgba(31,155,196,.07), 0 0 22px rgba(6,24,38,.5)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;transition:.18s}
@@ -142,8 +148,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   background:
     radial-gradient(700px 300px at 90% 0%, rgba(23,95,168,.28), transparent 62%),
     radial-gradient(600px 340px at 0% 100%, rgba(31,155,196,.24), transparent 60%),
-    #081220;
+    rgba(8,18,32,.38);
   border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
 }
 .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:34px;align-items:center}
 .hero h1{font-size:clamp(44px,7.5vw,84px);margin:14px 0 12px}
@@ -424,7 +431,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .prog-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:start}
 .field{margin-bottom:13px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
-.field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14.5px;transition:.16s}
+.field input,.field select{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14.5px;transition:.16s}
 .field input:focus,.field select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(31,155,196,.15)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .chart{display:flex;align-items:flex-end;justify-content:flex-start;gap:10px;height:180px;padding:12px 4px 0;border-bottom:1px solid var(--line)}
@@ -502,7 +509,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .avatar .on{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--surface)}
 .coach-card .nm{font-weight:700;font-size:14.5px}
 .coach-card .sp{font-size:11.5px;color:var(--muted)}
-.chat-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;height:520px;overflow:hidden}
+.chat-box{background:var(--surface-solid);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;height:520px;overflow:hidden}
 .chat-top{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .chat-top .who{min-width:0}
 .chat-top .nm{overflow-wrap:anywhere}
@@ -523,7 +530,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .chat-input .tool:hover{border-color:var(--orange)}
 .chat-input .tool:hover svg{fill:var(--orange)}
 .chat-input .tool.on{border-color:var(--orange);background:var(--molten-soft)}
-.emoji-bar{display:none;gap:6px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);background:var(--surface-2)}
+.emoji-bar{display:none;gap:6px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);background:#102232}
 .emoji-bar.open{display:flex}
 .emoji-bar button{font-size:21px;line-height:1;width:38px;height:38px;border-radius:10px}
 .emoji-bar button:hover{background:var(--surface)}
@@ -569,7 +576,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 /* ---------- Modal videollamada ---------- */
 .modal-bg{position:fixed;inset:0;z-index:100;background:rgba(5,5,7,.82);backdrop-filter:blur(8px);display:none;place-items:center;padding:20px}
 .modal-bg.open{display:grid}
-.call-modal{width:min(440px,100%);background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:34px;text-align:center;animation:pop .3s ease}
+.call-modal{width:min(440px,100%);background:var(--surface-solid);border:1px solid var(--line);border-radius:24px;padding:34px;text-align:center;animation:pop .3s ease}
 @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 .call-avatar{width:104px;height:104px;border-radius:50%;background:var(--molten);display:grid;place-items:center;font-family:'Anton';font-size:44px;margin:0 auto 18px;box-shadow:var(--glow);position:relative}
 .call-avatar::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--orange);opacity:.5;animation:pulse 1.6s ease-out infinite}
@@ -587,7 +594,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 /* ---------- Auth (login / registro) ---------- */
 .auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;
   background:radial-gradient(700px 400px at 80% 0%,rgba(23,95,168,.22),transparent 60%),radial-gradient(600px 420px at 8% 100%,rgba(31,155,196,.18),transparent 60%),var(--bg)}
-.auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.auth-card{width:min(420px,100%);background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,5vw,34px);box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .auth-brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
 .auth-brand .brand-mark{width:44px;height:44px;padding:6px}
 .auth-brand .brand-name{font-size:30px}
@@ -786,7 +793,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .rest-modal{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:20px;
   background:rgba(5,5,8,.72);backdrop-filter:blur(6px)}
 .rest-modal.open{display:grid}
-.rest-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);
+.rest-card{width:100%;max-width:400px;background:var(--surface-solid);border:1px solid var(--line);
   border-radius:var(--radius);padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
 .rest-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .rest-head h3{font-size:22px}
@@ -819,7 +826,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 
 
 /* ===== Fotos de progreso ===== */
-.ph-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:18px}
+.ph-card{background:var(--surface-solid);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:18px}
 .ph-card h3{font-family:'Anton',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:17px;margin-bottom:10px}
 .ph-note{color:var(--muted);font-size:13px;line-height:1.6}
 .ph-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-family:'Anton',sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:15px;padding:13px 24px;border-radius:var(--radius-sm);color:#fff;background:var(--molten);width:100%;transition:transform .15s;box-shadow:var(--glow)}
@@ -861,7 +868,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ph-dot.done{background:var(--orange)}
 .ph-dot.now{background:var(--magenta);box-shadow:0 0 8px var(--magenta)}
 #phFlash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:130;transition:opacity .25s}
-#phToast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--orange);border-radius:var(--radius-sm);padding:12px 20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:140;max-width:90vw;text-align:center}
+#phToast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--surface-solid);border:1px solid var(--orange);border-radius:var(--radius-sm);padding:12px 20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:140;max-width:90vw;text-align:center}
 
 </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -869,10 +876,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 <body>
 
 <!-- ===================== LOGIN / REGISTRO ===================== -->
+<div class="marca-agua" aria-hidden="true"></div>
 <div class="auth-gate" id="authGate">
   <div class="auth-card">
     <div class="auth-brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaAuth" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaAuth)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaAuth)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaAuth)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><img class="brand-svg" src="forja-emblema.png" alt="" aria-hidden="true"></div>
       <div class="brand-name">FOR<span style="background:var(--molten);-webkit-background-clip:text;background-clip:text;color:transparent">JA</span></div>
     </div>
     <div class="auth-title">Tu sistema de entrenamiento</div>
@@ -908,7 +916,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <!-- ===================== SIDEBAR (PC) ===================== -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaNav" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaNav)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaNav)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaNav)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+      <div class="brand-mark"><img class="brand-svg" src="forja-emblema.png" alt="" aria-hidden="true"></div>
       <div>
         <div class="brand-name">FOR<span>JA</span></div>
         <div class="brand-sub">Training System</div>
@@ -965,7 +973,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <div class="main">
     <div class="topbar">
       <div class="brand" style="padding:0;border:none">
-        <div class="brand-mark" style="width:32px;height:32px"><svg class="brand-svg" viewBox="105 55 305 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="fuegoMarcaTop" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#FFB45C"/><stop offset="45%" stop-color="#1F9BC4"/><stop offset="100%" stop-color="#175FA8"/></linearGradient></defs><path fill="url(#fuegoMarcaTop)" d="M304,66 L190,204 L248,192 L212,246 L336,128 L272,140 Z"/><path fill="url(#fuegoMarcaTop)" d="M124,274 L198,250 L198,240 L338,232 L380,248 L314,266 L306,268 L306,306 L346,306 L378,356 L142,356 L176,306 L212,306 L212,270 L124,274 Z"/><path fill="url(#fuegoMarcaTop)" d="M256,196 L270,214 L252,211 L263,226 L236,206 L252,209 Z"/></svg></div>
+        <div class="brand-mark" style="width:32px;height:32px"><img class="brand-svg" src="forja-emblema.png" alt="" aria-hidden="true"></div>
         <div class="brand-name">FOR<span>JA</span></div>
       </div>
       <div class="tb-right">
