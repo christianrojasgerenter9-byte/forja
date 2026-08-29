@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v96';
+const VERSION = 'forja-v101';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -73,7 +73,9 @@ self.addEventListener('install', evento => {
     const shell = await caches.open(CACHE_SHELL);
     // Uno por uno: si un archivo falla, no se cae el precacheo completo.
     await Promise.all(CASCARA.map(u =>
-      shell.add(u).catch(e => console.warn('FORJA SW: no se guardó', u, e))));
+      fetch(new Request(u, { cache: 'reload' }))
+        .then(r => (r && r.ok) ? shell.put(u, r) : null)
+        .catch(e => console.warn('FORJA SW: no se guardó', u, e))));
 
     const externo = await caches.open(CACHE_EXTERNO);
     await Promise.all(EXTERNOS.map(u =>
@@ -109,7 +111,9 @@ function esEnVivo(url) {
 async function redPrimero(peticion) {
   const cache = await caches.open(CACHE_SHELL);
   try {
-    const respuesta = await fetch(peticion);
+    // cache:'reload' salta la cache HTTP del navegador: siempre el archivo
+    // real del servidor, nunca una copia vieja guardada por Chrome/Safari.
+    const respuesta = await fetch(peticion, { cache: 'reload' });
     if (respuesta && respuesta.ok) cache.put('./index.html', respuesta.clone());
     return respuesta;
   } catch (e) {
@@ -125,7 +129,7 @@ async function redPrimero(peticion) {
 async function cacheYActualiza(peticion, nombreCache) {
   const cache = await caches.open(nombreCache);
   const enCache = await cache.match(peticion);
-  const enRed = fetch(peticion)
+  const enRed = fetch(peticion, { cache: 'no-cache' })
     .then(r => {
       if (r && (r.ok || r.type === 'opaque')) cache.put(peticion, r.clone());
       return r;
