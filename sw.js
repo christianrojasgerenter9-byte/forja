@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v101';
+const VERSION = 'forja-v103';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -113,7 +113,7 @@ async function redPrimero(peticion) {
   try {
     // cache:'reload' salta la cache HTTP del navegador: siempre el archivo
     // real del servidor, nunca una copia vieja guardada por Chrome/Safari.
-    const respuesta = await fetch(peticion, { cache: 'reload' });
+    const respuesta = await fetch(peticion.url, { cache: 'reload', credentials: 'same-origin' });
     if (respuesta && respuesta.ok) cache.put('./index.html', respuesta.clone());
     return respuesta;
   } catch (e) {
