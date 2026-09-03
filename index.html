@@ -12,6 +12,62 @@
 <meta name="apple-mobile-web-app-title" content="FORJA">
 <link rel="apple-touch-icon" href="forja-icono-192.png">
 <link rel="icon" type="image/png" href="forja-favicon.png">
+
+<!-- ===== Salvavidas: pantalla negra nunca mas =====
+     Va ANTES de los scripts de Firebase/fuentes a propósito: si esos
+     recursos se cuelgan por la red del celular (pasa en algunos iPhone
+     con ciertas redes/WiFi), este aviso igual aparece, porque no depende
+     de que el resto de la página termine de cargar. -->
+<script>
+(function(){
+  var mostrado=false;
+  function rescate(motivo){
+    if(mostrado) return; mostrado=true;
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#0b0b0b;color:#f3ead4;'+
+      'font:15px/1.5 system-ui,-apple-system,sans-serif;padding:28px 22px;overflow:auto';
+    d.innerHTML='<div style="max-width:420px;margin:8vh auto;text-align:center">'+
+      '<div style="font-size:28px;letter-spacing:.18em;font-weight:800;color:#c9a227">FORJA</div>'+
+      '<p style="margin:18px 0 6px;font-weight:600">La app está tardando mucho en abrir</p>'+
+      '<p style="margin:0 0 20px;color:#9a9a9a;font-size:13px">'+String(motivo||'').slice(0,300)+'</p>'+
+      '<button id="fjFix" style="width:100%;padding:14px;border:0;border-radius:12px;background:#c9a227;'+
+      'color:#141414;font-weight:700;font-size:15px">Reinstalar y volver a abrir</button>'+
+      '<button id="fjRe" style="width:100%;margin-top:10px;padding:14px;border:1px solid #333;'+
+      'border-radius:12px;background:transparent;color:#ccc;font-size:14px">Solo recargar</button>'+
+      '<p style="margin-top:22px;color:#666;font-size:11.5px">Si esto sigue pasando, prueba con datos móviles en vez de WiFi (algunas redes bloquean los servicios de Google que usa FORJA).</p></div>';
+    (document.body||document.documentElement).appendChild(d);
+    var re=d.querySelector('#fjRe'), fx=d.querySelector('#fjFix');
+    if(re) re.onclick=function(){ location.reload(); };
+    if(fx) fx.onclick=function(){
+      var fin=function(){ location.replace(location.pathname+'?v='+Date.now()); };
+      var tareas=[];
+      try{ if(window.caches) tareas.push(caches.keys().then(function(k){
+        return Promise.all(k.map(function(n){ return caches.delete(n); })); })); }catch(e){}
+      try{ if(navigator.serviceWorker) tareas.push(navigator.serviceWorker.getRegistrations()
+        .then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
+      Promise.all(tareas).then(fin, fin);
+      setTimeout(fin, 2500);
+    };
+  }
+  function pantallaViva(){
+    var app=document.querySelector('.app'), gate=document.getElementById('authGate');
+    return [app,gate].some(function(el){
+      return el && getComputedStyle(el).display!=='none' && el.offsetHeight>40; });
+  }
+  /* Reloj absoluto: arranca desde este instante, sin esperar a que la
+     pagina termine de cargar. Asi funciona aunque un script de Firebase
+     o de fuentes se quede colgado descargando y nunca deje avanzar el
+     resto de la pagina. */
+  setTimeout(function(){
+    if(!pantallaViva()) rescate('El arranque tardo demasiado. Puede ser tu conexion o algun servicio bloqueado por tu red.');
+  }, 9000);
+  window.addEventListener('error', function(ev){
+    if(pantallaViva()) return;
+    rescate(ev && ev.message);
+  });
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -252,12 +308,11 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-acc .del{color:#FF6B6B}
 .bm-foto{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bm-vista{position:relative;padding-bottom:14px}
-.bm-base{width:100%;display:block;filter:grayscale(1) brightness(.5) contrast(1.05)}
-.bm-zona{filter:grayscale(1) brightness(.6)}
+.bm-base{width:100%;display:block;filter:brightness(.42) saturate(.20) contrast(.96)}
 .bm-zona,.bm-on{position:absolute;left:0;top:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .45s ease;pointer-events:none}
 .bm-on.s0,.bm-on.s1{opacity:1;filter:brightness(1.12) saturate(1.25) drop-shadow(0 0 7px rgba(255,59,48,.8)) drop-shadow(0 0 20px rgba(255,59,48,.45))}
 .bm-on.s2{opacity:.7;filter:brightness(1) saturate(1.05) drop-shadow(0 0 5px rgba(255,59,48,.4))}
-.bm-zona.s4{opacity:.75;filter:grayscale(.2) sepia(.35) brightness(1.05) drop-shadow(0 0 8px rgba(201,162,39,.55))}
+.bm-zona.s4{opacity:.9;filter:brightness(1.02) saturate(.95) drop-shadow(0 0 8px rgba(201,162,39,.6))}
 .bm-hit{position:absolute;left:0;top:0;width:100%;height:100%}
 .bm-hit path{fill:transparent;stroke:transparent;stroke-width:.004;cursor:pointer;transition:.15s}
 .bm-hit path:hover{fill:rgba(255,255,255,.12);stroke:rgba(255,255,255,.5)}
@@ -1110,8 +1165,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           </div>
             </div>
             <div class="bm-leyenda" style="margin-top:12px;font-size:11.5px;color:var(--muted);line-height:2">
-              <span class="bmp"><i style="background:#ff2f24;box-shadow:0 0 8px rgba(255,47,36,.8)"></i>Lo que entrenas hoy</span>
-              <span class="bmp"><i style="background:#2A3A46"></i>Apagado · se reinicia cada día</span>
+              <span class="bmp"><i style="background:#ff2f24;box-shadow:0 0 8px rgba(255,47,36,.8)"></i>Hoy y ayer</span>
+              <span class="bmp"><i style="background:#8f2a24"></i>3 a 5 días</span>
+              <span class="bmp"><i style="background:#c9a227"></i>6 días</span>
+              <span class="bmp"><i style="background:#2A3A46"></i>Apagado</span>
               <div id="bmAviso" style="margin-top:8px;line-height:1.6"></div>
             </div>
           </div>
@@ -1630,6 +1687,7 @@ const CONFIG = {
   CODIGOS_PRO: [
     { hash: "e02c98590353d25fbc957c86f9c41fcc92cd32c4e944c09c022ff3477795a4c1", vence: "2026-07-31" },  // JULIO
     { hash: "a306ebe447b8d3d1a4eaa16e923849602cf814ca9ffecbef8252920dff883936", vence: "2026-08-31" },  // AGOSTO
+    { hash: "31f543f9e57d0c0e911d6bc173adf940399fc26ee4fab0c21521993623ac720b", vence: "2026-09-30" },  // SEPTIEMBRE — BORUTO
   ],
   PRECIO_PRO: 199 // MXN / mes
 };
@@ -2265,10 +2323,7 @@ function resolverGrupo(k){
   if(k==='abdomen' && keys.includes('abs')) return 'abs';
   return null;
 }
-function gruposDelSplit(){
-  /* dedupe: 'abs' y 'abdomen' son el mismo grupo y no debe salir dos veces */
-  return [...new Set((DAY_GROUPS[fechaDeKey(hoyKey()).getDay()]||[]).map(resolverGrupo).filter(Boolean))];
-}
+function gruposDelSplit(){ return (DAY_GROUPS[fechaDeKey(hoyKey()).getDay()]||[]).map(resolverGrupo).filter(Boolean); }
 function gruposElegidosHoy(){
   return (hoyFecha===hoyKey() && Array.isArray(hoyGrupos) && hoyGrupos.length)
     ? hoyGrupos.map(resolverGrupo).filter(Boolean) : null;
@@ -3895,130 +3950,17 @@ if(FB_ON){
 if(FB_ON){ showGate(); }
 else { if(session && users[session]) enterApp(); else showGate(); }
 
-
-/* Version nueva publicada: busca actualizaciones y recarga UNA sola vez.
-   Reglas anti-bucle (Safari/iOS es sensible a esto):
-   - solo recarga si ya habia un service worker controlando la pagina
-     (en la primera instalacion NO se recarga: ahi nace la pantalla negra);
-   - la bandera vive en sessionStorage, asi que un ciclo nunca se repite. */
-if('serviceWorker' in navigator){
-  try{
-    var habiaControl = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener('controllerchange', function(){
-      if(!habiaControl) return;
-      try{ if(sessionStorage.getItem('forja_sw_reload')==='1') return;
-           sessionStorage.setItem('forja_sw_reload','1'); }catch(e){}
-      location.reload();
-    });
-    navigator.serviceWorker.ready.then(function(reg){
-      try{ reg.update(); }catch(e){}
-      setInterval(function(){ try{ reg.update(); }catch(e){} }, 60*60*1000);
-    }).catch(function(){});
-  }catch(e){}
-}
-
-/* ===== Temporizador de descanso =====
-   Reloj por fecha limite (no por conteo): si sales de la app, se congela la
-   pantalla pero no el tiempo — al volver se recalcula con Date.now().
-   Mientras corre: reloj circular flotante dentro de la app, ficha en la
-   pantalla de bloqueo / barra de notificaciones (MediaSession) y un audio
-   silencioso que evita que el navegador duerma el contador. */
-const REST_KEY='forja_rest_v2';
+/* ===== Temporizador de descanso ===== */
 function initRestTimer(){
   const $=id=>document.getElementById(id);
   const modal=$('restModal'), disp=$('restDisplay'), bar=$('restBar');
   const minEl=$('restMin'), secEl=$('restSec'), startBtn=$('restStart'), resetBtn=$('restReset');
-  const mini=$('restMini'), miniTxt=$('restMiniTxt'), miniArc=$('restMiniArc'), miniX=$('restMiniX');
-  const CIRC=2*Math.PI*19;
-  let st={t:60,dl:0,p:60};      /* t=total, dl=fecha limite ms, p=restante en pausa (null si corre) */
-  let raf=null, sonoAlFinal=false;
-
+  let total=60, remaining=60, tmr=null, running=false;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v|0));
   const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
-  const corriendo=()=>st.p===null;
-  const restante=()=>corriendo()?Math.max(0,Math.ceil((st.dl-Date.now())/1000)):st.p;
-
-  function guardar(){ try{ localStorage.setItem(REST_KEY, JSON.stringify(st)); }catch(e){} }
-  function leer(){
-    try{ const v=JSON.parse(localStorage.getItem(REST_KEY)||'null');
-      if(v && typeof v.t==='number') st={t:v.t, dl:v.dl||0, p:(v.p===null?null:(v.p||0))};
-    }catch(e){}
-  }
-
-  /* ---- audio silencioso: mantiene vivo el contador en segundo plano ---- */
-  let keepEl=null, keepURL=null;
-  function wavSilencio(seg){
-    const sr=8000, n=sr*seg, buf=new ArrayBuffer(44+n*2), v=new DataView(buf);
-    const w=(o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
-    w(0,'RIFF'); v.setUint32(4,36+n*2,true); w(8,'WAVEfmt ');
-    v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
-    v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
-    w(36,'data'); v.setUint32(40,n*2,true);
-    return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
-  }
-  function keepOn(){
-    try{
-      if(!keepEl){
-        keepURL=wavSilencio(2);
-        keepEl=new Audio(keepURL);
-        keepEl.loop=true; keepEl.volume=0.0001; keepEl.setAttribute('playsinline','');
-      }
-      keepEl.play().catch(()=>{});
-    }catch(e){}
-  }
-  function keepOff(){ try{ if(keepEl) keepEl.pause(); }catch(e){} }
-
-  /* ---- ficha fuera de la app: pantalla de bloqueo / notificaciones ---- */
-  function media(){
-    if(!('mediaSession' in navigator)) return;
-    try{
-      const r=restante();
-      navigator.mediaSession.metadata=new MediaMetadata({
-        title:'Descanso '+fmt(r),
-        artist:corriendo()?'FORJA · en marcha':'FORJA · en pausa',
-        album:'Temporizador de descanso',
-        artwork:[{src:'forja-icono-192.png',sizes:'192x192',type:'image/png'},
-                 {src:'forja-icono-512.png',sizes:'512x512',type:'image/png'}]
-      });
-      navigator.mediaSession.playbackState=corriendo()?'playing':'paused';
-      navigator.mediaSession.setActionHandler('play',()=>{ if(!corriendo()) arrancar(); });
-      navigator.mediaSession.setActionHandler('pause',()=>{ if(corriendo()) pausar(); });
-      navigator.mediaSession.setActionHandler('stop',()=>cancelar());
-    }catch(e){}
-  }
-  function mediaLimpia(){
-    notiCerrar();
-    if(!('mediaSession' in navigator)) return;
-    try{ navigator.mediaSession.metadata=null; navigator.mediaSession.playbackState='none'; }catch(e){}
-  }
-
-  /* ---- notificacion viva: cuenta regresiva en la barra del sistema ---- */
-  let notiUlt=-1;
-  function pedirPermiso(){
-    try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
-  }
-  function notiPinta(){
-    if(!('Notification' in window) || Notification.permission!=='granted') return;
-    if(!navigator.serviceWorker || !navigator.serviceWorker.ready) return;
-    const r=restante();
-    if(r===notiUlt) return;
-    notiUlt=r;
-    navigator.serviceWorker.ready.then(reg=>reg.showNotification('Descanso · '+fmt(r),{
-      body: r>0 ? 'Faltan '+fmt(r)+' para tu siguiente serie.' : 'Descanso terminado.',
-      icon:'forja-icono-192.png', badge:'forja-icono-192.png',
-      tag:'forja-descanso-vivo', renotify:false, silent:true,
-      requireInteraction:true, data:{url:'./'}
-    })).catch(()=>{});
-  }
-  function notiCerrar(){
-    notiUlt=-1;
-    try{ if(navigator.serviceWorker && navigator.serviceWorker.ready)
-      navigator.serviceWorker.ready.then(reg=>reg.getNotifications({tag:'forja-descanso-vivo'})
-        .then(ns=>ns.forEach(n=>n.close()))).catch(()=>{});
-    }catch(e){}
-  }
-
-  /* ---- aviso al terminar ---- */
+  function readInputs(){const m=clamp(+minEl.value||0,0,59),s=clamp(+secEl.value||0,0,59);minEl.value=m;secEl.value=s;return m*60+s;}
+  function render(){disp.textContent=fmt(remaining);bar.style.width=(total>0?remaining/total*100:0)+'%';}
+  function setFromInputs(){total=readInputs();remaining=total;disp.classList.remove('done');disp.textContent=fmt(remaining);render();}
   function alarm(){
     try{const c=new (window.AudioContext||window.webkitAudioContext)();
       [0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;
@@ -4028,127 +3970,26 @@ function initRestTimer(){
         g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);
         o.start(c.currentTime+t);o.stop(c.currentTime+t+.22);});
     }catch(e){}
-    try{ if(navigator.vibrate) navigator.vibrate([300,120,300,120,300]); }catch(e){}
-    try{
-      if('Notification' in window && Notification.permission==='granted'){
-        const opts={body:'Descanso terminado. A la siguiente serie.',icon:'forja-icono-192.png',
-          badge:'forja-icono-192.png',tag:'forja-descanso',renotify:true,vibrate:[300,120,300]};
-        if(navigator.serviceWorker && navigator.serviceWorker.ready)
-          navigator.serviceWorker.ready.then(r=>r.showNotification('FORJA · ¡Listo!',opts)).catch(()=>{ new Notification('FORJA · ¡Listo!',opts); });
-        else new Notification('FORJA · ¡Listo!',opts);
-      }
-    }catch(e){}
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
   }
-
-  /* ---- pintado ---- */
-  function render(){
-    const r=restante(), t=st.t||1;
-    const acabado = r<=0;
-    disp.textContent = acabado ? '¡LISTO!' : fmt(r);
-    disp.classList.toggle('done', acabado);
-    bar.style.width=(acabado?0:r/t*100)+'%';
-    startBtn.textContent = corriendo() ? 'Pausar' : (r>0 && r<t ? 'Seguir' : 'Iniciar');
-    minEl.disabled=secEl.disabled=corriendo();
-    const vivo = (corriendo() && r>0);
-    mini.classList.toggle('on', vivo);
-    if(vivo){
-      miniTxt.textContent=fmt(r);
-      miniArc.style.strokeDashoffset=String(CIRC*(1-r/t));
-      mini.classList.toggle('urge', r<=10);
-    }
-  }
-  function bucle(){
-    render();
-    if(corriendo()){
-      if(restante()<=0){ terminar(); return; }
-      media(); notiPinta();
-      raf=setTimeout(bucle,250);
-    }else raf=null;
-  }
-  function correLoop(){ if(raf) clearTimeout(raf); bucle(); }
-
-  /* ---- controles ---- */
-  function leerInputs(){const m=clamp(+minEl.value||0,0,59),s=clamp(+secEl.value||0,0,59);minEl.value=m;secEl.value=s;return m*60+s;}
-  function desdeInputs(){ st={t:leerInputs()||60, dl:0, p:leerInputs()||60}; sonoAlFinal=false; guardar(); render(); }
-  function arrancar(){
-    let r=restante(); if(r<=0){ desdeInputs(); r=restante(); }
-    if(r<=0) return;
-    st.dl=Date.now()+r*1000; st.p=null; sonoAlFinal=false;
-    guardar(); pedirPermiso(); keepOn(); media(); notiPinta(); correLoop();
-  }
-  function pausar(){ st.p=restante(); st.dl=0; guardar(); keepOff(); notiCerrar(); media(); render(); }
-  function terminar(){
-    st.p=0; st.dl=0; guardar(); keepOff(); mediaLimpia(); render();
-    mini.classList.remove('on');
-    if(!sonoAlFinal){ sonoAlFinal=true; alarm(); }
-  }
-  function cancelar(){ st.p=st.t; st.dl=0; guardar(); keepOff(); mediaLimpia(); if(raf)clearTimeout(raf); raf=null; render(); }
-
-  function abrir(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); if(!corriendo() && restante()===st.t) desdeInputs(); render(); }
-  function cerrar(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }   /* NO detiene el reloj */
-
-  startBtn.addEventListener('click',()=>corriendo()?pausar():arrancar());
-  resetBtn.addEventListener('click',()=>{ cancelar(); desdeInputs(); });
-  $('restClose').addEventListener('click',cerrar);
-  modal.addEventListener('click',e=>{if(e.target===modal)cerrar();});
-  [minEl,secEl].forEach(el=>el.addEventListener('input',()=>{ if(!corriendo()) desdeInputs(); }));
-  $('restPresets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-    const s=+b.dataset.s; minEl.value=Math.floor(s/60); secEl.value=s%60; cancelar(); desdeInputs(); arrancar();});
-  document.addEventListener('click',e=>{const b=e.target.closest('.ex-rest');if(b)abrir();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))cerrar();});
-  mini.addEventListener('click',e=>{ if(e.target.closest('#restMiniX')){ cancelar(); return; } abrir(); });
-
-  /* al volver de segundo plano se recalcula con la hora real */
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ render(); if(corriendo()) correLoop(); } });
-  window.addEventListener('focus',()=>{ render(); if(corriendo()) correLoop(); });
-  window.addEventListener('pageshow',()=>{ render(); if(corriendo()) correLoop(); });
-
-  /* estado guardado: si el descanso vencio mientras estabas fuera, avisa al volver */
-  leer();
-  minEl.value=Math.floor(st.t/60); secEl.value=st.t%60;
-  if(corriendo()){
-    if(restante()<=0){ sonoAlFinal=false; terminar(); }
-    else { keepOn(); media(); correLoop(); }
-  }else render();
-
-  window.FORJADescanso={abrir:abrir, arrancar:arrancar, pausar:pausar, cancelar:cancelar, restante:restante};
+  function stop(){running=false;startBtn.textContent='Iniciar';minEl.disabled=secEl.disabled=false;clearInterval(tmr);tmr=null;}
+  function tick(){remaining--;if(remaining<=0){remaining=0;render();stop();disp.classList.add('done');disp.textContent='¡LISTO!';alarm();return;}render();}
+  function start(){if(remaining<=0)setFromInputs();if(remaining<=0)return;running=true;startBtn.textContent='Pausar';minEl.disabled=secEl.disabled=true;tmr=setInterval(tick,1000);}
+  function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');if(!running)setFromInputs();}
+  function close(){stop();modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+  startBtn.addEventListener('click',()=>running?stop():start());
+  resetBtn.addEventListener('click',()=>{stop();setFromInputs();});
+  $('restClose').addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  [minEl,secEl].forEach(el=>el.addEventListener('input',()=>{if(!running)setFromInputs();}));
+  $('restPresets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const s=+b.dataset.s;minEl.value=Math.floor(s/60);secEl.value=s%60;stop();setFromInputs();});
+  document.addEventListener('click',e=>{const b=e.target.closest('.ex-rest');if(b)open();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))close();});
+  setFromInputs();
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initRestTimer); else initRestTimer();
 
 </script>
-
-<style>
-/* Reloj de descanso flotante (visible en cualquier pantalla de la app) */
-.rest-mini{position:fixed;left:50%;transform:translate(-50%,-160%);top:calc(env(safe-area-inset-top,0px) + 10px);
-  z-index:820;display:flex;align-items:center;gap:10px;padding:7px 14px 7px 7px;border-radius:999px;
-  background:rgba(8,8,8,.92);border:1px solid rgba(201,162,39,.42);backdrop-filter:blur(12px);
-  box-shadow:0 10px 30px rgba(0,0,0,.6);color:#f3ead4;font-variant-numeric:tabular-nums;
-  opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.2,.9,.2,1),opacity .25s ease;cursor:pointer}
-.rest-mini.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-.rest-mini svg{width:38px;height:38px;display:block;transform:rotate(-90deg)}
-.rest-mini .rm-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:3.4}
-.rest-mini .rm-fg{fill:none;stroke:#c9a227;stroke-width:3.4;stroke-linecap:round;
-  stroke-dasharray:119.38;transition:stroke-dashoffset .3s linear,stroke .3s ease}
-.rest-mini #restMiniTxt{font-size:17px;font-weight:700;letter-spacing:.06em;min-width:56px}
-.rest-mini .rm-lbl{display:block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#8a8a8a;font-weight:600}
-.rest-mini #restMiniX{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-  background:rgba(255,255,255,.07);border:0;color:#b9b0a0;font-size:15px;line-height:1;cursor:pointer;flex:0 0 auto}
-.rest-mini #restMiniX:hover{background:rgba(255,59,48,.2);color:#ff6b60}
-.rest-mini.urge .rm-fg{stroke:#ff3b30}
-.rest-mini.urge #restMiniTxt{color:#ff6b60}
-.rest-mini.urge{border-color:rgba(255,59,48,.5);animation:rmPulse 1s ease-in-out infinite}
-@keyframes rmPulse{0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.6)}50%{box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 6px rgba(255,59,48,.12)}}
-</style>
-
-<!-- Reloj circular flotante del descanso -->
-<div class="rest-mini" id="restMini" role="button" tabindex="0" aria-label="Temporizador de descanso en marcha">
-  <svg viewBox="0 0 44 44" aria-hidden="true">
-    <circle class="rm-bg" cx="22" cy="22" r="19"></circle>
-    <circle class="rm-fg" id="restMiniArc" cx="22" cy="22" r="19" stroke-dashoffset="0"></circle>
-  </svg>
-  <span><span class="rm-lbl">Descanso</span><span id="restMiniTxt">00:00</span></span>
-  <button id="restMiniX" type="button" title="Cancelar descanso" aria-label="Cancelar descanso">&times;</button>
-</div>
 
 <!-- ===== Temporizador de descanso ===== -->
 <div class="rest-modal" id="restModal" aria-hidden="true">
@@ -4448,59 +4289,5 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 </script>
 
-<script>
-/* Salvavidas: pantalla negra nunca mas. Si un error corta el arranque o a los
-   6s no se ha pintado nada, muestra el motivo y ofrece reinstalar limpio. */
-(function(){
-  var mostrado=false;
-  function rescate(motivo){
-    if(mostrado) return; mostrado=true;
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b0b0b;color:#f3ead4;'+
-      'font:15px/1.5 system-ui,-apple-system,sans-serif;padding:28px 22px;overflow:auto';
-    d.innerHTML='<div style="max-width:420px;margin:8vh auto;text-align:center">'+
-      '<div style="font-size:28px;letter-spacing:.18em;font-weight:800;color:#c9a227">FORJA</div>'+
-      '<p style="margin:18px 0 6px;font-weight:600">No se pudo abrir la app</p>'+
-      '<p style="margin:0 0 20px;color:#9a9a9a;font-size:13px">'+String(motivo||'').slice(0,300)+'</p>'+
-      '<button id="fjFix" style="width:100%;padding:14px;border:0;border-radius:12px;background:#c9a227;'+
-      'color:#141414;font-weight:700;font-size:15px">Reinstalar y volver a abrir</button>'+
-      '<button id="fjRe" style="width:100%;margin-top:10px;padding:14px;border:1px solid #333;'+
-      'border-radius:12px;background:transparent;color:#ccc;font-size:14px">Solo recargar</button></div>';
-    document.body.appendChild(d);
-    d.querySelector('#fjRe').onclick=function(){ location.reload(); };
-    d.querySelector('#fjFix').onclick=function(){
-      var fin=function(){ location.replace(location.pathname+'?v='+Date.now()); };
-      var tareas=[];
-      try{ if(window.caches) tareas.push(caches.keys().then(function(k){
-        return Promise.all(k.map(function(n){ return caches.delete(n); })); })); }catch(e){}
-      try{ if(navigator.serviceWorker) tareas.push(navigator.serviceWorker.getRegistrations()
-        .then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
-      Promise.all(tareas).then(fin, fin);
-      setTimeout(fin, 2500);
-    };
-  }
-  function pantallaViva(){
-    var app=document.querySelector('.app'), gate=document.getElementById('authGate');
-    return [app,gate].some(function(el){
-      return el && getComputedStyle(el).display!=='none' && el.offsetHeight>40; });
-  }
-  /* solo vigila el arranque: pasados 8s (o en cuanto la app pinta) se apaga,
-     para que un error suelto a mitad del entrenamiento no tape la app */
-  var arrancando=true;
-  function cerrarVigilancia(){ arrancando=false; }
-  setTimeout(cerrarVigilancia, 8000);
-  var reloj=setInterval(function(){ if(pantallaViva()){ cerrarVigilancia(); clearInterval(reloj); } }, 500);
-  setTimeout(function(){ clearInterval(reloj); }, 9000);
-
-  window.addEventListener('error', function(ev){
-    if(!arrancando || !ev || !ev.message) return;
-    if(pantallaViva()) return;                 /* la app funciona: no molestar */
-    rescate(ev.message);
-  });
-  window.addEventListener('load', function(){
-    setTimeout(function(){ if(!pantallaViva()) rescate('El arranque se quedo a medias.'); }, 6000);
-  });
-})();
-</script>
 </body>
 </html>
