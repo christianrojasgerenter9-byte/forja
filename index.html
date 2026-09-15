@@ -258,6 +258,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bm-on.s0,.bm-on.s1{opacity:1;filter:brightness(1.12) saturate(1.25) drop-shadow(0 0 7px rgba(255,59,48,.8)) drop-shadow(0 0 20px rgba(255,59,48,.45))}
 .bm-on.s2{opacity:.7;filter:brightness(1) saturate(1.05) drop-shadow(0 0 5px rgba(255,59,48,.4))}
 .bm-zona.s4{opacity:.75;filter:grayscale(.2) sepia(.35) brightness(1.05) drop-shadow(0 0 8px rgba(201,162,39,.55))}
+.bm-mini-wrap{margin-top:22px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);text-align:center}
+.bm-mini-tag{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:700}
+.bm-mini{position:relative;width:150px;margin:0 auto}
+.bm-mini img{width:100%;display:block}
+.bm-mini .bm-base{filter:grayscale(1) brightness(.5) contrast(1.05)}
+.bm-mini-on{position:absolute;left:0;top:0;opacity:0;transition:opacity .5s ease;filter:brightness(1.1) saturate(1.2) drop-shadow(0 0 8px rgba(255,59,48,.7))}
+.bm-mini-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.bm-mini-list span{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--surface-2)}
+.bm-mini-list span.done{color:#ff3b30;border-color:#ff3b30;background:rgba(255,59,48,.08)}
 .bm-hit{position:absolute;left:0;top:0;width:100%;height:100%}
 .bm-hit path{fill:transparent;stroke:transparent;stroke-width:.004;cursor:pointer;transition:.15s}
 .bm-hit path:hover{fill:rgba(255,255,255,.12);stroke:rgba(255,255,255,.5)}
@@ -1204,6 +1213,18 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="muscle-pista" id="musclePista"></div>
         <button type="button" class="btn-descanso" id="btnDescansoHoy">Hoy descanso</button>
         <div class="ex-grid" id="exGrid"></div>
+        <div class="bm-mini-wrap" id="bmMiniWrap" style="display:none">
+          <span class="bm-mini-tag">Progreso de hoy</span>
+          <div class="bm-mini" id="bmMini">
+            <img class="bm-base" src="mq-f.webp" alt="">
+            <img class="bm-mini-on" data-g="pecho" src="mq-f-pecho-on.webp" alt="">
+            <img class="bm-mini-on" data-g="hombro" src="mq-f-hombro-on.webp" alt="">
+            <img class="bm-mini-on" data-g="brazo" src="mq-f-brazo-on.webp" alt="">
+            <img class="bm-mini-on" data-g="abs" src="mq-f-abs-on.webp" alt="">
+            <img class="bm-mini-on" data-g="pierna" src="mq-f-pierna-on.webp" alt="">
+          </div>
+          <div class="bm-mini-list" id="bmMiniList"></div>
+        </div>
       </section>
 
       <!-- ============ PROGRESO ============ -->
@@ -1239,7 +1260,6 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="chart" id="chart"></div>
             <div class="chart-x" id="chartX"></div>
             <div id="weekNote"></div>
-            <div class="log-list" id="logList"></div>
           </div>
         </div>
       </section>
@@ -2801,6 +2821,33 @@ function subirAlSiguiente(){
   window.scrollTo({top:Math.max(0,y), behavior:'smooth'});
 }
 
+/* Mini avatar al fondo de Rutinas: cada zona trabajada hoy se enciende en
+   proporcion a cuantos de sus ejercicios ya marcaste como hechos */
+function renderMiniAvatar(musculosSel, R){
+  const wrap=document.getElementById('bmMiniWrap'); if(!wrap) return;
+  const grupos=[...new Set(musculosSel.map(k=>k==='abdomen'?'abs':k))];
+  if(!grupos.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  const lista=document.getElementById('bmMiniList'); lista.innerHTML='';
+  document.querySelectorAll('.bm-mini-on').forEach(img=>{
+    const g=img.dataset.g;
+    const k=musculosSel.find(m=>(m==='abdomen'?'abs':m)===g);
+    if(!k){ img.style.opacity=0; return; }
+    const exs=(R[k]?R[k].ex:[])||[];
+    const total=exs.length, hechos=exs.filter(e=>doneToday[e.n]).length;
+    img.style.opacity= total? Math.max(hechos/total,0.08) : 0.08;
+  });
+  grupos.forEach(g=>{
+    const k=musculosSel.find(m=>(m==='abdomen'?'abs':m)===g);
+    if(!k) return;
+    const exs=(R[k]?R[k].ex:[])||[];
+    const total=exs.length, hechos=exs.filter(e=>doneToday[e.n]).length;
+    const s=document.createElement('span');
+    s.className=hechos>0?'done':'';
+    s.textContent=(BM_NOMBRES[g]||g)+' '+hechos+'/'+total;
+    lista.appendChild(s);
+  });
+}
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
@@ -2822,6 +2869,7 @@ function renderExercises(){
   const idxSiguiente = ex.findIndex(e=>!doneToday[e.n]);
   document.getElementById('exCountPill').textContent =
     ex.length+' ejercicios'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
+  renderMiniAvatar(musculosSel, R);
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
     const ov=exset[e.n]||{};
@@ -2954,18 +3002,33 @@ function groupLogsByWeek(list){
     if(!map[k]) map[k]={ini, vol:0, dias:{}};
     map[k].vol += (l.weight*l.reps||l.reps);
     map[k].dias[logFecha(l).toDateString()]=1;
+    const dow=logFecha(l).getDay();
+    if(!map[k].porDia) map[k].porDia={};
+    map[k].porDia[dow]=(map[k].porDia[dow]||0)+(l.weight*l.reps||l.reps);
   });
   const keys=Object.keys(map).map(Number).sort((a,b)=>a-b);
   const hoy=inicioSemana(new Date()).getTime();
   const fin=Math.max(keys[keys.length-1], hoy);
   const SEM=604800000, out=[];
   for(let t=keys[0]; t<=fin; t+=SEM){
-    const w=map[t]||{ini:new Date(t), vol:0, dias:{}};
+    const w=map[t]||{ini:new Date(t), vol:0, dias:{}, porDia:{}};
+    /* dia con mas y con menos volumen de la semana, para decir en que dia
+       del entrenamiento subiste el peso y en cual bajaste */
+    const NOM_DIA=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const dias=Object.entries(w.porDia||{});
+    let diaMax=null, diaMin=null;
+    if(dias.length){
+      dias.sort((a,b)=>b[1]-a[1]);
+      diaMax=NOM_DIA[dias[0][0]];
+      diaMin=NOM_DIA[dias[dias.length-1][0]];
+      if(dias.length===1) diaMin=null;
+    }
     out.push({
       vol:w.vol,
       sesiones:Object.keys(w.dias).length,
       esActual:t===hoy,
-      label:w.ini.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'})
+      label:w.ini.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'}),
+      diaMax, diaMin
     });
   }
   return out;
@@ -2987,7 +3050,7 @@ function renderProgress(){
       const prev=i>0?weeks[i-1].vol:null;
       const diff=prev!==null?w.vol-prev:null;
       const pct=prev?Math.round(diff/prev*100):null;
-      bar.dataset.v=fmt(w.vol)+' kg·rep · '+w.sesiones+(w.sesiones===1?' sesión':' sesiones')+(pct!==null?' · '+(pct>0?'+':'')+pct+'% vs semana previa':'');
+      bar.dataset.v=fmt(w.vol)+' kg·rep · '+w.sesiones+(w.sesiones===1?' sesión':' sesiones')+(pct!==null?' · '+(pct>0?'+':'')+pct+'% vs semana previa':'')+(w.diaMax?' · Tu mejor día: '+w.diaMax:'')+(w.diaMin?' · Tu día más flojo: '+w.diaMin:'');
       if(diff!==null&&w.vol>0){
         const d=document.createElement('span');
         const dir=diff>0?'up':diff<0?'down':'flat';
@@ -3005,24 +3068,16 @@ function renderProgress(){
       if(prev&&prev.vol){
         const diff=last.vol-prev.vol, pct=Math.round(diff/prev.vol*100);
         const dir=diff>0?'up':diff<0?'down':'';
+        const dias=last.diaMax?' <b>'+last.diaMax+'</b> fue tu día fuerte'+(last.diaMin?' y <b>'+last.diaMin+'</b> el más flojo.':'.'):'';
         note.innerHTML='<div class="week-note '+dir+'">'+(diff>0?'🔥':diff<0?'🪨':'➖')+
           ' <span>'+(last.esActual?'Esta semana':'Semana '+last.label)+' llevas <b>'+fmt(last.vol)+' kg·rep</b> — '+
           (diff>0?'<b>subiste '+pct+'%</b>':diff<0?'<b>bajaste '+Math.abs(pct)+'%</b>':'<b>igual</b>')+
-          ' vs la semana del '+prev.label+' ('+fmt(prev.vol)+' kg·rep).</span></div>';
+          ' vs la semana del '+prev.label+' ('+fmt(prev.vol)+' kg·rep).'+dias+'</span></div>';
       } else {
         note.innerHTML='<div class="week-note"><span>Primera semana registrada: <b>'+fmt(last.vol)+' kg·rep</b>. La próxima semana verás si subiste o bajaste.</span></div>';
       }
     }
   }
-  const ll=document.getElementById('logList'); ll.innerHTML='';
-  if(!registros.length){ll.innerHTML='<div class="empty">Tu historial aparecerá aquí en cuanto registres series en Rutinas.</div>';return;}
-  [...registros].reverse().slice(0,20).forEach(l=>{
-    const row=document.createElement('div');row.className='log-row';
-    row.innerHTML=`<span class="dot"></span><span class="ex">${l.exercise}</span>
-      <span class="stat2">${l.weight?l.weight+'kg × ':''}${l.reps} reps</span>
-      <span class="stat2" style="opacity:.6">${l.date}</span>`;
-    ll.appendChild(row);
-  });
 }
 
 /* ----------- Medidas corporales ----------- */
