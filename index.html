@@ -1630,6 +1630,7 @@ const CONFIG = {
   CODIGOS_PRO: [
     { hash: "e02c98590353d25fbc957c86f9c41fcc92cd32c4e944c09c022ff3477795a4c1", vence: "2026-07-31" },  // JULIO
     { hash: "a306ebe447b8d3d1a4eaa16e923849602cf814ca9ffecbef8252920dff883936", vence: "2026-08-31" },  // AGOSTO
+    { hash: "c819f205f0d434a83175a72832cb0d081227dea24e648a016f9b4c6d515898cc", vence: "2026-09-30" },  // SEPTIEMBRE — SHAZAM!
   ],
   PRECIO_PRO: 199 // MXN / mes
 };
@@ -3818,8 +3819,19 @@ function fbError(e){
   if(c.indexOf('wrong-password')>=0||c.indexOf('invalid-credential')>=0||c.indexOf('user-not-found')>=0) return 'Correo o contraseña incorrectos.';
   if(c.indexOf('network')>=0) return 'Sin conexión. Revisa tu internet.';
   if(c.indexOf('too-many-requests')>=0) return 'Demasiados intentos. Espera un momento.';
+  if(c.indexOf('tiempo-agotado')>=0) return 'Tardó demasiado en responder. Revisa tu conexión e intenta de nuevo.';
   return 'Ocurrió un error. Intenta de nuevo.';
 }
+/* Peticiones a Firebase sin limite de tiempo: en iPhone (red lenta, Safari
+   Relay o ITP bloqueando el token) se quedan "pensando" para siempre.
+   Esto corta la espera a los 12s y muestra un error en vez de congelarse. */
+function conTiempoLimite(promesa, ms=12000){
+  return Promise.race([
+    promesa,
+    new Promise((_,rej)=>setTimeout(()=>rej({code:'forja/tiempo-agotado'}),ms))
+  ]);
+}
+
 if(FB_ON){
   document.getElementById('doRegister').onclick=async()=>{
     const name=document.getElementById('regName').value.trim();
@@ -3833,9 +3845,9 @@ if(FB_ON){
     if(!document.getElementById('regConsent').checked){err.textContent='Debes leer y aceptar el Aviso de privacidad para crear tu cuenta.';return;}
     err.textContent='Creando cuenta…';
     try{
-      const cred=await fbAuth.createUserWithEmailAndPassword(email,p);
+      const cred=await conTiempoLimite(fbAuth.createUserWithEmailAndPassword(email,p));
       displayName=name;
-      await fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now(), avisoAceptado:true, avisoVersion:AVISO_VERSION, avisoFecha:new Date().toISOString()},{merge:true});
+      try{ await conTiempoLimite(fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now(), avisoAceptado:true, avisoVersion:AVISO_VERSION, avisoFecha:new Date().toISOString()},{merge:true})); }catch(e){}
       err.textContent='';
     }catch(e){ err.textContent=fbError(e); }
   };
@@ -3845,7 +3857,7 @@ if(FB_ON){
     const err=document.getElementById('logErr'); err.style.color=''; err.textContent='';
     if(!email||!p){err.textContent='Escribe tu correo y contraseña.';return;}
     err.textContent='Entrando…';
-    try{ await fbAuth.signInWithEmailAndPassword(email,p); err.textContent=''; }
+    try{ await conTiempoLimite(fbAuth.signInWithEmailAndPassword(email,p)); err.textContent=''; }
     catch(e){ err.textContent=fbError(e); }
   };
   logout=function(){ try{ fbAuth.signOut(); }catch(e){} };
@@ -3891,26 +3903,39 @@ if(FB_ON){
   });
 }
 
-/* ===== Arranque ===== */
-if(FB_ON){ showGate(); }
+/* ===== Arranque =====
+   Si Firebase esta activo pero en el iPhone la primera respuesta de
+   onAuthStateChanged nunca llega (red lenta, ITP bloqueando el token),
+   la app se quedaba "pensando" en la pantalla de acceso para siempre.
+   Con sesion local guardada, entra sin esperar mas de 4s a la nube. */
+if(FB_ON){
+  showGate();
+  if(session && users[session]){
+    setTimeout(()=>{ if(!fbUser) enterApp(); }, 4000);
+  }
+}
 else { if(session && users[session]) enterApp(); else showGate(); }
 
 
-/* Version nueva publicada: recarga una sola vez y sin avisar, para que el
-   usuario nunca se quede con la app vieja en el telefono. */
+/* Version nueva publicada: busca actualizaciones y recarga UNA sola vez.
+   Reglas anti-bucle (Safari/iOS es sensible a esto):
+   - solo recarga si ya habia un service worker controlando la pagina
+     (en la primera instalacion NO se recarga: ahi nace la pantalla negra);
+   - la bandera vive en sessionStorage, asi que un ciclo nunca se repite. */
 if('serviceWorker' in navigator){
-  let yaRecargue=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(yaRecargue) return; yaRecargue=true;
-    location.reload();
-  });
-  navigator.serviceWorker.ready.then(reg=>{
-    try{ reg.update(); }catch(e){}
-    setInterval(()=>{ try{ reg.update(); }catch(e){} }, 60*60*1000);
-  }).catch(()=>{});
-  document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden) navigator.serviceWorker.ready.then(r=>{try{r.update();}catch(e){}}).catch(()=>{});
-  });
+  try{
+    var habiaControl = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if(!habiaControl) return;
+      try{ if(sessionStorage.getItem('forja_sw_reload')==='1') return;
+           sessionStorage.setItem('forja_sw_reload','1'); }catch(e){}
+      location.reload();
+    });
+    navigator.serviceWorker.ready.then(function(reg){
+      try{ reg.update(); }catch(e){}
+      setInterval(function(){ try{ reg.update(); }catch(e){} }, 60*60*1000);
+    }).catch(function(){});
+  }catch(e){}
 }
 
 /* ===== Temporizador de descanso =====
@@ -4444,5 +4469,59 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 </script>
 
+<script>
+/* Salvavidas: pantalla negra nunca mas. Si un error corta el arranque o a los
+   6s no se ha pintado nada, muestra el motivo y ofrece reinstalar limpio. */
+(function(){
+  var mostrado=false;
+  function rescate(motivo){
+    if(mostrado) return; mostrado=true;
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b0b0b;color:#f3ead4;'+
+      'font:15px/1.5 system-ui,-apple-system,sans-serif;padding:28px 22px;overflow:auto';
+    d.innerHTML='<div style="max-width:420px;margin:8vh auto;text-align:center">'+
+      '<div style="font-size:28px;letter-spacing:.18em;font-weight:800;color:#c9a227">FORJA</div>'+
+      '<p style="margin:18px 0 6px;font-weight:600">No se pudo abrir la app</p>'+
+      '<p style="margin:0 0 20px;color:#9a9a9a;font-size:13px">'+String(motivo||'').slice(0,300)+'</p>'+
+      '<button id="fjFix" style="width:100%;padding:14px;border:0;border-radius:12px;background:#c9a227;'+
+      'color:#141414;font-weight:700;font-size:15px">Reinstalar y volver a abrir</button>'+
+      '<button id="fjRe" style="width:100%;margin-top:10px;padding:14px;border:1px solid #333;'+
+      'border-radius:12px;background:transparent;color:#ccc;font-size:14px">Solo recargar</button></div>';
+    document.body.appendChild(d);
+    d.querySelector('#fjRe').onclick=function(){ location.reload(); };
+    d.querySelector('#fjFix').onclick=function(){
+      var fin=function(){ location.replace(location.pathname+'?v='+Date.now()); };
+      var tareas=[];
+      try{ if(window.caches) tareas.push(caches.keys().then(function(k){
+        return Promise.all(k.map(function(n){ return caches.delete(n); })); })); }catch(e){}
+      try{ if(navigator.serviceWorker) tareas.push(navigator.serviceWorker.getRegistrations()
+        .then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
+      Promise.all(tareas).then(fin, fin);
+      setTimeout(fin, 2500);
+    };
+  }
+  function pantallaViva(){
+    var app=document.querySelector('.app'), gate=document.getElementById('authGate');
+    return [app,gate].some(function(el){
+      return el && getComputedStyle(el).display!=='none' && el.offsetHeight>40; });
+  }
+  /* solo vigila el arranque: pasados 8s (o en cuanto la app pinta) se apaga,
+     para que un error suelto a mitad del entrenamiento no tape la app */
+  var arrancando=true;
+  function cerrarVigilancia(){ arrancando=false; }
+  setTimeout(cerrarVigilancia, 8000);
+  var reloj=setInterval(function(){ if(pantallaViva()){ cerrarVigilancia(); clearInterval(reloj); } }, 500);
+  setTimeout(function(){ clearInterval(reloj); }, 9000);
+
+  window.addEventListener('error', function(ev){
+    if(!arrancando || !ev || !ev.message) return;
+    if(pantallaViva()) return;                 /* la app funciona: no molestar */
+    rescate(ev.message);
+  });
+  window.addEventListener('load', function(){
+    setTimeout(function(){ if(!pantallaViva()) rescate('El arranque se quedo a medias.'); }, 6000);
+  });
+})();
+</script>
 </body>
 </html>
