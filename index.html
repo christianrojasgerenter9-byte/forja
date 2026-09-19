@@ -229,13 +229,14 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-hist b{color:var(--text)}
 /* ---- Series del dia: una fila por serie ---- */
 .serie-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
-.serie-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);
+.serie-row{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);
            border-radius:12px;padding:11px 13px}
 .serie-row.is-drop{border-color:rgba(224,138,60,.5);background:rgba(224,138,60,.07)}
-.serie-row .sr-n{font-family:'Anton',sans-serif;font-size:13px;color:var(--muted-2);min-width:16px}
+.serie-row .sr-n{font-family:'Anton',sans-serif;font-size:13px;color:var(--muted-2);min-width:16px;margin-right:4px}
 .serie-row .sr-v{font-family:'Anton',sans-serif;font-size:17px;letter-spacing:.02em}
-.serie-row .sr-u{font-size:12px;color:var(--muted);font-weight:600}
-.serie-row .sr-x{font-size:12px;color:var(--muted-2);margin:0 1px}
+.serie-row .sr-u{font-size:12px;color:var(--muted);font-weight:600;margin-right:4px}
+.serie-row .sr-x{font-size:12px;color:var(--muted-2);margin:0 3px}
+.serie-row .sc-tag{margin-left:5px}
 .serie-row .sr-del{margin-left:auto;background:none;border:0;color:var(--muted-2);cursor:pointer;
                    font-size:16px;line-height:1;padding:2px 2px}
 .serie-row .sr-del:hover{color:#FF6B6B}
@@ -245,9 +246,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-chip button{background:none;border:0;color:var(--muted-2);cursor:pointer;font-size:14px;line-height:1;padding:0}
 .serie-chip button:hover{color:#FF6B6B}
 .serie-vacio{font-size:12px;color:var(--muted-2)}
-.serie-add{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap;
+.serie-add{display:grid;grid-template-columns:auto 1fr 1fr;gap:7px;align-items:stretch;
            background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:7px}
-.sf{flex:1 1 84px;min-width:74px;display:flex;align-items:center;gap:5px;background:var(--bg);
+.serie-add .serie-btn{grid-column:1/-1;justify-content:center}
+.sf{display:flex;align-items:center;gap:5px;min-width:0;background:var(--bg);
     border:1px solid var(--line);border-radius:10px;padding:2px 9px}
 .sf:focus-within{border-color:var(--orange)}
 .sf .sf-k{font-size:10px;font-weight:800;letter-spacing:.11em;color:var(--muted-2)}
@@ -1992,16 +1994,23 @@ let dropTipVisto=load('forja_droptip',0);
 
 function seriesEfectivas(ex){ return seriesHoy(ex).filter(x=>!x.d || x.d===1).length; }
 
-/* Numero de serie a la que pertenece el drop set de hoy (la caida 1) */
+/* Numero de serie a la que pertenece el ultimo reto de hoy (su caida 1) */
 function numSerieDrop(ex){
-  const arr=seriesHoy(ex); let num=0;
+  const arr=seriesHoy(ex); let num=0, res=0;
   for(let i=0;i<arr.length;i++){
     if(!arr[i].d || arr[i].d===1) num++;
-    if(arr[i].d===1) return num;
+    if(arr[i].d===1) res=num;
   }
-  return num;
+  return res || num;
 }
-function caidasDrop(ex){ return seriesHoy(ex).filter(x=>x.d).length; }
+function caidasDrop(ex){
+  /* Solo los niveles del ultimo reto: desde la ultima caida 1 en adelante */
+  const arr=seriesHoy(ex);
+  let ini=-1;
+  for(let i=0;i<arr.length;i++) if(arr[i].d===1) ini=i;
+  if(ini<0) return 0;
+  return arr.slice(ini).filter(x=>x.d).length;
+}
 
 function sugDrop(ex){
   const h=seriesHoy(ex);
