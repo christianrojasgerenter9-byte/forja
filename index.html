@@ -257,7 +257,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-btn{flex:0 0 auto;white-space:nowrap;border:0;border-radius:10px;padding:9px 15px;cursor:pointer;font-size:13px;
            font-weight:700;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta));
            display:flex;align-items:center;gap:6px}
-/* ---- Drop set ---- */
+/* ---- Reto Super Sayayin (drop set) ---- */
 .serie-drop{width:100%;white-space:nowrap;border:0;border-radius:12px;padding:14px 14px;cursor:pointer;margin-top:10px;
             font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.14em;text-transform:uppercase;
             color:#2A1403;background:linear-gradient(100deg,#F79A2B,#EE7F12);
@@ -1980,7 +1980,7 @@ function textoAnterior(ex){
   const reps=a.sets.map(x=>x.r).join(', ');
   const cuando = a.dias===1 ? 'ayer' : 'hace '+a.dias+' dias';
   return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' kg × ' : '') + reps
-       + (a.sets.some(x=>x.d) ? ' · con drop set' : '');
+       + (a.sets.some(x=>x.d) ? ' · con Reto Súper Sayayin' : '');
 }
 
 /* ----------- Drop set -----------
@@ -2016,11 +2016,14 @@ function chipsHTML(ex){
   let num=0;
   const html=arr.map((x,n)=>{
     let lbl;
-    if(x.d && x.d>1){ lbl='↓ '+num+'.'+x.d; }
-    else { num++; lbl=num+'·'; }
-    return '<span class="serie-chip'+(x.d?' is-drop':'')+(chipNuevo&&chipNuevo.ex===ex&&chipNuevo.i===n?' es-nueva':'')+'">'+lbl+' '+(x.p?x.p+'kg × ':'')+x.r+
-      (x.d?' <span class="sc-tag">DROP '+x.d+'</span>':'')+
-      ' <button data-sdel="'+ex+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>';
+    if(x.d && x.d>1){ lbl='↓'+num+'.'+x.d; }
+    else { num++; lbl=num; }
+    return '<div class="serie-row'+(x.d?' is-drop':'')+(chipNuevo&&chipNuevo.ex===ex&&chipNuevo.i===n?' es-nueva':'')+'">'+
+      '<span class="sr-n">'+lbl+'</span>'+
+      (x.p?'<span class="sr-v">'+x.p+'</span><span class="sr-u">kg</span><span class="sr-x">×</span>':'')+
+      '<span class="sr-v">'+x.r+'</span><span class="sr-u">reps</span>'+
+      (x.d?'<span class="sc-tag">SS '+x.d+'</span>':'')+
+      '<button class="sr-del" data-sdel="'+ex+'" data-i="'+n+'" aria-label="Quitar serie">×</button></div>';
   }).join('');
   return html || '<span class="serie-vacio">Aun sin series hoy</span>';
 }
@@ -3004,26 +3007,26 @@ function renderExercises(){
           </label>
           <button class="serie-btn" data-sadd="${e.n}">⊕ Serie</button>
         </div>
-        <button class="serie-drop" type="button" data-dropstart="${e.n}"${dropRun[e.n]?' disabled':''} title="Registra esta serie al fallo y encadena caidas de peso">
-          Drop set <span class="sd-sub">· exprime la última serie</span>
+        <button class="serie-drop" type="button" data-dropstart="${e.n}"${dropRun[e.n]?' disabled':''} title="Registra esta serie al fallo y encadena niveles bajando el peso">
+          Reto Súper Sayayin <span class="sd-sub">· exprime la última serie</span>
         </button>
         ${dropRun[e.n] ? `<div class="drop-panel${dropRun[e.n]===1?' es-nueva':''}">
           ${!dropTipVisto ? `<div class="drop-tip">
-            <b>¿Qué es un drop set?</b> Llegas al fallo con tu peso normal, bajas la carga de inmediato y sigues sin descansar. Cada bajada es una <b>caída</b>: encadénalas hasta que no puedas más. Cuenta como <b>una sola serie</b>, pero todo el volumen se suma a tu progreso.
+            <b>¿Qué es el Reto Súper Sayayin?</b> Llegas al fallo con tu peso normal, bajas la carga de inmediato y sigues sin descansar. Cada bajada es un <b>nivel</b>: encadénalos hasta que no puedas más. Cuenta como <b>una sola serie</b>, pero todo el volumen se suma a tu progreso.
             <button type="button" data-dptip="1">Entendido</button>
           </div>` : ''}
-          <div class="dp-title es-nueva">Caida ${dropRun[e.n]+1}${sugDrop(e.n)!=='' ? ' · sugerido ~'+sugDrop(e.n)+'kg' : ''}</div>
+          <div class="dp-title es-nueva">Nivel ${dropRun[e.n]+1}${sugDrop(e.n)!=='' ? ' · sugerido ~'+sugDrop(e.n)+'kg' : ''}</div>
           <div class="dp-row">
             <input class="serie-in" data-dp="${e.n}" data-f="p" inputmode="decimal" placeholder="kg" value="${sugDrop(e.n)}">
             <input class="serie-in" data-dp="${e.n}" data-f="r" inputmode="numeric" placeholder="reps al fallo">
           </div>
           <div class="dp-actions">
-            <button class="dp-add" type="button" data-dpadd="${e.n}">+ Otra caida</button>
-            <button class="dp-end" type="button" data-dpend="${e.n}">Terminar drop</button>
+            <button class="dp-add" type="button" data-dpadd="${e.n}">+ Otro nivel</button>
+            <button class="dp-end" type="button" data-dpend="${e.n}">Terminar reto</button>
           </div>
         </div>` : ''}
         ${(!dropRun[e.n] && caidasDrop(e.n)) ? `<div class="drop-done">
-          <span class="dd-ck">✓</span><span>Serie <b>${numSerieDrop(e.n)}</b> exprimida al fallo · ${caidasDrop(e.n)} caídas</span>
+          <span class="dd-ck">✓</span><span>Serie <b>${numSerieDrop(e.n)}</b> exprimida al fallo · nivel ${caidasDrop(e.n)}</span>
         </div>` : ''}
       </div>
       <div class="ex-actions">
