@@ -213,8 +213,10 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-box{margin-top:2px;border-bottom:1px solid var(--line);padding-bottom:13px}
 .serie-box .serie-add{margin-top:2px}
 .serie-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
-.serie-add .sm-pr{flex:0 1 auto;border-radius:9px;padding:7px 8px;gap:4px;background:var(--bg);letter-spacing:0}
-.serie-add .sm-prin{min-width:22px;max-width:46px;font-size:14px}
+.serie-add .sm-pr{flex:0 0 auto;flex-direction:column;align-items:center;gap:1px;border-radius:10px;
+                  padding:5px 10px;background:var(--bg);letter-spacing:0}
+.serie-add .sm-pr>span{font-size:10px;font-weight:800;letter-spacing:.11em;color:var(--muted-2)}
+.serie-add .sm-prin{min-width:30px;max-width:54px;font-family:'Anton',sans-serif;font-size:15px;text-align:center}
 .sm-pr{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);
   border-radius:10px;padding:7px 12px;font-size:11.5px;color:var(--muted);letter-spacing:.04em;cursor:text}
 .sm-pr:focus-within{border-color:var(--amber)}
@@ -223,19 +225,79 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   font-family:'Anton';font-size:15px;color:var(--amber);text-align:center;letter-spacing:.4px}
 .sm-prin:focus{outline:none}
 .sm-prin::placeholder{color:var(--muted-2)}
-.serie-hist{font-size:11.5px;color:var(--muted-2);margin-bottom:8px}
+.serie-hist{font-size:11.5px;color:var(--muted-2);margin-bottom:10px}
+.serie-hist b{color:var(--text)}
+/* ---- Series del dia: una fila por serie ---- */
+.serie-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
+.serie-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);
+           border-radius:12px;padding:11px 13px}
+.serie-row.is-drop{border-color:rgba(224,138,60,.5);background:rgba(224,138,60,.07)}
+.serie-row .sr-n{font-family:'Anton',sans-serif;font-size:13px;color:var(--muted-2);min-width:16px}
+.serie-row .sr-v{font-family:'Anton',sans-serif;font-size:17px;letter-spacing:.02em}
+.serie-row .sr-u{font-size:12px;color:var(--muted);font-weight:600}
+.serie-row .sr-x{font-size:12px;color:var(--muted-2);margin:0 1px}
+.serie-row .sr-del{margin-left:auto;background:none;border:0;color:var(--muted-2);cursor:pointer;
+                   font-size:16px;line-height:1;padding:2px 2px}
+.serie-row .sr-del:hover{color:#FF6B6B}
 .serie-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
 .serie-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
             border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px}
 .serie-chip button{background:none;border:0;color:var(--muted-2);cursor:pointer;font-size:14px;line-height:1;padding:0}
 .serie-chip button:hover{color:#FF6B6B}
 .serie-vacio{font-size:12px;color:var(--muted-2)}
-.serie-add{display:flex;gap:5px;align-items:stretch}
-.serie-in{flex:1 1 44px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
-          padding:9px 8px;color:var(--text);font-size:14px;text-align:center}
-.serie-in:focus{outline:2px solid var(--orange);outline-offset:1px}
-.serie-btn{flex:0 1 auto;white-space:nowrap;border:0;border-radius:9px;padding:9px 12px;cursor:pointer;font-size:12.5px;
-           font-weight:600;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta))}
+.serie-add{display:flex;gap:7px;align-items:stretch;flex-wrap:wrap;
+           background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:7px}
+.sf{flex:1 1 84px;min-width:74px;display:flex;align-items:center;gap:5px;background:var(--bg);
+    border:1px solid var(--line);border-radius:10px;padding:2px 9px}
+.sf:focus-within{border-color:var(--orange)}
+.sf .sf-k{font-size:10px;font-weight:800;letter-spacing:.11em;color:var(--muted-2)}
+.serie-in{flex:1 1 auto;min-width:0;background:transparent;border:0;border-radius:0;
+          padding:9px 2px;color:var(--text);font-family:'Anton',sans-serif;font-size:18px;text-align:center}
+.serie-in:focus{outline:none}
+.serie-btn{flex:0 0 auto;white-space:nowrap;border:0;border-radius:10px;padding:9px 15px;cursor:pointer;font-size:13px;
+           font-weight:700;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta));
+           display:flex;align-items:center;gap:6px}
+/* ---- Drop set ---- */
+.serie-drop{width:100%;white-space:nowrap;border:0;border-radius:12px;padding:14px 14px;cursor:pointer;margin-top:10px;
+            font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.14em;text-transform:uppercase;
+            color:#2A1403;background:linear-gradient(100deg,#F79A2B,#EE7F12);
+            box-shadow:0 6px 18px rgba(238,127,18,.22);
+            display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .12s,filter .15s}
+.serie-drop:hover{filter:brightness(1.07)}
+.serie-drop:active{transform:scale(.985)}
+.serie-drop .sd-ico{font-size:13px;letter-spacing:-.06em;opacity:.8}
+.serie-drop .sd-sub{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.02em;
+                    text-transform:none;opacity:.78}
+.serie-drop[disabled]{opacity:.45;cursor:default;box-shadow:none}
+@keyframes chipIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes dropFlash{0%{box-shadow:0 0 0 0 rgba(224,138,60,.45)}100%{box-shadow:0 0 0 14px rgba(224,138,60,0)}}
+.serie-chip.es-nueva,.serie-row.es-nueva{animation:chipIn .26s cubic-bezier(.2,.9,.3,1.2)}
+.drop-panel.es-nueva{animation:dropIn .22s ease-out}
+.dp-title.es-nueva{animation:dropFlash .5s ease-out}
+.drop-tip{font-size:11.5px;line-height:1.5;color:#FFD9B0;background:rgba(224,138,60,.10);
+          border:1px solid rgba(224,138,60,.45);border-radius:10px;padding:9px 11px;margin-bottom:9px}
+.drop-tip b{color:#FFC185}
+.drop-tip button{display:block;margin-top:7px;background:transparent;border:0;padding:0;cursor:pointer;
+                 color:#FFD9B0;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.drop-done{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;font-weight:600;color:#8FF0BC;
+           background:rgba(47,208,122,.09);border:1px solid rgba(47,208,122,.32);
+           border-radius:12px;padding:12px 13px;animation:dropIn .24s ease-out}
+.drop-done .dd-ck{font-size:14px;color:var(--green)}
+.drop-done b{color:#BFFFDA;font-weight:800}
+.serie-chip.is-drop{border-color:#E08A3C;background:rgba(224,138,60,.10)}
+.serie-chip .sc-tag{margin-left:2px;font-size:9px;font-weight:800;letter-spacing:.06em;color:#FFD9B0;
+                    background:rgba(224,138,60,.25);border-radius:5px;padding:1px 5px}
+.drop-panel{margin-top:10px;border:1px dashed #E08A3C;border-radius:12px;padding:11px;background:rgba(224,138,60,.06)}
+.drop-panel .dp-title{font-size:11.5px;font-weight:800;color:#FFD9B0;letter-spacing:.03em;text-transform:uppercase;margin-bottom:8px}
+.dp-row{display:flex;gap:6px;margin-bottom:8px}
+.dp-row .serie-in{background:var(--bg);border:1px solid rgba(224,138,60,.4);border-radius:10px;padding:10px 8px;font-size:16px}
+.dp-row .serie-in:focus{border-color:#E08A3C}
+.dp-row .serie-in::placeholder{font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0}
+.dp-actions{display:flex;gap:8px}
+.dp-actions button{flex:1;border-radius:9px;padding:9px 8px;font-size:12px;font-weight:700;cursor:pointer}
+.dp-add{background:transparent;color:#FFD9B0;border:1px solid #E08A3C}
+.dp-end{background:linear-gradient(90deg,var(--orange),var(--magenta));color:#EAF6FB;border:0}
 .sin-red{position:fixed;left:50%;transform:translateX(-50%);bottom:76px;z-index:60;
          background:#2A1A0C;border:1px solid var(--orange);color:#FFD9B0;border-radius:999px;
          padding:8px 16px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.5);display:none}
@@ -434,8 +496,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   color:var(--orange);background:var(--molten-soft);border:1px solid rgba(31,155,196,.35);padding:4px 9px;border-radius:99px}
 @keyframes sube{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
 .ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.ex-name{font-weight:700;font-size:16px}
-.ex-num{font-family:'Anton';font-size:26px;color:var(--line)}
+.ex-name{font-weight:700;font-size:17px;line-height:1.3}
+.ex-name .ex-n{font-family:'Anton',sans-serif;font-weight:400;color:var(--orange);margin-right:5px}
+.ex-num{font-family:'Anton';font-size:26px;color:var(--line);display:none}
 .ex-meta{display:flex;gap:10px}
 .ex-meta .m{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
 .ex-meta .m .v{font-family:'Anton';font-size:22px}
@@ -1874,11 +1937,13 @@ function invitarAPro(){
 function seriesDe(fecha, ex){ return (series[fecha] && series[fecha][ex]) || []; }
 function seriesHoy(ex){ return seriesDe(hoyKey(), ex); }
 
-function agregarSerie(ex, peso, reps){
+function agregarSerie(ex, peso, reps, drop){
   const k=hoyKey();
   if(!series[k]) series[k]={};
   if(!series[k][ex]) series[k][ex]=[];
-  series[k][ex].push({p:peso, r:reps});
+  const reg={p:peso, r:reps};
+  if(drop) reg.d=drop;
+  series[k][ex].push(reg);
   /* Se recortan los meses viejos para no llenar el almacenamiento */
   const claves=Object.keys(series).sort();
   while(claves.length>200) delete series[claves.shift()];
@@ -1914,7 +1979,50 @@ function textoAnterior(ex){
   const pesos=[...new Set(a.sets.map(x=>x.p).filter(Boolean))];
   const reps=a.sets.map(x=>x.r).join(', ');
   const cuando = a.dias===1 ? 'ayer' : 'hace '+a.dias+' dias';
-  return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' kg × ' : '') + reps;
+  return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' kg × ' : '') + reps
+       + (a.sets.some(x=>x.d) ? ' · con drop set' : '');
+}
+
+/* ----------- Drop set -----------
+   Un drop set vive dentro de la ultima serie: la caida 1 es la serie normal al fallo
+   y las siguientes bajan el peso. Todas suman volumen, pero cuentan como 1 serie. */
+let dropRun={};   /* {ejercicio: numero de caida en curso} — solo en memoria */
+let chipNuevo=null;  /* {ex,i} la ultima serie agregada: se anima al aparecer */
+let dropTipVisto=load('forja_droptip',0);
+
+function seriesEfectivas(ex){ return seriesHoy(ex).filter(x=>!x.d || x.d===1).length; }
+
+/* Numero de serie a la que pertenece el drop set de hoy (la caida 1) */
+function numSerieDrop(ex){
+  const arr=seriesHoy(ex); let num=0;
+  for(let i=0;i<arr.length;i++){
+    if(!arr[i].d || arr[i].d===1) num++;
+    if(arr[i].d===1) return num;
+  }
+  return num;
+}
+function caidasDrop(ex){ return seriesHoy(ex).filter(x=>x.d).length; }
+
+function sugDrop(ex){
+  const h=seriesHoy(ex);
+  const ult=h.length ? h[h.length-1].p : null;
+  if(!ult) return '';
+  const v=ult*0.7;
+  return v>=10 ? Math.round(v) : Math.round(v*2)/2;
+}
+
+function chipsHTML(ex){
+  const arr=seriesHoy(ex);
+  let num=0;
+  const html=arr.map((x,n)=>{
+    let lbl;
+    if(x.d && x.d>1){ lbl='↓ '+num+'.'+x.d; }
+    else { num++; lbl=num+'·'; }
+    return '<span class="serie-chip'+(x.d?' is-drop':'')+(chipNuevo&&chipNuevo.ex===ex&&chipNuevo.i===n?' es-nueva':'')+'">'+lbl+' '+(x.p?x.p+'kg × ':'')+x.r+
+      (x.d?' <span class="sc-tag">DROP '+x.d+'</span>':'')+
+      ' <button data-sdel="'+ex+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>';
+  }).join('');
+  return html || '<span class="serie-vacio">Aun sin series hoy</span>';
 }
 
 /* ----------- Datos: rutinas ----------- */
@@ -1925,6 +2033,7 @@ const ROUTINES = {
     {n:'Press francés (tríceps)', s:4, r:'10', max:'12'},
     {n:'Extensión de tríceps en polea', s:3, r:'12-15', max:'18'},
     {n:'Curl concentrado', s:3, r:'12', max:'15'},
+    {n:'Curl sentado en banco inclinado con mancuernas', s:3, r:'10-12', max:'15'},
     {n:'Fondos entre bancas', s:3, r:'al fallo', max:'20'},
   ]},
   pierna:  { label:'Pierna', ex:[
@@ -2021,6 +2130,7 @@ const GYM_VOL = {
     {n:'Fondos en paralelas con lastre',s:4,r:'8',max:'10'},
     {n:'Curl predicador (banca Scott)',s:3,r:'8',max:'10'},
     {n:'Press cerrado en banca',s:3,r:'6-8',max:'10'},
+    {n:'Curl sentado en banco inclinado con mancuernas',s:3,r:'8-10',max:'12'},
   ]},
   pierna:{label:'Pierna',ex:[
     {n:'Sentadilla con barra (pesada)',s:5,r:'5',max:'8'},
@@ -2211,7 +2321,7 @@ function getRoutines(){
 }
 
 const WEEK = [
-  ['LUN','Brazo + Hombro','12 ejercicios'],
+  ['LUN','Brazo + Hombro','13 ejercicios'],
   ['MAR','Pierna completa','6 ejercicios'],
   ['MIÉ','Espalda + Pecho','12 ejercicios'],
   ['JUE','Pierna · 2ª sesión','6 ejercicios'],
@@ -2877,30 +2987,51 @@ function renderExercises(){
     const c=document.createElement('div');c.className='ex-card'+(isDone?' is-hecho':'')+(i===idxSiguiente?' es-siguiente':'');
     c.innerHTML=`
       <div class="ex-top">
-        <div class="ex-name">${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
-        <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
       </div>
       <div class="serie-box">
         <div class="serie-hist">${textoAnterior(e.n)}</div>
-        <div class="serie-chips">${
-          seriesHoy(e.n).map((x,n)=>'<span class="serie-chip">'+(n+1)+'· '+(x.p?x.p+'kg × ':'')+x.r+
-            '<button data-sdel="'+e.n+'" data-i="'+n+'" aria-label="Quitar serie">×</button></span>').join('')
-          || '<span class="serie-vacio">Aun sin series hoy</span>'}</div>
+        <div class="serie-rows">${chipsHTML(e.n)}</div>
         <div class="serie-add">
           <label class="sm-pr"><span>PR</span>
             <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal (PR) en kg" title="Tu récord personal en kg">
           </label>
-          <input class="serie-in" inputmode="decimal" placeholder="kg" data-sp="${e.n}" value="${sugPeso(e.n)}">
-          <input class="serie-in" inputmode="numeric" placeholder="reps" data-sr="${e.n}" value="${sugReps(e.n)}">
-          <button class="serie-btn" data-sadd="${e.n}">+ Serie</button>
+          <label class="sf"><span class="sf-k">KG</span>
+            <input class="serie-in" inputmode="decimal" placeholder="--" data-sp="${e.n}" value="${sugPeso(e.n)}">
+          </label>
+          <label class="sf"><span class="sf-k">RPS</span>
+            <input class="serie-in" inputmode="numeric" placeholder="--" data-sr="${e.n}" value="${sugReps(e.n)}">
+          </label>
+          <button class="serie-btn" data-sadd="${e.n}">⊕ Serie</button>
         </div>
+        <button class="serie-drop" type="button" data-dropstart="${e.n}"${dropRun[e.n]?' disabled':''} title="Registra esta serie al fallo y encadena caidas de peso">
+          Drop set <span class="sd-sub">· exprime la última serie</span>
+        </button>
+        ${dropRun[e.n] ? `<div class="drop-panel${dropRun[e.n]===1?' es-nueva':''}">
+          ${!dropTipVisto ? `<div class="drop-tip">
+            <b>¿Qué es un drop set?</b> Llegas al fallo con tu peso normal, bajas la carga de inmediato y sigues sin descansar. Cada bajada es una <b>caída</b>: encadénalas hasta que no puedas más. Cuenta como <b>una sola serie</b>, pero todo el volumen se suma a tu progreso.
+            <button type="button" data-dptip="1">Entendido</button>
+          </div>` : ''}
+          <div class="dp-title es-nueva">Caida ${dropRun[e.n]+1}${sugDrop(e.n)!=='' ? ' · sugerido ~'+sugDrop(e.n)+'kg' : ''}</div>
+          <div class="dp-row">
+            <input class="serie-in" data-dp="${e.n}" data-f="p" inputmode="decimal" placeholder="kg" value="${sugDrop(e.n)}">
+            <input class="serie-in" data-dp="${e.n}" data-f="r" inputmode="numeric" placeholder="reps al fallo">
+          </div>
+          <div class="dp-actions">
+            <button class="dp-add" type="button" data-dpadd="${e.n}">+ Otra caida</button>
+            <button class="dp-end" type="button" data-dpend="${e.n}">Terminar drop</button>
+          </div>
+        </div>` : ''}
+        ${(!dropRun[e.n] && caidasDrop(e.n)) ? `<div class="drop-done">
+          <span class="dd-ck">✓</span><span>Serie <b>${numSerieDrop(e.n)}</b> exprimida al fallo · ${caidasDrop(e.n)} caídas</span>
+        </div>` : ''}
       </div>
       <div class="ex-actions">
         <a class="ex-video" href="${howTo(e.n)}" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
           Cómo se hace
         </a>
-        <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar'}</button>
+        <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar completo'}</button>
       </div>
       <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>`;
     g.appendChild(c);
@@ -2924,9 +3055,10 @@ function renderExercises(){
     if(!reps){ cr.focus(); return; }
     const peso=parseFloat(String(cp.value).replace(',','.'));
     agregarSerie(k, isNaN(peso)?null:peso, reps);
+    chipNuevo={ex:k, i:seriesHoy(k).length-1};
     /* Al completar las series planeadas, el ejercicio se marca solo */
     const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
-    if(objetivo && seriesHoy(k).length>=objetivo && !doneToday[k]){
+    if(objetivo && seriesEfectivas(k)>=objetivo && !doneToday[k]){
       doneToday[k]=true; save('forja_done',doneToday);
       renderExercises(); renderHome(); subirAlSiguiente(); return;
     }
@@ -2936,9 +3068,69 @@ function renderExercises(){
     quitarSerie(b.dataset.sdel, parseInt(b.dataset.i,10));
     renderExercises(); renderHome();
   });
+  /* --- Drop set --- */
+  g.querySelectorAll('[data-dropstart]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.dropstart;
+    if(dropRun[k]){ return; }
+    const cp=g.querySelector('[data-sp="'+CSS.escape(k)+'"]');
+    const cr=g.querySelector('[data-sr="'+CSS.escape(k)+'"]');
+    const reps=parseInt(cr.value,10);
+    if(!reps){ cr.focus(); return; }
+    const peso=parseFloat(String(cp.value).replace(',','.'));
+    agregarSerie(k, isNaN(peso)?null:peso, reps, 1);
+    chipNuevo={ex:k, i:seriesHoy(k).length-1};
+    dropRun[k]=1;
+    renderExercises(); renderHome();
+    const nx=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="r"]');
+    if(nx) nx.focus();
+  });
+  function guardarCaida(k){
+    const cp=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="p"]');
+    const cr=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="r"]');
+    if(!cp||!cr) return false;
+    const reps=parseInt(cr.value,10);
+    if(!reps){ cr.focus(); return false; }
+    const peso=parseFloat(String(cp.value).replace(',','.'));
+    dropRun[k]=(dropRun[k]||1)+1;
+    agregarSerie(k, isNaN(peso)?null:peso, reps, dropRun[k]);
+    chipNuevo={ex:k, i:seriesHoy(k).length-1};
+    return true;
+  }
+  g.querySelectorAll('[data-dpadd]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.dpadd;
+    if(!guardarCaida(k)) return;
+    renderExercises(); renderHome();
+    const nx=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="r"]');
+    if(nx) nx.focus();
+  });
+  g.querySelectorAll('[data-dpend]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.dpend;
+    const cr=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="r"]');
+    if(cr && parseInt(cr.value,10)) guardarCaida(k);
+    delete dropRun[k];
+    if(!dropTipVisto){ dropTipVisto=1; save('forja_droptip',1); }
+    const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
+    if(objetivo && seriesEfectivas(k)>=objetivo && !doneToday[k]){
+      doneToday[k]=true; save('forja_done',doneToday);
+      renderExercises(); renderHome(); subirAlSiguiente(); return;
+    }
+    renderExercises(); renderHome();
+  });
+  g.querySelectorAll('[data-dptip]').forEach(b=>b.onclick=()=>{
+    dropTipVisto=1; save('forja_droptip',1);
+    renderExercises();
+  });
+  g.querySelectorAll('[data-dp]').forEach(inp=>inp.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'){
+      ev.preventDefault();
+      const btn=g.querySelector('[data-dpadd="'+CSS.escape(inp.dataset.dp)+'"]');
+      if(btn) btn.click();
+    }
+  }));
   g.querySelectorAll('.serie-in').forEach(inp=>inp.addEventListener('keydown',ev=>{
     if(ev.key==='Enter'){
       const k=inp.dataset.sp||inp.dataset.sr;
+      if(!k) return;
       const btn=g.querySelector('[data-sadd="'+CSS.escape(k)+'"]');
       if(btn) btn.click();
     }
@@ -2959,6 +3151,7 @@ function renderExercises(){
     };
     inp.onkeydown=ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); inp.blur(); } };
   });
+  chipNuevo=null;   /* la animacion corre una sola vez */
 }
 
 /* ----------- PROGRESO ----------- */
