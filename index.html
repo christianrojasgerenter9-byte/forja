@@ -2019,6 +2019,8 @@ function sugDrop(ex){
   const v=ult*0.7;
   return v>=10 ? Math.round(v) : Math.round(v*2)/2;
 }
+/* Nivel 1 arranca con tu peso normal; los siguientes con ~30% menos */
+function sugNivel(ex, n){ return n<=1 ? sugPeso(ex) : sugDrop(ex); }
 
 function chipsHTML(ex){
   const arr=seriesHoy(ex);
@@ -3024,9 +3026,9 @@ function renderExercises(){
             <b>¿Qué es el Reto Súper Sayayin?</b> Llegas al fallo con tu peso normal, bajas la carga de inmediato y sigues sin descansar. Cada bajada es un <b>nivel</b>: encadénalos hasta que no puedas más. Cuenta como <b>una sola serie</b>, pero todo el volumen se suma a tu progreso.
             <button type="button" data-dptip="1">Entendido</button>
           </div>` : ''}
-          <div class="dp-title es-nueva">Nivel ${dropRun[e.n]+1}${sugDrop(e.n)!=='' ? ' · sugerido ~'+sugDrop(e.n)+'kg' : ''}</div>
+          <div class="dp-title es-nueva">Nivel ${dropRun[e.n]}${sugNivel(e.n,dropRun[e.n])!=='' ? ' · sugerido ~'+sugNivel(e.n,dropRun[e.n])+'kg' : ''}</div>
           <div class="dp-row">
-            <input class="serie-in" data-dp="${e.n}" data-f="p" inputmode="decimal" placeholder="kg" value="${sugDrop(e.n)}">
+            <input class="serie-in" data-dp="${e.n}" data-f="p" inputmode="decimal" placeholder="kg" value="${sugNivel(e.n,dropRun[e.n])}">
             <input class="serie-in" data-dp="${e.n}" data-f="r" inputmode="numeric" placeholder="reps al fallo">
           </div>
           <div class="dp-actions">
@@ -3084,13 +3086,7 @@ function renderExercises(){
   g.querySelectorAll('[data-dropstart]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.dropstart;
     if(dropRun[k]){ return; }
-    const cp=g.querySelector('[data-sp="'+CSS.escape(k)+'"]');
-    const cr=g.querySelector('[data-sr="'+CSS.escape(k)+'"]');
-    const reps=parseInt(cr.value,10);
-    if(!reps){ cr.focus(); return; }
-    const peso=parseFloat(String(cp.value).replace(',','.'));
-    agregarSerie(k, isNaN(peso)?null:peso, reps, 1);
-    chipNuevo={ex:k, i:seriesHoy(k).length-1};
+    /* Abre el reto sin registrar nada: solo se guarda lo que captures nivel por nivel */
     dropRun[k]=1;
     renderExercises(); renderHome();
     const nx=g.querySelector('[data-dp="'+CSS.escape(k)+'"][data-f="r"]');
@@ -3103,9 +3099,11 @@ function renderExercises(){
     const reps=parseInt(cr.value,10);
     if(!reps){ cr.focus(); return false; }
     const peso=parseFloat(String(cp.value).replace(',','.'));
-    dropRun[k]=(dropRun[k]||1)+1;
-    agregarSerie(k, isNaN(peso)?null:peso, reps, dropRun[k]);
+    const nivel=dropRun[k]||1;
+    agregarSerie(k, isNaN(peso)?null:peso, reps, nivel);
     chipNuevo={ex:k, i:seriesHoy(k).length-1};
+    dropRun[k]=nivel+1;
+    cr.value=''; 
     return true;
   }
   g.querySelectorAll('[data-dpadd]').forEach(b=>b.onclick=()=>{
