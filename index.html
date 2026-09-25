@@ -316,18 +316,18 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .fjcal-acc .del{color:#FF6B6B}
 .bm-foto{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bm-vista{position:relative;padding-bottom:14px}
-.bm-base{width:100%;display:block;filter:grayscale(1) brightness(.5) contrast(1.05)}
+.bm-base{width:100%;display:block;filter:grayscale(1) brightness(1.75) contrast(.8) drop-shadow(0 0 10px rgba(255,255,255,.15))}
 .bm-zona{filter:grayscale(1) brightness(.6)}
 .bm-zona,.bm-on{position:absolute;left:0;top:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .45s ease;pointer-events:none}
-.bm-on.s0,.bm-on.s1{opacity:1;filter:brightness(1.12) saturate(1.25) drop-shadow(0 0 7px rgba(255,59,48,.8)) drop-shadow(0 0 20px rgba(255,59,48,.45))}
+.bm-on.s0,.bm-on.s1{opacity:1;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(-35deg) saturate(5) drop-shadow(0 0 7px rgba(255,59,48,.85)) drop-shadow(0 0 20px rgba(255,59,48,.5))}
 .bm-on.s2{opacity:.7;filter:brightness(1) saturate(1.05) drop-shadow(0 0 5px rgba(255,59,48,.4))}
 .bm-zona.s4{opacity:.75;filter:grayscale(.2) sepia(.35) brightness(1.05) drop-shadow(0 0 8px rgba(201,162,39,.55))}
 .bm-mini-wrap{margin-top:22px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);text-align:center}
 .bm-mini-tag{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:700}
 .bm-mini{position:relative;width:150px;margin:0 auto}
 .bm-mini img{width:100%;display:block}
-.bm-mini .bm-base{filter:grayscale(1) brightness(.5) contrast(1.05)}
-.bm-mini-on{position:absolute;left:0;top:0;opacity:0;transition:opacity .5s ease;filter:brightness(1.1) saturate(1.2) drop-shadow(0 0 8px rgba(255,59,48,.7))}
+.bm-mini .bm-base{filter:grayscale(1) brightness(1.75) contrast(.8) drop-shadow(0 0 8px rgba(255,255,255,.15))}
+.bm-mini-on{position:absolute;left:0;top:0;opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(-35deg) saturate(5) drop-shadow(0 0 8px rgba(255,59,48,.8))}
 .bm-mini-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
 .bm-mini-list span{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--surface-2)}
 .bm-mini-list span.done{color:#ff3b30;border-color:#ff3b30;background:rgba(255,59,48,.08)}
