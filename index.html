@@ -498,6 +498,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   color:var(--orange);background:var(--molten-soft);border:1px solid rgba(31,155,196,.35);padding:4px 9px;border-radius:99px}
 @keyframes sube{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
 .ex-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ex-av{position:relative;flex:0 0 auto;width:72px;height:84px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.07),rgba(255,255,255,0) 70%);border:1px solid var(--line);pointer-events:none}
+.ex-av-in{position:absolute}
+.ex-av-in img{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+.ex-av .bm-base{filter:grayscale(1) brightness(1.75) contrast(.8)}
+.ex-av .ex-av-on{opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.2) sepia(1) hue-rotate(-35deg) saturate(6) drop-shadow(0 0 4px rgba(255,59,48,1)) drop-shadow(0 0 10px rgba(255,59,48,.6))}
+.ex-av.on{border-color:rgba(255,59,48,.55)}
+.ex-av.on .ex-av-on{opacity:1}
 .ex-name{font-weight:700;font-size:17px;line-height:1.3}
 .ex-name .ex-n{font-family:'Anton',sans-serif;font-weight:400;color:var(--orange);margin-right:5px}
 .ex-num{font-family:'Anton';font-size:26px;color:var(--line);display:none}
@@ -2982,6 +2989,35 @@ function renderMiniAvatar(musculosSel, R){
     lista.appendChild(s);
   });
 }
+/* Zona del mini avatar de cada ejercicio: por nombre, y si no, por el grupo */
+function exZona(nombre, k){
+  const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const t=(v,g)=>({v,g});
+  if(/tricep|fondo|frances|patada de|copa|extension de codo|press cerrado/.test(n)) return t('b','brazo');
+  if(/bicep|curl(?! femoral)|martillo|antebrazo|muneca/.test(n)) return t('f','brazo');
+  if(/femoral|gluteo|hip thrust|puente|rumano|pantorrilla|talon/.test(n)) return t('b','pierna');
+  if(/sentadilla|zancada|prensa|cuadricep|desplante|pierna|salto|bulgara|step/.test(n)) return t('f','pierna');
+  if(/remo|jalon|dominada|peso muerto|espalda|pull|superman|dorsal|lumbar/.test(n)) return t('b','espalda');
+  if(/militar|lateral|hombro|pajaro|posterior|arnold|face pull|elevacion frontal|encogimiento/.test(n)) return t('f','hombro');
+  if(/abdom|plancha|crunch|abs|oblicu|rueda|elevacion de pierna|mountain|escalador|russian|bicicleta/.test(n)) return t('f','abs');
+  if(/pecho|banca|lagartija|flexion|apertura|cruce|pec|inclinado|declinado/.test(n)) return t('f','pecho');
+  const g=(k==='abdomen'?'abs':k);
+  if(g==='espalda') return t('b','espalda');
+  if(['pecho','hombro','brazo','abs','pierna'].includes(g)) return t('f',g);
+  return null;
+}
+/* Encuadre (centro x,y normalizado y zoom) de cada zona */
+const EX_AV_ZOOM={
+  'f-pecho':[.54,.15,2.2],'f-hombro':[.54,.16,1.5],'f-brazo':[.2,.3,2.2],'f-abs':[.54,.31,2],'f-pierna':[.53,.68,1.25],
+  'b-espalda':[.48,.24,1.7],'b-hombro':[.48,.16,1.5],'b-brazo':[.19,.3,2.2],'b-pierna':[.5,.68,1.25]
+};
+function exAvatarHTML(nombre,k,encendido){
+  const z=exZona(nombre,k); if(!z) return '';
+  const c=EX_AV_ZOOM[z.v+'-'+z.g]||[.5,.4,1.2];
+  const BW=72,BH=84,W=BW*c[2],H=W*(1322/640);
+  const L=Math.round(BW/2-c[0]*W), T=Math.round(Math.min(0,Math.max(BH-H,BH/2-c[1]*H)));
+  return '<div class="ex-av'+(encendido?' on':'')+'" aria-hidden="true"><div class="ex-av-in" style="left:'+L+'px;top:'+T+'px;width:'+Math.round(W)+'px;height:'+Math.round(H)+'px"><img class="bm-base" src="mq-'+z.v+'.webp" alt=""><img class="ex-av-on" src="mq-'+z.v+'-'+z.g+'-on.webp" alt=""></div></div>';
+}
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
@@ -2994,7 +3030,7 @@ function renderExercises(){
     R[k].ex.forEach(e=>{
       if(vistos[e.n]) return;
       vistos[e.n]=1;
-      ex.push(Object.assign({}, e, {_g:R[k].label}));
+      ex.push(Object.assign({}, e, {_g:R[k].label, _k:k}));
     });
   });
   const varios = musculosSel.length>1;
@@ -3012,6 +3048,7 @@ function renderExercises(){
     c.innerHTML=`
       <div class="ex-top">
         <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
+        ${exAvatarHTML(e.n,e._k,isDone||seriesHoy(e.n).length>0)}
       </div>
       <div class="serie-box">
         <div class="serie-hist">${textoAnterior(e.n)}</div>
