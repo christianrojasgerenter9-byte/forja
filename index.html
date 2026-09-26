@@ -515,8 +515,19 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-actions{display:flex;gap:9px;margin-top:auto}
 .ex-actions a,.ex-actions button{flex:1;font-size:12.5px;font-weight:700;padding:10px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px}
 .ex-video{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
-.ex-video:hover{border-color:#FF0000;color:#fff}
-.ex-video svg{width:15px;height:15px;fill:#FF0000}
+.ex-video:hover{border-color:var(--orange);color:#fff}
+.ex-video svg{width:15px;height:15px;fill:var(--orange)}
+.tec-bg{position:fixed;inset:0;z-index:120;background:rgba(5,5,7,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.tec-bg.open{display:flex}
+.tec-card{width:100%;max-width:380px;background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;padding:18px 18px 16px;position:relative}
+.tec-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-size:18px;display:grid;place-items:center;cursor:pointer}
+.tec-name{font-size:18px;font-weight:800;margin:2px 44px 12px 0;line-height:1.2}
+.tec-stage{position:relative;border-radius:16px;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.06),rgba(255,255,255,0) 70%);border:1px solid var(--line)}
+.tec-stage svg{width:100%;height:min(46vh,420px);display:block}
+.tec-fase{position:absolute;left:12px;top:10px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--orange);background:rgba(0,0,0,.35);padding:4px 9px;border-radius:99px}
+.tec-tips{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tec-tips li{display:flex;gap:9px;font-size:13.5px;line-height:1.4;color:var(--text)}
+.tec-tips li b{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--molten-soft);color:var(--orange);font-size:11px;display:grid;place-items:center}
 .ex-done{background:var(--molten-soft);border:1px solid var(--line);color:var(--text)}
 .ex-done.is-done{background:var(--green);color:#04120a;border-color:transparent}
 .ex-pr{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 14px;border-radius:12px;background:var(--molten-soft);border:1px solid var(--line);transition:.16s}
@@ -2411,8 +2422,158 @@ document.getElementById('playlistBtnHero').href=CONFIG.YOUTUBE_PLAYLIST;
 document.getElementById('playlistBtnHome').href=CONFIG.YOUTUBE_PLAYLIST;
 document.getElementById('adContactBtn').href='https://wa.me/'+CONFIG.WHATSAPP+'?text='+encodeURIComponent('Hola, me interesa anunciar mi negocio en FORJA. ¿Me compartes info de espacios y precios?');
 
-/* ----------- YouTube "cómo se hace" ----------- */
-const howTo = name => 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' técnica correcta ejercicio');
+/* ----------- Técnica animada "cómo se hace" ----------- */
+const TEC_J={
+  f:{s:[160,205],e:[100,390],w:[65,575],h:[245,570],k:[215,865],a:[195,1210]},
+  b:{s:[125,200],e:[75,385],w:[40,580],h:[235,570],k:[200,855],a:[165,1215]}
+};
+const TEC={
+  curl:{v:'f',g:'brazo',a:{},b:{fa:-150},f:['Sube','Baja lento'],t:['Codos pegados al cuerpo, que no se muevan.','Sube sin balancear la espalda.','Baja lento, casi hasta estirar el brazo.']},
+  tri:{v:'b',g:'brazo',a:{ua:170,fa:160},b:{ua:170,fa:0},f:['Estira','Baja lento'],t:['Codos fijos apuntando arriba.','Solo se mueve el antebrazo.','Estira completo y aprieta el tríceps.']},
+  press:{v:'f',g:'hombro',a:{ua:75,fa:95},b:{ua:165,fa:-5},f:['Empuja arriba','Baja controlado'],t:['Abdomen firme y glúteos apretados.','Empuja hasta casi estirar, sin trabar codos.','Baja hasta la altura de la barbilla.']},
+  lateral:{v:'f',g:'hombro',a:{},b:{ua:78,fa:-5},f:['Abre','Baja lento'],t:['Codos apenas flexionados.','Sube a los lados hasta la altura del hombro.','Baja lento, sin dejar caer el peso.']},
+  frontal:{v:'f',g:'hombro',a:{},b:{ua:6,uasy:.3,fasy:.3},f:['Sube al frente','Baja lento'],t:['Brazo casi recto, codo apenas flexionado.','Sube solo a la altura del hombro.','Sin impulso: el torso no se mueve.']},
+  bench:{v:'f',g:'pecho',a:{ua:70,fa:0,fasy:.3},b:{ua:30,uasy:.4,fa:-60,fasy:.4},f:['Empuja','Regresa lento'],t:['Omóplatos juntos, pecho arriba.','Empuja hasta casi estirar los brazos.','Regresa controlado sintiendo el pecho.']},
+  pushup:{v:'f',g:'pecho',a:{ua:70,fa:0,fasy:.3},b:{ua:30,uasy:.4,fa:-60,fasy:.4},f:['Empuja','Baja'],t:['Cuerpo recto de cabeza a talones.','Baja hasta que el pecho casi toque el piso.','Codos a unos 45° del cuerpo.']},
+  squat:{v:'f',g:'pierna',a:{ua:10,fa:-150,ground:1},b:{ua:10,fa:-150,th:14,thsy:.42,sh:-14,shsy:.97,ground:1},f:['Baja','Sube'],t:['Pies al ancho de hombros, peso en talones.','Cadera atrás, como si te sentaras.','Rodillas en línea con las puntas de los pies.']},
+  lunge:{v:'f',g:'pierna',a:{ground:1},b:{th:[4,-4],thsy:[.45,.9],sh:[-4,4],shsy:[1,.55],ground:1},f:['Baja','Sube'],t:['Torso recto, mirada al frente.','Baja hasta que la rodilla de atrás casi toque el piso.','Empuja con el talón de la pierna de adelante.']},
+  legext:{v:'f',g:'pierna',a:{thsy:.35,ground:1},b:{thsy:.35,shsy:.3},f:['Estira','Baja lento'],t:['Espalda pegada al respaldo.','Estira la pierna completa y aprieta arriba.','Baja lento sin azotar el peso.']},
+  bridge:{v:'b',g:'pierna',a:{th:8,thsy:.5,sh:-8,ground:1},b:{thsy:.9,ground:1},f:['Sube la cadera','Baja'],t:['Pies firmes, al ancho de cadera.','Empuja con los talones.','Aprieta glúteos 1 segundo arriba.']},
+  calf:{v:'b',g:'pierna',a:{},b:{dy:-30},f:['Punta arriba','Baja'],t:['Sube lo más alto que puedas en puntas.','Pausa arriba 1 segundo.','Baja lento hasta estirar la pantorrilla.']},
+  legcurl:{v:'b',g:'pierna',a:{ground:1},b:{shsy:.3,ground:1},f:['Flexiona','Baja lento'],t:['Cadera pegada al banco.','Lleva los talones hacia los glúteos.','Baja controlado, sin soltar de golpe.']},
+  hinge:{v:'b',g:'espalda',a:{ground:1},b:{tsy:.55,uasy:.85,fasy:.85,ground:1},f:['Cadera atrás','Sube'],t:['Espalda recta todo el tiempo.','Lleva la cadera hacia atrás, rodillas apenas flexionadas.','Sube apretando glúteos.']},
+  row:{v:'b',g:'espalda',a:{tsy:.55,ground:1},b:{tsy:.55,ua:25,uasy:.55,fa:-20,fasy:.6,ground:1},f:['Jala','Baja lento'],t:['Torso inclinado y espalda recta.','Jala con el codo hacia la cadera.','Junta los omóplatos arriba.']},
+  pull:{v:'b',g:'espalda',a:{ua:160,fa:-5},b:{ua:70,fa:100},f:['Jala','Sube lento'],t:['Pecho arriba, leve inclinación atrás.','Jala la barra hacia la parte alta del pecho.','Sube controlado hasta estirar los brazos.']},
+  plank:{v:'f',g:'abs',a:{},b:{dy:4},slow:1,f:['Sostén','Respira'],t:['Codos debajo de los hombros.','Aprieta abdomen y glúteos.','No subas ni dejes caer la cadera.']},
+  crunch:{v:'f',g:'abs',a:{ua:150,fa:150},b:{ua:150,fa:150,tsy:.72},f:['Sube','Baja lento'],t:['Manos detrás de la cabeza sin jalar el cuello.','Sube despegando solo los hombros.','Exhala al subir, baja controlado.']}
+};
+function tecTipo(nombre,k){
+  const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const R=[[/femoral|curl de pierna|curl acostado/,'legcurl'],[/extension de (pierna|cuadricep)|cuadricep/,'legext'],[/pantorrilla|talon|gemelo/,'calf'],
+    [/hip thrust|puente|gluteo/,'bridge'],[/zancada|desplante|bulgara|lunge|step/,'lunge'],[/sentadilla|prensa|squat|salto/,'squat'],
+    [/peso muerto|rumano|buenos dias/,'hinge'],[/remo/,'row'],[/jalon|dominada|pull/,'pull'],[/lateral|pajaro|posterior/,'lateral'],[/frontal/,'frontal'],
+    [/tricep|frances|copa|fondo|patada|extension/,'tri'],[/curl|bicep|martillo/,'curl'],[/militar|arnold|hombro|encogimiento/,'press'],
+    [/lagartija|flexion/,'pushup'],[/plancha|escalador|mountain/,'plank'],[/crunch|abdom|oblicu|russian|bicicleta|elevacion de pierna|rueda/,'crunch'],
+    [/press|banca|pecho|apertura|cruce|pec/,'bench']];
+  for(const [re,t] of R) if(re.test(n)) return t;
+  return ({brazo:'curl',pecho:'bench',hombro:'press',espalda:'row',pierna:'squat',abdomen:'crunch',abs:'crunch'})[k]||'squat';
+}
+let tecRAF=0;
+function tecMath(){
+  const mul=(m,n)=>[m[0]*n[0]+m[2]*n[1],m[1]*n[0]+m[3]*n[1],m[0]*n[2]+m[2]*n[3],m[1]*n[2]+m[3]*n[3],m[0]*n[4]+m[2]*n[5]+m[4],m[1]*n[4]+m[3]*n[5]+m[5]];
+  const ch=(...a)=>a.reduce(mul);
+  const T=(x,y)=>[1,0,0,1,x,y], R=d=>{const r=d*Math.PI/180,c=Math.cos(r),s=Math.sin(r);return [c,s,-s,c,0,0];}, S=(x,y)=>[x,0,0,y,0,0];
+  const ap=(m,p)=>[m[0]*p[0]+m[2]*p[1]+m[4],m[1]*p[0]+m[3]*p[1]+m[5]];
+  return {ch,T,R,S,ap};
+}
+function tecPose(J0,P){
+  const {ch,T,R,S,ap}=tecMath();
+  const g=(k,i,d)=>{ const v=P[k]; return v==null?d:(Array.isArray(v)?v[i]:v); };
+  const run=dy=>{
+    const root=T(0,dy), out={}; let ay=0;
+    out.torso=ch(root,T(320,590),S(1,g('tsy',0,1)),T(-320,-590));
+    [1,-1].forEach((k,i)=>{
+      const sd=i?'R':'L', J={}; for(const q in J0) J[q]=i?[640-J0[q][0],J0[q][1]]:J0[q];
+      const ua=g('ua',i,0), fa=g('fa',i,0), th=g('th',i,0), sh=g('sh',i,0);
+      const s=ap(out.torso,J.s);
+      out['ua'+sd]=ch(T(s[0],s[1]),R(k*ua),S(1,g('uasy',i,1)),T(-J.s[0],-J.s[1]));
+      const e=ap(out['ua'+sd],J.e);
+      out['fa'+sd]=ch(T(e[0],e[1]),R(k*(ua+fa)),S(1,g('fasy',i,1)),T(-J.e[0],-J.e[1]));
+      const hp=ap(root,J.h);
+      out['th'+sd]=ch(T(hp[0],hp[1]),R(k*th),S(1,g('thsy',i,1)),T(-J.h[0],-J.h[1]));
+      const kn=ap(out['th'+sd],J.k);
+      out['sh'+sd]=ch(T(kn[0],kn[1]),R(k*(th+sh)),S(1,g('shsy',i,1)),T(-J.k[0],-J.k[1]));
+      ay=Math.max(ay,ap(out['sh'+sd],J.a)[1]);
+    });
+    return {out,ay};
+  };
+  let dy=P.dy||0;
+  if(P.ground){ dy=J0.a[1]-run(0).ay; }
+  return run(dy).out;
+}
+function tecClips(J){
+  const cap=(p1,p2,e1,e2,w1,w2,cx)=>{
+    const dx=p2[0]-p1[0],dy=p2[1]-p1[1],l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l,nx=-uy,ny=ux;
+    const a=[p1[0]-ux*e1,p1[1]-uy*e1], b=[p2[0]+ux*e2,p2[1]+uy*e2];
+    let pts=[[a[0]+nx*w1,a[1]+ny*w1],[b[0]+nx*w2,b[1]+ny*w2],[b[0]-nx*w2,b[1]-ny*w2],[a[0]-nx*w1,a[1]-ny*w1]];
+    if(cx!=null) pts=pts.map(p=>[Math.min(p[0],cx),p[1]]);
+    return pts;
+  };
+  const m=pts=>pts.map(p=>[640-p[0],p[1]]);
+  const s=J.s,hh=J.h;
+  const tl=[[s[0]+30,0],[s[0]-40,140],[s[0]+45,270],[hh[0]-60,440],[hh[0]-80,620]];
+  const L={ua:cap(J.s,J.e,22,35,44,48),fa:cap(J.e,J.w,30,160,52,72),th:cap(J.h,J.k,50,40,85,70,322),sh:cap(J.k,J.a,30,120,72,78)};
+  const C={torso:tl.concat(m(tl).reverse())};
+  for(const q in L){ C[q+'L']=L[q]; C[q+'R']=m(L[q]); }
+  return C;
+}
+const tecTint={};
+function tecTintar(src,modo){
+  const key=src+'|'+modo; if(tecTint[key]) return tecTint[key];
+  return tecTint[key]=new Promise(res=>{
+    const im=new Image(); im.onload=()=>{
+      try{
+        const c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight;
+        const x=c.getContext('2d'); x.drawImage(im,0,0);
+        const D=x.getImageData(0,0,c.width,c.height), p=D.data;
+        for(let i=0;i<p.length;i+=4){
+          const l=.3*p[i]+.59*p[i+1]+.11*p[i+2];
+          if(modo==='w'){ const v=Math.min(255,l*1.55+16); p[i]=v; p[i+1]=v; p[i+2]=Math.min(255,v+6); }
+          else { p[i]=Math.min(255,l*1.9+30); p[i+1]=l*.22; p[i+2]=l*.16; }
+        }
+        x.putImageData(D,0,0); c.toBlob(b=>res(b?URL.createObjectURL(b):src),'image/png');
+      }catch(e){ res(src); }
+    };
+    im.onerror=()=>res(src); im.src=src;
+  });
+}
+function abrirTecnica(nombre,k){
+  let bg=document.getElementById('tecModal');
+  if(!bg){
+    bg=document.createElement('div'); bg.id='tecModal'; bg.className='tec-bg';
+    bg.innerHTML='<div class="tec-card" role="dialog" aria-modal="true"><button type="button" class="tec-x" aria-label="Cerrar">×</button><div class="tec-name"></div><div class="tec-stage"><span class="tec-fase"></span><svg viewBox="-280 -380 1200 1740" preserveAspectRatio="xMidYMid meet"></svg></div><ul class="tec-tips"></ul></div>';
+    document.body.appendChild(bg);
+    const cerrar=()=>{ bg.classList.remove('open'); cancelAnimationFrame(tecRAF); };
+    bg.querySelector('.tec-x').onclick=cerrar;
+    bg.onclick=e=>{ if(e.target===bg) cerrar(); };
+  }
+  const d=TEC[tecTipo(nombre,k)], J=TEC_J[d.v], C=tecClips(J);
+  const A=Object.assign({},d.a), B=Object.assign({},d.a,d.b);
+  const ORD=['torso','thL','thR','shL','shR','uaL','uaR','faL','faR'];
+  const clip=Object.keys(C).map(q=>'<clipPath id="tecC'+q+'" clipPathUnits="userSpaceOnUse"><polygon points="'+C[q].map(p=>p.map(Math.round).join(',')).join(' ')+'"/></clipPath>').join('');
+  const img=(src,q)=>'<g data-p="'+q+'"><image href="'+src+'" width="640" height="1322" clip-path="url(#tecC'+q+')"/></g>';
+  const base='mq-'+d.v+'.webp', on='mq-'+d.v+'-'+d.g+'-on.webp';
+  const svg=bg.querySelector('svg');
+  svg.innerHTML='<defs>'+clip+'</defs>'+
+    '<line x1="-200" y1="1318" x2="840" y2="1318" stroke="rgba(255,255,255,.14)" stroke-width="10" stroke-linecap="round"/>'+
+    '<g data-tint="w" style="opacity:0;transition:opacity .25s">'+ORD.map(q=>img(base,q)).join('')+'</g>'+
+    '<g data-tint="r" style="opacity:0;transition:opacity .25s">'+ORD.map(q=>img(on,q)).join('')+'</g>';
+  [['w',base],['r',on]].forEach(([m,src])=>tecTintar(src,m).then(u=>{ const gg=svg.querySelector('[data-tint="'+m+'"]'); if(!gg) return; gg.querySelectorAll('image').forEach(im=>im.setAttribute('href',u)); gg.style.opacity=1; }));
+  const G=[...svg.querySelectorAll('[data-p]')].map(el=>({el,q:el.dataset.p}));
+  bg.querySelector('.tec-name').textContent=nombre;
+  bg.querySelector('.tec-tips').innerHTML=d.t.map((x,i)=>'<li><b>'+(i+1)+'</b><span>'+x+'</span></li>').join('');
+  const fase=bg.querySelector('.tec-fase');
+  const keys=new Set(Object.keys(A).concat(Object.keys(B)));
+  const dur=d.slow?4200:3000, ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  const DEF={uasy:1,fasy:1,thsy:1,shsy:1,tsy:1};
+  const lerp=(x,y,p)=>x+(y-x)*p;
+  const val=(o,q,i)=>{ const v=o[q]; if(v==null) return DEF[q]!=null?DEF[q]:0; return Array.isArray(v)?v[i]:v; };
+  const t0=performance.now();
+  const frame=now=>{
+    const c=((now-t0)%dur)/dur; let p,f;
+    if(c<.4){p=ease(c/.4);f=0;} else if(c<.5){p=1;f=0;} else if(c<.9){p=1-ease((c-.5)/.4);f=1;} else {p=0;f=1;}
+    const P={ground:A.ground||B.ground};
+    keys.forEach(q=>{ if(q==='ground') return; P[q]=[lerp(val(A,q,0),val(B,q,0),p),lerp(val(A,q,1),val(B,q,1),p)]; });
+    P.dy=P.dy?P.dy[0]:0;
+    const M=tecPose(J,P);
+    G.forEach(({el,q})=>el.setAttribute('transform','matrix('+M[q].map(x=>x.toFixed(3)).join(' ')+')'));
+    if(fase.textContent!==d.f[f]) fase.textContent=d.f[f];
+    tecRAF=requestAnimationFrame(frame);
+  };
+  cancelAnimationFrame(tecRAF); tecRAF=requestAnimationFrame(frame);
+  bg.classList.add('open');
+}
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-tec]'); if(b){ e.preventDefault(); abrirTecnica(b.dataset.tec,b.dataset.tk); } });
 
 /* ----------- INICIO ----------- */
 /* Split por dia de la semana (0=domingo). Es solo la sugerencia: el usuario
@@ -3088,10 +3249,10 @@ function renderExercises(){
         </div>` : ''}
       </div>
       <div class="ex-actions">
-        <a class="ex-video" href="${howTo(e.n)}" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M23 12a11 11 0 01-.3 2.6 2.8 2.8 0 01-2 2C19 17 12 17 12 17s-7 0-8.7-.4a2.8 2.8 0 01-2-2A11 11 0 011 12a11 11 0 01.3-2.6 2.8 2.8 0 012-2C5 7 12 7 12 7s7 0 8.7.4a2.8 2.8 0 012 2A11 11 0 0123 12zM10 15l6-3-6-3z"/></svg>
+        <button type="button" class="ex-video" data-tec="${e.n}" data-tk="${e._k||''}">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           Cómo se hace
-        </a>
+        </button>
         <button class="ex-done ${isDone?'is-done':''}" data-ex="${e.n}">${isDone?'✓ Hecho':'Marcar completo'}</button>
       </div>
       <button class="ex-rest" type="button" data-rest>⏱️ Descanso</button>`;
