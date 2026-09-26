@@ -524,6 +524,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .tec-name{font-size:18px;font-weight:800;margin:2px 44px 12px 0;line-height:1.2}
 .tec-stage{position:relative;border-radius:16px;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.06),rgba(255,255,255,0) 70%);border:1px solid var(--line)}
 .tec-stage svg{width:100%;height:min(46vh,420px);display:block}
+.tec-vid{width:100%;height:min(46vh,420px);object-fit:contain;border-radius:16px;background:#000}
 .tec-fase{position:absolute;left:12px;top:10px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--orange);background:rgba(0,0,0,.35);padding:4px 9px;border-radius:99px}
 .tec-tips{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .tec-tips li{display:flex;gap:9px;font-size:13.5px;line-height:1.4;color:var(--text)}
@@ -2372,7 +2373,7 @@ const WEEK = [
   ['DOM','Descanso','Recuperación'],
 ];
 const COACHES = [
-  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', foto:'', /* 👈 ruta o URL de su foto, ej. 'coach-christian.jpg' */ email:'', /* 👈 correo con el que entra a FORJA (así puede cambiar su propia foto) */ wa:'525646463204', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
+  {id:'c1', n:'Christian Rojas', sp:'Coach principal · FORJA', a:'C', foto:'', /* 👈 ruta o URL de su foto, ej. 'coach-christian.jpg' */ email:'christian.rojas.gerente.r9@gmail.com', /* 👈 correo con el que entra a FORJA (así puede cambiar su propia foto) */ wa:'525646463204', reply:'¡Hola! Soy Christian, tu coach en FORJA. Cuéntame en qué te ayudo hoy. 💪'},
   {id:'c2', n:'Diego Garfias', sp:'Coach FORJA · Fuerza y técnica', a:'D', foto:'', /* 👈 ruta o URL de su foto */ email:'', /* 👈 su correo de FORJA */ wa:'525611840254', reply:'¡Qué tal! Soy Diego, coach en FORJA. Dime qué necesitas ajustar de tu rutina. 💪'},
 ];
 
@@ -2432,6 +2433,7 @@ const TEC={
   tri:{v:'b',g:'brazo',a:{ua:170,fa:160},b:{ua:170,fa:0},f:['Estira','Baja lento'],t:['Codos fijos apuntando arriba.','Solo se mueve el antebrazo.','Estira completo y aprieta el tríceps.']},
   press:{v:'f',g:'hombro',a:{ua:75,fa:95},b:{ua:165,fa:-5},f:['Empuja arriba','Baja controlado'],t:['Abdomen firme y glúteos apretados.','Empuja hasta casi estirar, sin trabar codos.','Baja hasta la altura de la barbilla.']},
   lateral:{v:'f',g:'hombro',a:{},b:{ua:78,fa:-5},f:['Abre','Baja lento'],t:['Codos apenas flexionados.','Sube a los lados hasta la altura del hombro.','Baja lento, sin dejar caer el peso.']},
+  rear:{v:'b',g:'hombro',a:{},b:{ua:78,fa:-5},f:['Abre atrás','Baja lento'],t:['Torso inclinado al frente, espalda recta.','Abre los brazos hacia atrás a la altura del hombro.','Aprieta la parte trasera del hombro, sin jalar con el cuello.']},
   frontal:{v:'f',g:'hombro',a:{},b:{ua:6,uasy:.3,fasy:.3},f:['Sube al frente','Baja lento'],t:['Brazo casi recto, codo apenas flexionado.','Sube solo a la altura del hombro.','Sin impulso: el torso no se mueve.']},
   bench:{v:'f',g:'pecho',a:{ua:70,fa:0,fasy:.3},b:{ua:30,uasy:.4,fa:-60,fasy:.4},f:['Empuja','Regresa lento'],t:['Omóplatos juntos, pecho arriba.','Empuja hasta casi estirar los brazos.','Regresa controlado sintiendo el pecho.']},
   pushup:{v:'f',g:'pecho',a:{ua:70,fa:0,fasy:.3},b:{ua:30,uasy:.4,fa:-60,fasy:.4},f:['Empuja','Baja'],t:['Cuerpo recto de cabeza a talones.','Baja hasta que el pecho casi toque el piso.','Codos a unos 45° del cuerpo.']},
@@ -2451,7 +2453,7 @@ function tecTipo(nombre,k){
   const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const R=[[/femoral|curl de pierna|curl acostado/,'legcurl'],[/extension de (pierna|cuadricep)|cuadricep/,'legext'],[/pantorrilla|talon|gemelo/,'calf'],
     [/hip thrust|puente|gluteo/,'bridge'],[/zancada|desplante|bulgara|lunge|step/,'lunge'],[/sentadilla|prensa|squat|salto/,'squat'],
-    [/peso muerto|rumano|buenos dias/,'hinge'],[/remo/,'row'],[/jalon|dominada|pull/,'pull'],[/lateral|pajaro|posterior/,'lateral'],[/frontal/,'frontal'],
+    [/peso muerto|rumano|buenos dias/,'hinge'],[/remo/,'row'],[/jalon|dominada|pull/,'pull'],[/pajaro|posterior/,'rear'],[/lateral/,'lateral'],[/frontal/,'frontal'],
     [/tricep|frances|copa|fondo|patada|extension/,'tri'],[/curl|bicep|martillo/,'curl'],[/militar|arnold|hombro|encogimiento/,'press'],
     [/lagartija|flexion/,'pushup'],[/plancha|escalador|mountain/,'plank'],[/crunch|abdom|oblicu|russian|bicicleta|elevacion de pierna|rueda/,'crunch'],
     [/press|banca|pecho|apertura|cruce|pec/,'bench']];
@@ -2531,13 +2533,19 @@ function abrirTecnica(nombre,k){
   let bg=document.getElementById('tecModal');
   if(!bg){
     bg=document.createElement('div'); bg.id='tecModal'; bg.className='tec-bg';
-    bg.innerHTML='<div class="tec-card" role="dialog" aria-modal="true"><button type="button" class="tec-x" aria-label="Cerrar">×</button><div class="tec-name"></div><div class="tec-stage"><span class="tec-fase"></span><svg viewBox="-280 -380 1200 1740" preserveAspectRatio="xMidYMid meet"></svg></div><ul class="tec-tips"></ul></div>';
+    bg.innerHTML='<div class="tec-card" role="dialog" aria-modal="true"><button type="button" class="tec-x" aria-label="Cerrar">×</button><div class="tec-name"></div><div class="tec-stage"><span class="tec-fase"></span><svg viewBox="-280 -380 1200 1740" preserveAspectRatio="xMidYMid meet"></svg><video class="tec-vid" muted loop playsinline preload="auto" style="display:none"></video></div><ul class="tec-tips"></ul></div>';
     document.body.appendChild(bg);
-    const cerrar=()=>{ bg.classList.remove('open'); cancelAnimationFrame(tecRAF); };
+    const cerrar=()=>{ bg.classList.remove('open'); cancelAnimationFrame(tecRAF); const v=bg.querySelector('.tec-vid'); try{v.pause();}catch(e){} };
     bg.querySelector('.tec-x').onclick=cerrar;
     bg.onclick=e=>{ if(e.target===bg) cerrar(); };
   }
-  const d=TEC[tecTipo(nombre,k)], J=TEC_J[d.v], C=tecClips(J);
+  const tipo=tecTipo(nombre,k), d=TEC[tipo], J=TEC_J[d.v], C=tecClips(J);
+  /* Si existe tec/<tipo>.mp4 se usa el video; si no, la animación del androide */
+  const vid=bg.querySelector('.tec-vid'), svgEl=bg.querySelector('.tec-stage svg');
+  vid.style.display='none'; svgEl.style.display='';
+  vid.oncanplay=()=>{ vid.style.display='block'; svgEl.style.display='none'; cancelAnimationFrame(tecRAF); vid.play().catch(()=>{}); };
+  vid.onerror=()=>{ vid.style.display='none'; svgEl.style.display=''; };
+  vid.src='tec/'+tipo+'.mp4';
   const A=Object.assign({},d.a), B=Object.assign({},d.a,d.b);
   const ORD=['torso','thL','thR','shL','shR','uaL','uaR','faL','faR'];
   const clip=Object.keys(C).map(q=>'<clipPath id="tecC'+q+'" clipPathUnits="userSpaceOnUse"><polygon points="'+C[q].map(p=>p.map(Math.round).join(',')).join(' ')+'"/></clipPath>').join('');
@@ -5022,5 +5030,6 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   });
 })();
 </script>
+<script src="forja-coach.js"></script>
 </body>
 </html>
