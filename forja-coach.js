@@ -12,12 +12,14 @@ const GRUPOS={pecho:'Pecho',espalda:'Espalda',hombro:'Hombro',brazo:'Brazo',pier
 const LS_ACT='forja_coach_activa', LS_CACHE='forja_coach_cache';
 let RUTS=[], VIDS={}, draft=null, tab='rutinas', busca='';
 try{ const c=JSON.parse(localStorage.getItem(LS_CACHE)||'{}'); RUTS=c.r||[]; VIDS=c.v||{}; }catch(e){}
+let vista=(()=>{ try{ return localStorage.getItem('forja_vista')||'coach'; }catch(e){ return 'coach'; } })();
 let activa=(()=>{ try{ return localStorage.getItem(LS_ACT)||''; }catch(e){ return ''; } })();
 
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slug=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,120)||'x';
 const nube=()=>{ try{ return FB_ON && fbDB && fbUser; }catch(e){ return false; } };
-const miCoach=()=>{ try{ return coachDelUsuario(); }catch(e){ return null; } };
+const esCoachCuenta=()=>{ try{ return coachDelUsuario(); }catch(e){ return null; } };
+const miCoach=()=>vista==='coach'?esCoachCuenta():null;
 const guardaCache=()=>{ try{ localStorage.setItem(LS_CACHE,JSON.stringify({r:RUTS,v:VIDS})); }catch(e){} };
 
 /* ---------- Estilos (mismo lenguaje visual de FORJA) ---------- */
@@ -58,6 +60,11 @@ css.textContent=`
 .cz-bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden}.cz-bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .2s}
 .cz-empty{font-size:13px;color:var(--muted);padding:6px 2px}
 .cz-foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;position:sticky;bottom:-18px;background:var(--surface-solid);padding:10px 0 4px}
+.cz-vista{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:3px;margin-right:6px}
+.cz-vista button{padding:6px 11px;border-radius:99px;font-weight:800;font-size:11.5px;letter-spacing:.3px;color:var(--muted);background:none;border:0;cursor:pointer}
+.cz-vista button.on{background:var(--molten,var(--orange));color:#EAF6FB}
+.cz-vista button:hover:not(.on){color:var(--text)}
+@media(max-width:420px){.cz-vista button{padding:6px 8px;font-size:10.5px}}
 .cz-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--surface-solid);border:1px solid var(--orange);color:var(--text);padding:10px 16px;border-radius:99px;font-size:13px;font-weight:700;z-index:9999;max-width:90vw}
 .tec-coach{position:absolute;right:12px;top:10px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#EAF6FB;background:var(--molten,var(--orange));padding:4px 9px;border-radius:99px;z-index:2}
 .tec-ifr{width:100%;height:min(46vh,420px);border:0;border-radius:16px;background:#000;display:block}
@@ -79,7 +86,7 @@ function escuchar(){
     guardaCache();
   },()=>{});
 }
-try{ fbAuth && fbAuth.onAuthStateChanged(u=>{ if(u) setTimeout(()=>{ escuchar(); pintarTodo(); },300); }); }catch(e){}
+try{ fbAuth && fbAuth.onAuthStateChanged(u=>{ setTimeout(()=>{ if(u) escuchar(); pintarTodo(); },300); }); }catch(e){}
 
 async function guardarRutina(r){
   const c=miCoach(); r.coachId=c.id; r.coachN=c.n; r.t=Date.now();
@@ -182,8 +189,23 @@ function pintarCaja(){
   const p=box.querySelector('[data-cz-panel]'); if(p) p.onclick=abrirPanel;
 }
 const _renderEx=renderExercises;
-renderExercises=function(){ _renderEx.apply(this,arguments); try{ pintarCaja(); }catch(e){} };
-function pintarTodo(){ try{ if(activa && !rutActiva() && RUTS.length) usar(''); pintarCaja(); if(document.getElementById('czPanel')) pintarPanel(); }catch(e){} }
+renderExercises=function(){ _renderEx.apply(this,arguments); try{ pintarVista(); pintarCaja(); }catch(e){} };
+function pintarVista(){
+  const top=document.getElementById('pfpTop'); if(!top) return;
+  let s=document.getElementById('czVista');
+  if(!esCoachCuenta()){ if(s) s.remove(); return; }
+  if(!s){ s=document.createElement('div'); s.id='czVista'; s.className='cz-vista'; s.setAttribute('role','group'); s.setAttribute('aria-label','Ver como');
+    top.parentNode.insertBefore(s,top); }
+  s.innerHTML='<button type="button" data-v="coach" class="'+(vista==='coach'?'on':'')+'" title="Ver herramientas de coach">Coach</button><button type="button" data-v="cliente" class="'+(vista==='cliente'?'on':'')+'" title="Ver la app como la ve tu alumno">Cliente</button>';
+  s.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
+    if(vista===b.dataset.v) return;
+    vista=b.dataset.v; try{ localStorage.setItem('forja_vista',vista); }catch(e){}
+    if(vista==='cliente') cerrarPanel();
+    pintarVista(); pintarCaja();
+    toast(vista==='coach'?'Modo coach':'Viendo como cliente');
+  });
+}
+function pintarTodo(){ try{ pintarVista(); if(activa && !rutActiva() && RUTS.length) usar(''); pintarCaja(); if(document.getElementById('czPanel')) pintarPanel(); }catch(e){} }
 
 /* ---------- Panel del coach ---------- */
 function todosLosEjercicios(){
@@ -193,7 +215,7 @@ function todosLosEjercicios(){
   return [...s].sort((a,b)=>a.localeCompare(b,'es'));
 }
 function abrirPanel(){
-  const c=miCoach(); if(!c){ alert('Solo los coaches pueden entrar aquí.'); return; }
+  const c=miCoach(); if(!c){ alert('Cambia a modo Coach para entrar aquí.'); return; }
   if(!nube()) toast('Sin sesión en la nube: lo que hagas solo se guarda en este dispositivo',3500);
   let bg=document.getElementById('czPanel');
   if(!bg){ bg=document.createElement('div'); bg.id='czPanel'; bg.className='cz-bg'; document.body.appendChild(bg);
@@ -313,6 +335,6 @@ document.addEventListener('click',e=>{
 },true);
 
 /* ---------- Arranque ---------- */
-escuchar(); pintarTodo();
+escuchar(); pintarTodo(); setTimeout(pintarTodo,1500);
 if(activa && rutActiva()) usar(activa);
 })();
