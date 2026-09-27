@@ -883,11 +883,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .code-row button:hover{border-color:var(--orange)}
 .code-msg{font-size:13px;margin-top:8px;min-height:16px}
 /* ===== Selector Gimnasio / En casa (agregado) ===== */
-.mode-toggle{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--line);
+.mode-toggle{display:inline-flex;max-width:100%;overflow-x:auto;scrollbar-width:none;gap:4px;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:4px;margin-bottom:16px}
-.mode-btn{padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
+.mode-btn{white-space:nowrap;padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
 .mode-btn.active{background:var(--molten);color:#EAF6FB}
 .mode-btn:hover:not(.active){color:var(--text)}
+@media(max-width:480px){.mode-btn{padding:9px 12px;font-size:13px}}
 /* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
 .ex-meta input.v{
   width:100%;max-width:82px;text-align:center;font-family:'Anton',sans-serif;
@@ -1291,7 +1292,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="mode-toggle" id="modeToggle">
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
-          <button class="mode-btn" type="button" data-mode="park">🌳 Parque de calistenia</button>
+          <button class="mode-btn" type="button" data-mode="park" title="Parque de calistenia">🌳 Parque</button>
         </div>
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
@@ -3094,7 +3095,7 @@ function openGoal(){ document.getElementById('goalModal').classList.add('open');
 function closeGoal(){ document.getElementById('goalModal').classList.remove('open'); }
 function renderEnfoque(){
   const el=document.getElementById('enfoqueBanner'); if(!el) return;
-  if(plan!=='pro'){ el.style.display='none'; el.innerHTML=''; return; }
+  if(plan!=='pro' || mode==='park'){ el.style.display='none'; el.innerHTML=''; return; }
   if(!goal){
     el.className='enfoque-banner choose'; el.style.display='flex';
     el.innerHTML='<div><b>🎯 Elige tu objetivo</b><span>Volumen o Definición para cargar tus rutinas enfocadas.</span></div><button type="button" id="enfoqueBtn">Definir</button>';

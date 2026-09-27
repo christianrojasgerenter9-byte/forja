@@ -42,12 +42,12 @@ css.textContent=`
 .cr-act{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:rgba(31,155,196,.12);border:1px solid var(--orange);border-radius:14px;padding:10px 12px;font-size:13px}
 .cz-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9990;display:flex;align-items:flex-end;justify-content:center;padding:12px}
 @media(min-width:700px){.cz-bg{align-items:center}}
-.cz-card{background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;width:100%;max-width:680px;max-height:90vh;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px;color:var(--text)}
-.cz-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.cz-h{font-family:Anton,sans-serif;font-size:24px;letter-spacing:.5px}
+.cz-card{background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;overflow-x:hidden;padding:18px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;color:var(--text)}
+.cz-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.cz-top>div{flex:1;min-width:0}.cz-x{flex:0 0 auto}
+.cz-h{font-family:Anton,sans-serif;font-size:24px;letter-spacing:.5px;line-height:1.1}
 .cz-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:20px;cursor:pointer}
-.cz-tabs{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:4px;align-self:flex-start}
-.cz-tab{padding:8px 16px;border-radius:99px;font-weight:700;font-size:13px;color:var(--muted);cursor:pointer;background:none;border:0}
+.cz-tabs{display:inline-flex;max-width:100%;overflow-x:auto;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:4px;align-self:flex-start}
+.cz-tab{white-space:nowrap;padding:8px 16px;border-radius:99px;font-weight:700;font-size:13px;color:var(--muted);cursor:pointer;background:none;border:0}
 .cz-tab.on{background:var(--molten,var(--orange));color:#EAF6FB}
 .cz-row{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
 .cz-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
