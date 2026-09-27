@@ -883,7 +883,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .code-row button:hover{border-color:var(--orange)}
 .code-msg{font-size:13px;margin-top:8px;min-height:16px}
 /* ===== Selector Gimnasio / En casa (agregado) ===== */
-.mode-toggle{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);
+.mode-toggle{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--line);
   border-radius:99px;padding:4px;margin-bottom:16px}
 .mode-btn{padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
 .mode-btn.active{background:var(--molten);color:#EAF6FB}
@@ -1291,6 +1291,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="mode-toggle" id="modeToggle">
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
+          <button class="mode-btn" type="button" data-mode="park">🌳 Parque de calistenia</button>
         </div>
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
@@ -2163,6 +2164,53 @@ const HOME_ROUTINES = {
   ]},
 };
 
+/* ----------- Datos: rutinas PARQUE DE CALISTENIA (barras, paralelas, peso corporal) ----------- */
+const PARK_ROUTINES = {
+  pecho:   { label:'Pecho', ex:[
+    {n:'Fondos en paralelas (inclinado al frente)', s:4, r:'8-12', max:'20'},
+    {n:'Flexiones con pies en banca', s:4, r:'12-15', max:'25'},
+    {n:'Flexiones en barra baja', s:3, r:'12', max:'20'},
+    {n:'Flexiones explosivas (con palmada)', s:3, r:'8', max:'15'},
+    {n:'Flexiones diamante', s:3, r:'al fallo', max:'20'},
+  ]},
+  espalda: { label:'Espalda', ex:[
+    {n:'Dominadas agarre prono', s:4, r:'6-10', max:'15'},
+    {n:'Dominadas supinas (chin-ups)', s:3, r:'8-10', max:'15'},
+    {n:'Remo australiano en barra baja', s:4, r:'12', max:'20'},
+    {n:'Dominadas agarre ancho', s:3, r:'6-8', max:'12'},
+    {n:'Colgado activo en barra (scapular pull)', s:3, r:'10', max:'15'},
+  ]},
+  hombro:  { label:'Hombro', ex:[
+    {n:'Pike push-ups (flexión en pica)', s:4, r:'10', max:'15'},
+    {n:'Flexión en pica con pies en banca', s:3, r:'8', max:'12'},
+    {n:'Parada de manos contra pared (hold)', s:3, r:'30 seg', max:'60 seg'},
+    {n:'Pájaros en barra baja (deltoide posterior)', s:3, r:'12', max:'15'},
+    {n:'Fondos en paralelas (torso vertical)', s:3, r:'10', max:'15'},
+  ]},
+  brazo:   { label:'Brazo', ex:[
+    {n:'Chin-ups agarre cerrado (bíceps)', s:4, r:'8', max:'12'},
+    {n:'Fondos en paralelas (tríceps)', s:4, r:'10-12', max:'20'},
+    {n:'Curl de bíceps en barra baja (australiano)', s:3, r:'12', max:'15'},
+    {n:'Extensión de tríceps en barra baja', s:3, r:'10-12', max:'15'},
+    {n:'Fondos en banca (tríceps)', s:3, r:'al fallo', max:'25'},
+  ]},
+  pierna:  { label:'Pierna', ex:[
+    {n:'Sentadilla con salto', s:4, r:'15', max:'20'},
+    {n:'Sentadilla búlgara en banca', s:4, r:'10 c/pierna', max:'15'},
+    {n:'Step-ups en banca', s:3, r:'12 c/pierna', max:'15'},
+    {n:'Zancadas caminando', s:3, r:'14 c/pierna', max:'20'},
+    {n:'Pistol squat asistida (barra)', s:3, r:'6 c/pierna', max:'10'},
+    {n:'Elevación de pantorrilla en escalón', s:4, r:'20', max:'30'},
+  ]},
+  abdomen: { label:'Abdomen', ex:[
+    {n:'Elevación de piernas colgado', s:4, r:'10-12', max:'20'},
+    {n:'Rodillas al pecho colgado', s:3, r:'15', max:'20'},
+    {n:'L-sit en paralelas', s:3, r:'15 seg', max:'30 seg'},
+    {n:'Windshield wipers colgado (oblicuos)', s:3, r:'8 c/lado', max:'12'},
+    {n:'Plancha (plank)', s:3, r:'45 seg', max:'90 seg'},
+  ]},
+};
+
 /* ===================== RUTINAS ENFOCADAS (SOLO PRO) ===================== */
 /* GYM — VOLUMEN (fuerza/masa: cargas altas, pocas reps, descansos largos) */
 const GYM_VOL = {
@@ -2356,6 +2404,7 @@ const HOME_DEF = {
 };
 
 function getRoutines(){
+  if(mode==='park') return PARK_ROUTINES;
   if(plan==='pro' && goal){
     if(mode==='home') return goal==='volumen'?HOME_VOL:HOME_DEF;
     return goal==='volumen'?GYM_VOL:GYM_DEF;
@@ -2455,7 +2504,7 @@ function tecTipo(nombre,k){
     [/hip thrust|puente|gluteo/,'bridge'],[/zancada|desplante|bulgara|lunge|step/,'lunge'],[/sentadilla|prensa|squat|salto/,'squat'],
     [/peso muerto|rumano|buenos dias/,'hinge'],[/remo/,'row'],[/jalon|dominada|pull/,'pull'],[/pajaro|posterior/,'rear'],[/lateral/,'lateral'],[/frontal/,'frontal'],
     [/tricep|frances|copa|fondo|patada|extension/,'tri'],[/curl|bicep|martillo/,'curl'],[/militar|arnold|hombro|encogimiento/,'press'],
-    [/lagartija|flexion/,'pushup'],[/plancha|escalador|mountain/,'plank'],[/crunch|abdom|oblicu|russian|bicicleta|elevacion de pierna|rueda/,'crunch'],
+    [/lagartija|flexion/,'pushup'],[/plancha|escalador|mountain|l-sit|parada de manos/,'plank'],[/colgado|windshield/,'crunch'],[/crunch|abdom|oblicu|russian|bicicleta|elevacion de pierna|rueda/,'crunch'],
     [/press|banca|pecho|apertura|cruce|pec/,'bench']];
   for(const [re,t] of R) if(re.test(n)) return t;
   return ({brazo:'curl',pecho:'bench',hombro:'press',espalda:'row',pierna:'squat',abdomen:'crunch',abs:'crunch'})[k]||'squat';

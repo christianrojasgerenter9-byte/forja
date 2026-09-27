@@ -181,7 +181,7 @@ function pintarCaja(){
     (r?'<div class="cr-act"><span>Entrenando <b>'+esc(r.nombre)+'</b> de '+esc((r.coachN||'').split(' ')[0])+'</span><button class="cz-btn sm" data-cz-salir>Volver a rutinas FORJA</button></div>':'')+
     (RUTS.length?'<div class="cr-list">'+RUTS.map(x=>{
       const on=x.id===activa, nv=(x.ex||[]).filter(e=>e.v||VIDS[e.n]).length;
-      return '<div class="cr-item'+(on?' on':'')+'"><div class="cr-n">'+esc(x.nombre)+'</div><div class="cr-m">'+esc(x.coachN||'Coach')+' · '+(x.ex||[]).length+' ejercicios'+(nv?' · '+nv+' videos':'')+(x.modo==='home'?' · En casa':' · Gimnasio')+'</div>'+
+      return '<div class="cr-item'+(on?' on':'')+'"><div class="cr-n">'+esc(x.nombre)+'</div><div class="cr-m">'+esc(x.coachN||'Coach')+' · '+(x.ex||[]).length+' ejercicios'+(nv?' · '+nv+' videos':'')+({home:' · En casa',park:' · Parque'}[x.modo]||' · Gimnasio')+'</div>'+
         (on?'<span class="cr-m" style="color:var(--orange);font-weight:800">✓ Activa</span>':'<button class="cz-btn sm" data-cz-usar="'+esc(x.id)+'">Usar esta rutina</button>')+'</div>';
     }).join('')+'</div>':'');
   box.querySelectorAll('[data-cz-usar]').forEach(b=>b.onclick=()=>{ usar(b.dataset.czUsar); toast('Rutina cargada ✓'); });
@@ -210,7 +210,7 @@ function pintarTodo(){ try{ pintarVista(); if(activa && !rutActiva() && RUTS.len
 /* ---------- Panel del coach ---------- */
 function todosLosEjercicios(){
   const s=new Set();
-  [typeof ROUTINES!=='undefined'&&ROUTINES,typeof HOME_ROUTINES!=='undefined'&&HOME_ROUTINES,typeof GYM_VOL!=='undefined'&&GYM_VOL,typeof GYM_DEF!=='undefined'&&GYM_DEF,typeof HOME_VOL!=='undefined'&&HOME_VOL,typeof HOME_DEF!=='undefined'&&HOME_DEF]
+  [typeof ROUTINES!=='undefined'&&ROUTINES,typeof HOME_ROUTINES!=='undefined'&&HOME_ROUTINES,typeof GYM_VOL!=='undefined'&&GYM_VOL,typeof GYM_DEF!=='undefined'&&GYM_DEF,typeof HOME_VOL!=='undefined'&&HOME_VOL,typeof HOME_DEF!=='undefined'&&HOME_DEF,typeof PARK_ROUTINES!=='undefined'&&PARK_ROUTINES]
     .forEach(R=>{ if(R) Object.values(R).forEach(g=>g.ex.forEach(e=>s.add(e.n))); });
   return [...s].sort((a,b)=>a.localeCompare(b,'es'));
 }
@@ -233,7 +233,7 @@ function pintarPanel(){
     h+='<div class="cz-tabs"><button class="cz-tab'+(tab==='rutinas'?' on':'')+'" data-tab="rutinas">Mis rutinas</button><button class="cz-tab'+(tab==='videos'?' on':'')+'" data-tab="videos">Videos de ejercicios</button></div>';
     if(tab==='rutinas'){
       const mias=RUTS.filter(r=>r.coachId===c.id);
-      h+=(mias.length?mias.map(r=>'<div class="cz-row"><div class="cz-line" style="justify-content:space-between"><div><div class="cr-n">'+esc(r.nombre)+'</div><div class="cr-m">'+(r.ex||[]).length+' ejercicios · '+(r.modo==='home'?'En casa':'Gimnasio')+'</div></div><div class="cz-line"><button class="cz-btn sm" data-ed="'+esc(r.id)+'">Editar</button><button class="cz-btn sm dan" data-bo="'+esc(r.id)+'">Borrar</button></div></div></div>').join('')
+      h+=(mias.length?mias.map(r=>'<div class="cz-row"><div class="cz-line" style="justify-content:space-between"><div><div class="cr-n">'+esc(r.nombre)+'</div><div class="cr-m">'+(r.ex||[]).length+' ejercicios · '+({home:'En casa',park:'Parque'}[r.modo]||'Gimnasio')+'</div></div><div class="cz-line"><button class="cz-btn sm" data-ed="'+esc(r.id)+'">Editar</button><button class="cz-btn sm dan" data-bo="'+esc(r.id)+'">Borrar</button></div></div></div>').join('')
         :'<div class="cz-empty">Todavía no subes rutinas. Crea la primera y tus alumnos la verán en Rutinas.</div>')+
         '<button class="cz-btn pri" data-nueva style="align-self:flex-start">+ Nueva rutina</button>';
     }else{
@@ -257,7 +257,7 @@ function pintarPanel(){
 function htmlEditor(){
   const d=draft, opt=k=>Object.keys(GRUPOS).map(g=>'<option value="'+g+'"'+(g===k?' selected':'')+'>'+GRUPOS[g]+'</option>').join('');
   return '<div class="cz-row"><div class="cz-lbl">Nombre de la rutina</div><input class="cz-in" data-nom placeholder="Ej. Torso fuerza · semana 1" value="'+esc(d.nombre)+'">'+
-    '<div class="cz-line"><span class="cz-lbl">Dónde</span><div class="cz-tabs"><button class="cz-tab'+(d.modo!=='home'?' on':'')+'" data-modo="gym">🏋️ Gimnasio</button><button class="cz-tab'+(d.modo==='home'?' on':'')+'" data-modo="home">🏠 En casa</button></div></div></div>'+
+    '<div class="cz-line"><span class="cz-lbl">Dónde</span><div class="cz-tabs"><button class="cz-tab'+(d.modo!=='home'?' on':'')+'" data-modo="gym">🏋️ Gimnasio</button><button class="cz-tab'+(d.modo==='home'?' on':'')+'" data-modo="home">🏠 En casa</button><button class="cz-tab'+(d.modo==='park'?' on':'')+'" data-modo="park">🌳 Parque</button></div></div></div>'+
     '<div class="cz-lbl">Ejercicios ('+d.ex.length+')</div>'+
     d.ex.map((e,i)=>'<div class="cz-row" data-i="'+i+'">'+
       '<div class="cz-line"><span class="cr-n" style="color:var(--orange)">'+(i+1)+'.</span><input class="cz-in w" data-f="n" placeholder="Nombre del ejercicio" value="'+esc(e.n)+'"><select class="cz-sel" data-f="g">'+opt(e.g)+'</select></div>'+
