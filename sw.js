@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v123';
+const VERSION = 'forja-v124';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -16,6 +16,7 @@ const CASCARA = [
   './index.html',
   './forja-racha.js',
   './forja-coach.js',
+  './forja-pulso.js',
   './manifest.json',
   './forja-icono-192.png',
   './forja-icono-512.png',

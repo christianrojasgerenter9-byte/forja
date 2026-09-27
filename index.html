@@ -2065,6 +2065,7 @@ function chipsHTML(ex){
       (x.p?'<span class="sr-v">'+x.p+'</span><span class="sr-u">kg</span><span class="sr-x">×</span>':'')+
       '<span class="sr-v">'+x.r+'</span><span class="sr-u">reps</span>'+
       (x.d?'<span class="sc-tag">SS '+x.d+'</span>':'')+
+      (x.h?'<span class="sc-hr">❤'+x.h+'</span>':'')+
       '<button class="sr-del" data-sdel="'+ex+'" data-i="'+n+'" aria-label="Quitar serie">×</button></div>';
   }).join('');
   return html || '<span class="serie-vacio">Aun sin series hoy</span>';
@@ -5081,5 +5082,6 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 </script>
 <script src="forja-coach.js"></script>
+<script src="forja-pulso.js"></script>
 </body>
 </html>
