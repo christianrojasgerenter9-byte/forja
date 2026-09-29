@@ -602,6 +602,13 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .meal-top{padding:16px 18px;background:var(--molten-soft);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
 .meal-top .t{font-family:'Anton';font-size:20px}
 .meal-top .kc{font-size:12px;color:var(--orange);font-weight:700}
+.diet-seg{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:4px}
+.diet-seg button{padding:9px 16px;border-radius:99px;font-size:13px;font-weight:700;color:var(--muted)}
+.diet-seg button.on{background:var(--molten);color:#fff}
+.meal-opts{display:flex;gap:6px;padding:12px 18px 0}
+.meal-opts button{flex:1;padding:8px 6px;border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--line);color:var(--muted);background:var(--surface-2)}
+.meal-opts button:hover{border-color:var(--orange);color:var(--text)}
+.meal-opts button.on{border-color:var(--orange);color:var(--text);background:var(--molten-soft)}
 .meal ul{list-style:none;padding:16px 18px;display:flex;flex-direction:column;gap:9px}
 .meal li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--text)}
 .meal li span{color:var(--muted);font-size:12px}
@@ -1467,7 +1474,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
             <div class="muted" style="font-size:12px;letter-spacing:1px;text-transform:uppercase">Objetivo diario</div>
             <div style="font-family:'Anton';font-size:30px"><span id="dietKcal">2000</span> kcal</div>
           </div>
-          <div class="pill">Distribuido en 5 comidas</div>
+          <div class="diet-seg" id="dietPlanSeg"></div>
         </div>
         <div class="meal-grid" id="mealGrid"></div>
       </section>
@@ -3690,20 +3697,68 @@ document.getElementById('applyDiet').onclick=()=>{ if(calc(false)===null) return
 function renderDiet(){
   const t=dietTarget||2000;
   document.getElementById('dietKcal').textContent=t.toLocaleString('es-MX');
-  // reparto por comida
-  const meals=[
-    {t:'Desayuno', p:.25, items:[['Avena con fruta','60g avena + plátano'],['Claras de huevo','4 claras + 1 entero'],['Café negro','sin azúcar']]},
-    {t:'Snack AM', p:.12, items:[['Yogur griego','200g natural'],['Almendras','20g'],['Miel','1 cdita']]},
-    {t:'Comida', p:.32, items:[['Pechuga de pollo','180g a la plancha'],['Arroz integral','80g cocido'],['Ensalada verde','libre + aceite oliva']]},
-    {t:'Snack PM', p:.11, items:[['Batido de proteína','1 scoop + agua'],['Manzana','1 pieza']]},
-    {t:'Cena', p:.20, items:[['Salmón o atún','160g'],['Verduras al vapor','brócoli + calabaza'],['Aguacate','1/2 pieza']]},
+  let plan=load('forja_diet_plan', goal==='definicion'?'definicion':'volumen');
+  const picks=load('forja_diet_pick',{});
+  const V=plan==='volumen';
+  /* 3 opciones por comida — Gary: que el alumno elija qué comer */
+  const meals=V?[
+    {t:'Desayuno',p:.25,o:[
+      [['Avena con plátano','80g avena + 1 plátano + leche'],['Huevos revueltos','3 enteros'],['Crema de cacahuate','1 cda']],
+      [['Chilaquiles verdes','con 150g de pollo'],['Frijoles','1/2 taza'],['Tortillas','2 piezas']],
+      [['Hot cakes de avena','3 piezas'],['Claras + 1 huevo','4 claras'],['Miel y fresas','1 cda + 1 taza']]]},
+    {t:'Snack AM',p:.12,o:[
+      [['Yogur griego','200g'],['Granola','40g'],['Almendras','20g']],
+      [['Sándwich de atún','pan integral 2 reb.'],['Manzana','1 pieza']],
+      [['Licuado','leche + plátano + avena'],['Crema de cacahuate','1 cda']]]},
+    {t:'Comida',p:.32,o:[
+      [['Pechuga de pollo','200g a la plancha'],['Arroz','1 1/2 taza cocido'],['Verduras','libre + aceite oliva']],
+      [['Bistec de res','200g'],['Papa cocida','250g'],['Frijoles','1/2 taza']],
+      [['Salmón o tilapia','200g'],['Pasta integral','1 1/2 taza'],['Aguacate','1/2 pieza']]]},
+    {t:'Snack PM',p:.11,o:[
+      [['Batido de proteína','1 scoop + leche'],['Plátano','1 pieza']],
+      [['Tostadas de pollo','3 piezas'],['Aguacate','1/4 pieza']],
+      [['Pan integral','2 reb. + crema de cacahuate'],['Leche','1 vaso']]]},
+    {t:'Cena',p:.20,o:[
+      [['Tacos de pollo','4 tortillas + 150g'],['Frijoles','1/2 taza']],
+      [['Omelette','3 huevos + queso + espinaca'],['Pan integral','2 reb.']],
+      [['Atún con arroz','1 lata + 1 taza'],['Aguacate','1/2 pieza']]]}
+  ]:[
+    {t:'Desayuno',p:.25,o:[
+      [['Claras con espinaca','5 claras + 1 huevo'],['Avena','40g con canela'],['Café negro','sin azúcar']],
+      [['Omelette de pavo','2 huevos + 60g pavo'],['Tortilla','1 pieza'],['Fruta','1 taza papaya']],
+      [['Yogur griego','200g natural'],['Frutos rojos','1 taza'],['Chía','1 cda']]]},
+    {t:'Snack AM',p:.12,o:[
+      [['Manzana','1 pieza'],['Almendras','15g']],
+      [['Pepino y jícama','libre con limón'],['Queso panela','60g']],
+      [['Batido de proteína','1 scoop + agua']]]},
+    {t:'Comida',p:.32,o:[
+      [['Pechuga de pollo','180g a la plancha'],['Arroz integral','1/2 taza'],['Ensalada verde','libre']],
+      [['Pescado blanco','200g al ajillo'],['Verduras al vapor','brócoli + calabaza'],['Camote','100g']],
+      [['Carne magra','160g'],['Nopales asados','libre'],['Frijoles','1/3 taza']]]},
+    {t:'Snack PM',p:.11,o:[
+      [['Batido de proteína','1 scoop + agua']],
+      [['Huevos cocidos','2 piezas'],['Zanahoria','libre']],
+      [['Rollitos de pavo','4 reb. + pepino']]]},
+    {t:'Cena',p:.20,o:[
+      [['Atún en agua','1 lata con verduras'],['Aguacate','1/4 pieza']],
+      [['Tacos de lechuga','150g pollo o res'],['Pico de gallo','libre']],
+      [['Salmón','150g'],['Espárragos','1 taza']]]}
   ];
+  const seg=document.getElementById('dietPlanSeg');
+  seg.innerHTML=[['volumen','💪 Volumen'],['definicion','🔥 Definición']].map(([k,l])=>
+    `<button type="button" data-dplan="${k}" class="${plan===k?'on':''}">${l}</button>`).join('');
+  seg.querySelectorAll('[data-dplan]').forEach(b=>b.onclick=()=>{ save('forja_diet_plan',b.dataset.dplan); renderDiet(); });
   const g=document.getElementById('mealGrid'); g.innerHTML='';
   meals.forEach(m=>{
-    const kc=Math.round(t*m.p);
+    const kc=Math.round(t*m.p), key=plan+'|'+m.t, sel=Math.min(picks[key]||0,m.o.length-1);
     const el=document.createElement('div');el.className='meal';
     el.innerHTML=`<div class="meal-top"><div class="t">${m.t}</div><div class="kc">${kc} kcal</div></div>
-      <ul>${m.items.map(i=>`<li>${i[0]}<span>${i[1]}</span></li>`).join('')}</ul>`;
+      <div class="meal-opts">${m.o.map((_,i)=>`<button type="button" data-op="${i}" class="${i===sel?'on':''}">Opción ${i+1}</button>`).join('')}</div>
+      ${window.FORJA_RECETA&&FORJA_RECETA.foto(plan,m.t,sel)?`<div class="meal-foto" style="background-image:url('${FORJA_RECETA.foto(plan,m.t,sel)}')"></div>`:''}
+      <ul>${m.o[sel].map(i=>`<li>${i[0]}<span>${i[1]}</span></li>`).join('')}</ul>
+      ${window.FORJA_RECETA?'<button type="button" class="meal-rec" data-rec>Ver receta y preparación</button>':''}`;
+    const rb=el.querySelector('[data-rec]'); if(rb) rb.onclick=()=>FORJA_RECETA.abrir(plan,m.t,sel,m.o[sel][0][0],kc);
+    el.querySelectorAll('[data-op]').forEach(b=>b.onclick=()=>{ picks[key]=+b.dataset.op; save('forja_diet_pick',picks); renderDiet(); });
     g.appendChild(el);
   });
 }
@@ -5083,5 +5138,6 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </script>
 <script src="forja-coach.js"></script>
 <script src="forja-pulso.js"></script>
+<script src="forja-recetas.js"></script>
 </body>
 </html>

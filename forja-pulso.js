@@ -56,7 +56,7 @@ document.head.appendChild(css);
 function pintarBoton(){
   const mt=document.getElementById('modeToggle'); if(!mt) return;
   let b=document.getElementById('hrBtn');
-  if(!b){ b=document.createElement('button'); b.type='button'; b.id='hrBtn'; b.className='hr-btn'; mt.insertAdjacentElement('afterend',b); b.onclick=()=>car?abrirPanel():conectar(); }
+  if(!b){ b=document.createElement('button'); b.type='button'; b.id='hrBtn'; b.className='hr-btn'; mt.insertAdjacentElement('afterend',b); b.onclick=()=>car?abrirPanel():conectar(false); }
   b.classList.toggle('on',!!car);
   b.innerHTML=car?'<span class="hb">❤</span> Reloj conectado':'<span class="hb">❤</span> Conectar reloj';
 }
@@ -78,26 +78,38 @@ function guardaDias(){
   const k=Object.keys(dias).sort(); while(k.length>60) delete dias[k.shift()];
   try{ localStorage.setItem(LS_DIA,JSON.stringify(dias)); }catch(e){}
 }
+const conTiempo=(p,ms,msg)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error(msg)),ms))]);
 async function enlazar(){
-  const srv=await dev.gatt.connect();
-  const s=await srv.getPrimaryService('heart_rate');
-  car=await s.getCharacteristic('heart_rate_measurement');
+  const srv=await conTiempo(dev.gatt.connect(),15000,'TIMEOUT_CONEXION');
+  let s;
+  try{ s=await conTiempo(srv.getPrimaryService('heart_rate'),8000,'SIN_SERVICIO'); }
+  catch(e){ try{ dev.gatt.disconnect(); }catch(_){} throw new Error('SIN_SERVICIO'); }
+  car=await conTiempo(s.getCharacteristic('heart_rate_measurement'),8000,'SIN_SERVICIO');
   car.addEventListener('characteristicvaluechanged',alLeer);
   await car.startNotifications();
   intentos=0; pintarBoton(); pintarPill();
 }
-async function conectar(){
+let conectando=false;
+async function conectar(todos){
   if(!soportado()){ abrirAyuda(); return; }
+  if(conectando) return;
+  const b=document.getElementById('hrBtn');
   try{
-    dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}]});
+    dev=await navigator.bluetooth.requestDevice(todos?{acceptAllDevices:true,optionalServices:['heart_rate']}:{filters:[{services:['heart_rate']}]});
+    conectando=true; if(b) b.innerHTML='<span class="hb">❤</span> Conectando…';
     manual=false;
     dev.addEventListener('gattserverdisconnected',alPerder);
     await enlazar();
     aviso('❤ Conectado a '+(dev.name||'tu reloj'));
   }catch(e){
-    if(e&&e.name==='NotFoundError') return; /* canceló el selector */
-    abrirAyuda('No pude conectar. Revisa que tu reloj esté transmitiendo el pulso y vuelve a intentar.');
+    conectando=false; try{ dev&&dev.gatt.connected&&dev.gatt.disconnect(); }catch(_){} 
+    const m=e&&e.message;
+    if(e&&e.name==='NotFoundError'){ dev=null; pintarBoton(); return; } /* canceló el selector */
+    dev=null; car=null; pintarBoton();
+    abrirAyuda(m==='SIN_SERVICIO'?'Tu reloj se conectó, pero no está transmitiendo el pulso. Activa la transmisión de frecuencia cardiaca en el reloj (pasos abajo) y vuelve a intentar.':m==='TIMEOUT_CONEXION'?'El reloj no respondió. Suele pasar cuando la transmisión de pulso está apagada o el reloj está ocupado con la app Mi Fitness. Sigue los pasos y reintenta.':'No pude conectar. Revisa que tu reloj esté transmitiendo el pulso y vuelve a intentar.');
+    return;
   }
+  conectando=false;
 }
 async function alPerder(){
   car=null; pintarPill(); pintarBoton();
@@ -147,10 +159,10 @@ function abrirAyuda(msg){
   hoja('<h3>Conectar tu reloj</h3>'+
     (msg?'<p style="color:var(--text)">'+esc(msg)+'</p>':'')+
     (!soportado()?'<p style="color:var(--text)">'+(ios?'En iPhone, Safari no permite conectar relojes por Bluetooth. Abre FORJA en un Android con Chrome.':'Este navegador no permite Bluetooth. Abre FORJA en Chrome (Android o computadora).')+'</p>':'')+
-    '<ol><li>En tu reloj activa <b>“Transmitir frecuencia cardiaca”</b> (Garmin: Ajustes › Sensores › Transmitir FC · Amazfit: Detección FC › Compartir · Polar: Ajustes › Conexión).</li><li>Deja el reloj cerca del celular con Bluetooth y ubicación encendidos.</li><li>Toca <b>Conectar reloj</b> y elígelo en la lista.</li></ol>'+
+    '<ol><li>En tu reloj activa <b>“Transmitir frecuencia cardiaca”</b>:<br>· <b>Xiaomi / Redmi Watch</b>: en el reloj, Ajustes › Frecuencia cardiaca › <b>Transmisión de FC</b> (en algunos modelos está dentro de un entrenamiento: inicia uno, desliza a ajustes y actívala). Si no ves la opción, tu modelo no la trae.<br>· Garmin: Ajustes › Sensores › Transmitir FC · Amazfit: Detección FC › Compartir · Polar: Ajustes › Conexión.</li><li>Deja la pantalla del reloj encendida mostrando el pulso, cerca del celular, con Bluetooth y ubicación activos.</li><li>Toca <b>Conectar reloj</b> y elígelo en la lista. Si no aparece, usa <b>Buscar todos</b>.</li></ol>'+
     '<p>Funciona con Polar, Garmin, Amazfit, Coros, Wahoo y bandas de pecho. Apple Watch y Galaxy Watch no transmiten pulso por Bluetooth sin una app extra.</p>'+
-    '<div class="hr-acts">'+(soportado()?'<button class="hr-a pri" data-retry>Intentar de nuevo</button>':'')+'<button class="hr-a" data-cerrar>Cerrar</button></div>')
-    .querySelectorAll('[data-retry]').forEach(b=>b.onclick=()=>{ b.closest('.hr-sheet').remove(); conectar(); });
+    '<div class="hr-acts">'+(soportado()?'<button class="hr-a" data-todos>Buscar todos</button><button class="hr-a pri" data-retry>Intentar de nuevo</button>':'')+'<button class="hr-a" data-cerrar>Cerrar</button></div>')
+    .querySelectorAll('[data-retry],[data-todos]').forEach(b=>b.onclick=()=>{ const t=b.hasAttribute('data-todos'); b.closest('.hr-sheet').remove(); conectar(t); });
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function aviso(t){ const d=document.createElement('div'); d.className='cz-toast'; d.style.cssText='position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:var(--surface-solid);border:1px solid #e05656;color:var(--text);padding:10px 16px;border-radius:99px;font-size:13px;font-weight:700;z-index:9999'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2600); }
