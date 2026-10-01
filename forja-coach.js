@@ -120,23 +120,33 @@ async function subirArchivo(file){
   await cargarStorage();
   const ref=firebase.storage().ref('videos-coach/'+fbUser.uid+'/'+Date.now()+'-'+slug(file.name.replace(/\.[^.]+$/,''))+'.'+((file.name.split('.').pop()||'mp4').toLowerCase()));
   const t=toast('Subiendo video… 0%',9e9);
+  let task, ultimo=Date.now(), vigia;
   try{
-    const task=ref.put(file,{contentType:file.type||'video/mp4'});
-    task.on('state_changed',s=>{ t.textContent='Subiendo video… '+Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; });
-    await task; const url=await ref.getDownloadURL(); t.remove(); toast('Video listo ✓'); return url;
+    task=ref.put(file,{contentType:file.type||'video/mp4'});
+    task.on('state_changed',s=>{ ultimo=Date.now(); t.textContent='Subiendo video… '+Math.round(s.bytesTransferred/s.totalBytes*100)+'%'; });
+    vigia=setInterval(()=>{ if(Date.now()-ultimo>45000){ clearInterval(vigia); task.cancel(); } },5000);
+    await task; clearInterval(vigia);
+    const url=await ref.getDownloadURL(); t.remove(); toast('Video listo ✓'); return url;
   }catch(e){
-    t.remove();
-    const c=(e&&e.code)||'';
-    if(c.indexOf('unauthorized')>=0) throw new Error('Tu cuenta no tiene permiso de subir videos. Revisa las reglas de Storage.');
-    throw new Error('No se pudo subir. Verifica que Storage esté activo en Firebase, o pega un enlace de YouTube/Drive.');
+    clearInterval(vigia); t.remove();
+    const c=(e&&e.code)||'', m=((e&&e.message)||'').toLowerCase();
+    console.warn('[FORJA] subida falló',c,e);
+    const alt='\n\nMientras tanto: sube el video a YouTube como «No listado» y pega el enlace aquí. Funciona igual.';
+    if(c==='storage/canceled') throw new Error('La subida se quedó trabada (sin avance en 45 s). Revisa tu señal o usa Wi-Fi.'+alt);
+    if(c==='storage/unauthorized') throw new Error('Firebase rechazó el permiso (storage/unauthorized). Faltan las reglas de Storage para videos-coach.'+alt);
+    if(c==='storage/quota-exceeded') throw new Error('Se llenó el espacio de Storage del plan.'+alt);
+    if(c==='storage/unknown'||c==='storage/bucket-not-found'||c==='storage/project-not-found'||c==='storage/retry-limit-exceeded'||m.indexOf('404')>=0||m.indexOf('cors')>=0)
+      throw new Error('Firebase Storage no está activado en el proyecto ('+(c||'sin código')+'). Desde 2024 Storage requiere el plan Blaze.'+alt);
+    throw new Error('No se pudo subir ('+(c||'error')+').'+alt);
   }
 }
 /* Pide un video: archivo del cel o enlace. Llama cb(url) */
 function pedirVideo(cb, actual){
   const bg=document.createElement('div'); bg.className='cz-bg'; bg.style.zIndex='9995';
   bg.innerHTML='<div class="cz-card" style="max-width:420px"><div class="cz-top"><div class="cz-h" style="font-size:20px">Video del ejercicio</div><button class="cz-x" data-x>×</button></div>'+
-    '<button class="cz-btn pri" data-f>🎥 Subir desde mi celular</button>'+
-    '<div class="cz-lbl">o pega un enlace</div><div class="cz-line"><input class="cz-in w" data-u placeholder="YouTube, Google Drive o .mp4" value="'+esc(actual||'')+'"><button class="cz-btn" data-ok>Usar enlace</button></div>'+
+    '<div class="cr-d" style="line-height:1.5">1. Sube el video a YouTube como <b>No listado</b><br>2. Toca <b>Compartir → Copiar enlace</b><br>3. Pégalo aquí</div>'+
+    '<div class="cz-line"><input class="cz-in w" data-u placeholder="https://youtu.be/…" value="'+esc(actual||'')+'"><button class="cz-btn pri" data-ok>Guardar</button></div>'+
+    (window.FORJA_STORAGE?'<button class="cz-btn" data-f>🎥 Subir archivo desde el celular</button>':'')+
     (actual?'<button class="cz-btn sm dan" data-del style="align-self:flex-start">Quitar video</button>':'')+
     '<input type="file" accept="video/*" data-file style="display:none"></div>';
   document.body.appendChild(bg);
@@ -144,7 +154,7 @@ function pedirVideo(cb, actual){
   bg.querySelector('[data-x]').onclick=()=>bg.remove();
   bg.onclick=e=>{ if(e.target===bg) bg.remove(); };
   const fi=bg.querySelector('[data-file]');
-  bg.querySelector('[data-f]').onclick=()=>fi.click();
+  const bf=bg.querySelector('[data-f]'); if(bf) bf.onclick=()=>fi.click();
   fi.onchange=async()=>{ const f=fi.files[0]; if(!f) return; bg.style.display='none';
     try{ fin(await subirArchivo(f)); }catch(e){ bg.style.display=''; alert(e.message); } };
   bg.querySelector('[data-ok]').onclick=()=>{ const u=bg.querySelector('[data-u]').value.trim(); if(!/^https?:\/\//i.test(u)){ alert('Pega un enlace que empiece con https://'); return; } fin(u); };
