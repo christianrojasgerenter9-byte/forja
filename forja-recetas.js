@@ -196,6 +196,7 @@ function abrir(plan,meal,i,titulo,kcal){
   document.body.appendChild(s);
 }
 
-window.FORJA_RECETA={abrir, foto:(plan,meal,i)=>extra(plan+'|'+meal+'|'+i).foto||''};
+window.FORJA_RECETA={abrir, foto:(plan,meal,i)=>extra(plan+'|'+meal+'|'+i).foto||'',
+  macros:(plan,meal,i)=>{ const r=R[plan]&&R[plan][meal]&&R[plan][meal][i]; return r?{p:r.p,c:r.c,g:r.g}:null; }};
 try{ renderDiet(); }catch(e){}
 })();
