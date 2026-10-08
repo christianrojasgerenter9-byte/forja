@@ -28,10 +28,8 @@
 body{background:#07090A}
 body::before{
   background:
-    radial-gradient(60% 45% at 55% 62%,rgba(110,200,50,.20),transparent 70%),
-    radial-gradient(40% 35% at 20% 10%,rgba(90,150,40,.10),transparent 70%),
-    linear-gradient(180deg,rgba(7,9,10,.35),rgba(7,9,10,.85)),
-    url('forja-fondo.jpg') center/cover no-repeat,
+    linear-gradient(180deg,rgba(5,7,6,.25),rgba(5,7,6,.55) 70%,rgba(5,7,6,.85)),
+    url('forja-fondo.jpg?v=2') center 30%/cover no-repeat,
     #07090A !important;
 }
 body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -136,7 +134,6 @@ a:hover{color:#B9F27A}
 .ring-wrap{order:1;padding:70px 0 40px}
 @media (max-width:820px){.ring-wrap{padding:60px 0 30px}}
 
-/* Engranes de la referencia, a la derecha */
-.app::after{content:"";position:fixed;top:0;right:0;bottom:0;width:min(34vw,440px);z-index:0;pointer-events:none;
-  background:url('forja-engranes.png') right center/auto 100% no-repeat;opacity:.9}
-@media (max-width:820px){.app::after{width:60vw;opacity:.35}}
+
+.marca-agua{display:none !important}
+@media (max-width:820px){body::before{background-position:center top !important;background-size:auto 100vh !important}}
