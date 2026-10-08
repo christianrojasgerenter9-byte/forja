@@ -319,15 +319,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .bm-base{width:100%;display:block;filter:grayscale(1) brightness(1.75) contrast(.8) drop-shadow(0 0 10px rgba(255,255,255,.15))}
 .bm-zona{filter:grayscale(1) brightness(.6)}
 .bm-zona,.bm-on{position:absolute;left:0;top:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .45s ease;pointer-events:none}
-.bm-on.s0,.bm-on.s1{opacity:1;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(-35deg) saturate(5) drop-shadow(0 0 7px rgba(255,59,48,.85)) drop-shadow(0 0 20px rgba(255,59,48,.5))}
-.bm-on.s2{opacity:.7;filter:brightness(1) saturate(1.05) drop-shadow(0 0 5px rgba(255,59,48,.4))}
+.bm-on.s0,.bm-on.s1{opacity:1;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(55deg) saturate(5) drop-shadow(0 0 7px rgba(142,224,74,.85)) drop-shadow(0 0 20px rgba(142,224,74,.5))}
+.bm-on.s2{opacity:.7;filter:brightness(1) saturate(1.05) drop-shadow(0 0 5px rgba(142,224,74,.4))}
 .bm-zona.s4{opacity:.75;filter:grayscale(.2) sepia(.35) brightness(1.05) drop-shadow(0 0 8px rgba(201,162,39,.55))}
 .bm-mini-wrap{margin-top:22px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);text-align:center}
 .bm-mini-tag{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:700}
 .bm-mini{position:relative;width:150px;margin:0 auto}
 .bm-mini img{width:100%;display:block}
 .bm-mini .bm-base{filter:grayscale(1) brightness(1.75) contrast(.8) drop-shadow(0 0 8px rgba(255,255,255,.15))}
-.bm-mini-on{position:absolute;left:0;top:0;opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(-35deg) saturate(5) drop-shadow(0 0 8px rgba(255,59,48,.8))}
+.bm-mini-on{position:absolute;left:0;top:0;opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.1) sepia(1) hue-rotate(55deg) saturate(5) drop-shadow(0 0 8px rgba(142,224,74,.8))}
 .bm-mini-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
 .bm-mini-list span{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--surface-2)}
 .bm-mini-list span.done{color:#ff3b30;border-color:#ff3b30;background:rgba(255,59,48,.08)}
@@ -502,8 +502,8 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-av-in{position:absolute}
 .ex-av-in img{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 .ex-av .bm-base{filter:grayscale(1) brightness(1.75) contrast(.8)}
-.ex-av .ex-av-on{opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.2) sepia(1) hue-rotate(-35deg) saturate(6) drop-shadow(0 0 4px rgba(255,59,48,1)) drop-shadow(0 0 10px rgba(255,59,48,.6))}
-.ex-av.on{border-color:rgba(255,59,48,.55)}
+.ex-av .ex-av-on{opacity:0;transition:opacity .5s ease;filter:grayscale(1) brightness(1.2) sepia(1) hue-rotate(55deg) saturate(6) drop-shadow(0 0 4px rgba(142,224,74,1)) drop-shadow(0 0 10px rgba(142,224,74,.6))}
+.ex-av.on{border-color:rgba(142,224,74,.55)}
 .ex-av.on .ex-av-on{opacity:1}
 .ex-name{font-weight:700;font-size:17px;line-height:1.3}
 .ex-name .ex-n{font-family:'Anton',sans-serif;font-weight:400;color:var(--orange);margin-right:5px}
@@ -2580,7 +2580,7 @@ function tecTintar(src,modo){
         for(let i=0;i<p.length;i+=4){
           const l=.3*p[i]+.59*p[i+1]+.11*p[i+2];
           if(modo==='w'){ const v=Math.min(255,l*1.55+16); p[i]=v; p[i+1]=v; p[i+2]=Math.min(255,v+6); }
-          else { p[i]=Math.min(255,l*1.9+30); p[i+1]=l*.22; p[i+2]=l*.16; }
+          else { p[i]=l*.5; p[i+1]=Math.min(255,l*1.75+30); p[i+2]=l*.22; }
         }
         x.putImageData(D,0,0); c.toBlob(b=>res(b?URL.createObjectURL(b):src),'image/png');
       }catch(e){ res(src); }
@@ -5140,6 +5140,6 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <script src="forja-coach.js"></script>
 <script src="forja-recetas.js"></script>
 <script src="forja-diario.js"></script>
-<link rel="stylesheet" href="forja-tema.css?v=140">
+<link rel="stylesheet" href="forja-tema.css?v=141">
 </body>
 </html>
