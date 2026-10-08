@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v133';
+const VERSION = 'forja-v106';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -15,8 +15,6 @@ const CASCARA = [
   './',
   './index.html',
   './forja-racha.js',
-  './forja-coach.js',
-  './forja-recetas.js','./forja-diario.js',
   './manifest.json',
   './forja-icono-192.png',
   './forja-icono-512.png',
@@ -62,7 +60,6 @@ const SIEMPRE_EN_VIVO = [
   'firestore.googleapis.com',
   'firebaseinstallations.googleapis.com',
   'firebaseremoteconfig.googleapis.com',
-  'firebasestorage.googleapis.com',
   'identitytoolkit',
   'securetoken',
   'google-analytics.com',
