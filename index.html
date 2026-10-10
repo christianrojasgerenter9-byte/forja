@@ -524,7 +524,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .tec-name{font-size:18px;font-weight:800;margin:2px 44px 12px 0;line-height:1.2}
 .tec-stage{position:relative;border-radius:16px;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.06),rgba(255,255,255,0) 70%);border:1px solid var(--line)}
 .tec-stage svg{width:100%;height:min(46vh,420px);display:block}
-.tec-vid{width:100%;height:min(46vh,420px);object-fit:contain;border-radius:16px;background:#000}
+.tec-vid{width:100%;height:min(46vh,420px);object-fit:cover;border-radius:16px;background:#000}
 .tec-fase{position:absolute;left:12px;top:10px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--orange);background:rgba(0,0,0,.35);padding:4px 9px;border-radius:99px}
 .tec-tips{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .tec-tips li{display:flex;gap:9px;font-size:13.5px;line-height:1.4;color:var(--text)}
@@ -896,6 +896,12 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .mode-btn.active{background:var(--molten);color:#EAF6FB}
 .mode-btn:hover:not(.active){color:var(--text)}
 @media(max-width:480px){.mode-btn{padding:9px 12px;font-size:13px}}
+.cu-btn{white-space:nowrap;padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
+.cu-btn.active{background:var(--molten);color:#EAF6FB}
+.cu-btn:hover:not(.active){color:var(--text)}
+.bm-vm{display:none}
+.bm-foto.mujer .bm-vista{display:none}
+.bm-foto.mujer .bm-vm{display:block}
 /* ===== Casillas editables Series/Reps/Máx (agregado) ===== */
 .ex-meta input.v{
   width:100%;max-width:82px;text-align:center;font-family:'Anton',sans-serif;
@@ -1166,6 +1172,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="card" style="margin-bottom:18px">
           <span class="eyebrow">Mapa muscular</span>
           <h2 style="font-size:26px;margin:8px 0 4px">Tu cuerpo hoy</h2>
+          <div class="mode-toggle" id="cuerpoToggle" style="margin:10px 0 6px"><button class="cu-btn active" type="button" data-cu="h">Hombre</button><button class="cu-btn" type="button" data-cu="m">Mujer</button></div>
           <p class="muted" style="font-size:13.5px;margin:0 0 18px">
             Solo se enciende en rojo lo que entrenas hoy. El mapa se reinicia cada día. Toca un músculo para meterlo en la rutina de hoy.</p>
           <div class="bm-wrap">
@@ -1215,6 +1222,49 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
                 <path class="bm-part" data-g="pierna" d="M0.292 0.398L0.478 0.392L0.664 0.398L0.67 0.452L0.478 0.474L0.286 0.452Z"></path>
                 <path class="bm-part" data-g="pierna" d="M0.234 0.424L0.455 0.424L0.447 0.48L0.441 0.51L0.426 0.54L0.405 0.57L0.391 0.6L0.379 0.63L0.366 0.66L0.35 0.69L0.354 0.72L0.355 0.75L0.341 0.78L0.316 0.81L0.297 0.84L0.284 0.87L0.291 0.9L0.291 0.93L0.15 0.93L0.163 0.9L0.18 0.87L0.179 0.84L0.171 0.81L0.164 0.78L0.157 0.75L0.164 0.72L0.187 0.69L0.213 0.66L0.22 0.63L0.22 0.6L0.216 0.57L0.212 0.54L0.212 0.51L0.218 0.48Z"></path>
                 <path class="bm-part" data-g="pierna" d="M0.722 0.424L0.501 0.424L0.509 0.48L0.515 0.51L0.53 0.54L0.551 0.57L0.565 0.6L0.577 0.63L0.59 0.66L0.606 0.69L0.602 0.72L0.601 0.75L0.615 0.78L0.64 0.81L0.659 0.84L0.672 0.87L0.665 0.9L0.665 0.93L0.806 0.93L0.793 0.9L0.776 0.87L0.777 0.84L0.785 0.81L0.792 0.78L0.799 0.75L0.792 0.72L0.769 0.69L0.743 0.66L0.736 0.63L0.736 0.6L0.74 0.57L0.744 0.54L0.744 0.51L0.738 0.48Z"></path>
+              </svg>
+              <div class="bm-cara">Espalda</div>
+            </div>
+            <div class="bm-vista bm-vm">
+              <img class="bm-base" src="mq-mf.webp" alt="Maniqui mujer vista frente">
+              <img class="bm-zona" data-g="pecho" src="mq-mf-pecho.webp" alt="">
+              <img class="bm-on" data-g="pecho" src="mq-mf-pecho.webp" alt="">
+              <img class="bm-zona" data-g="hombro" src="mq-mf-hombro.webp" alt="">
+              <img class="bm-on" data-g="hombro" src="mq-mf-hombro.webp" alt="">
+              <img class="bm-zona" data-g="brazo" src="mq-mf-brazo.webp" alt="">
+              <img class="bm-on" data-g="brazo" src="mq-mf-brazo.webp" alt="">
+              <img class="bm-zona" data-g="abs" src="mq-mf-abs.webp" alt="">
+              <img class="bm-on" data-g="abs" src="mq-mf-abs.webp" alt="">
+              <img class="bm-zona" data-g="pierna" src="mq-mf-pierna.webp" alt="">
+              <img class="bm-on" data-g="pierna" src="mq-mf-pierna.webp" alt="">
+              <svg class="bm-hit" viewBox="0 0 1 1" preserveAspectRatio="none">
+                <path class="bm-part" data-g="pecho" d="M0.405 0.205L0.595 0.205L0.6 0.285L0.4 0.285Z"></path>
+                <path class="bm-part" data-g="hombro" d="M0.33 0.19L0.405 0.19L0.405 0.27L0.335 0.27Z"></path>
+                <path class="bm-part" data-g="hombro" d="M0.595 0.19L0.645 0.19L0.645 0.27L0.6 0.27Z"></path>
+                <path class="bm-part" data-g="brazo" d="M0 0.44L0.28 0.22L0.335 0.23L0.345 0.27L0.11 0.51L0 0.51Z"></path>
+                <path class="bm-part" data-g="brazo" d="M0.645 0.2L0.67 0.2L1 0.45L1 0.51L0.9 0.51L0.615 0.29L0.645 0.27Z"></path>
+                <path class="bm-part" data-g="abs" d="M0.4 0.285L0.6 0.285L0.615 0.4L0.385 0.4Z"></path>
+                <path class="bm-part" data-g="pierna" d="M0.34 0.4L0.66 0.4L0.66 1L0.34 1Z"></path>
+              </svg>
+              <div class="bm-cara">Frente</div>
+            </div>
+            <div class="bm-vista bm-vm">
+              <img class="bm-base" src="mq-mb.webp" alt="Maniqui mujer vista espalda">
+              <img class="bm-zona" data-g="hombro" src="mq-mb-hombro.webp" alt="">
+              <img class="bm-on" data-g="hombro" src="mq-mb-hombro.webp" alt="">
+              <img class="bm-zona" data-g="brazo" src="mq-mb-brazo.webp" alt="">
+              <img class="bm-on" data-g="brazo" src="mq-mb-brazo.webp" alt="">
+              <img class="bm-zona" data-g="espalda" src="mq-mb-espalda.webp" alt="">
+              <img class="bm-on" data-g="espalda" src="mq-mb-espalda.webp" alt="">
+              <img class="bm-zona" data-g="pierna" src="mq-mb-pierna.webp" alt="">
+              <img class="bm-on" data-g="pierna" src="mq-mb-pierna.webp" alt="">
+              <svg class="bm-hit" viewBox="0 0 1 1" preserveAspectRatio="none">
+                <path class="bm-part" data-g="hombro" d="M0.33 0.18L0.4 0.18L0.4 0.26L0.33 0.26Z"></path>
+                <path class="bm-part" data-g="hombro" d="M0.6 0.18L0.67 0.18L0.67 0.26L0.6 0.26Z"></path>
+                <path class="bm-part" data-g="brazo" d="M0 0.17L0.33 0.17L0.33 0.27L0 0.27Z"></path>
+                <path class="bm-part" data-g="brazo" d="M0.67 0.17L1 0.17L1 0.27L0.67 0.27Z"></path>
+                <path class="bm-part" data-g="espalda" d="M0.4 0.18L0.6 0.18L0.64 0.3L0.61 0.4L0.39 0.4L0.36 0.3Z"></path>
+                <path class="bm-part" data-g="pierna" d="M0.33 0.4L0.67 0.4L0.67 1L0.33 1Z"></path>
               </svg>
               <div class="bm-cara">Espalda</div>
             </div>
@@ -2588,6 +2638,12 @@ function tecTintar(src,modo){
     im.onerror=()=>res(src); im.src=src;
   });
 }
+/* Videos específicos por ejercicio (si no hay, se usa tec/<tipo>.mp4) */
+function tecVideo(nombre,tipo){
+  const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(tipo==='curl' && !/barra|martillo|concentrado|predicador|scott/.test(n) && /mancuerna|alternado|botella|mochila|inclinado|sentado|superserie/.test(n)) return 'curl-mancuernas';
+  return tipo;
+}
 function abrirTecnica(nombre,k){
   let bg=document.getElementById('tecModal');
   if(!bg){
@@ -2603,8 +2659,11 @@ function abrirTecnica(nombre,k){
   const vid=bg.querySelector('.tec-vid'), svgEl=bg.querySelector('.tec-stage svg');
   vid.style.display='none'; svgEl.style.display='';
   vid.oncanplay=()=>{ vid.style.display='block'; svgEl.style.display='none'; cancelAnimationFrame(tecRAF); vid.play().catch(()=>{}); };
-  vid.onerror=()=>{ vid.style.display='none'; svgEl.style.display=''; };
-  vid.src='tec/'+tipo+'.mp4';
+  /* Mujer: primero tec/mujer/<video>.mp4; si no existe, el de hombre; si no, el androide */
+  const vbase=tecVideo(nombre,tipo), fuentes=(load('forja_cuerpo','h')==='m'?['tec/mujer/'+vbase+'.mp4']:[]).concat(['tec/'+vbase+'.mp4']);
+  let fi=0;
+  vid.onerror=()=>{ fi++; if(fi<fuentes.length){ vid.src=fuentes[fi]; return; } vid.style.display='none'; svgEl.style.display=''; };
+  vid.src=fuentes[0];
   const A=Object.assign({},d.a), B=Object.assign({},d.a,d.b);
   const ORD=['torso','thL','thR','shL','shR','uaL','uaR','faL','faR'];
   const clip=Object.keys(C).map(q=>'<clipPath id="tecC'+q+'" clipPathUnits="userSpaceOnUse"><polygon points="'+C[q].map(p=>p.map(Math.round).join(',')).join(' ')+'"/></clipPath>').join('');
@@ -3192,6 +3251,19 @@ function subirAlSiguiente(){
 
 /* Mini avatar al fondo de Rutinas: cada zona trabajada hoy se enciende en
    proporcion a cuantos de sus ejercicios ya marcaste como hechos */
+/* Maniqui hombre / mujer (se guarda por usuario) */
+function aplicarCuerpo(cu,guardar){
+  cu=cu==='m'?'m':'h'; if(guardar) save('forja_cuerpo',cu);
+  const bm=document.getElementById('bodyMap'); if(bm) bm.classList.toggle('mujer',cu==='m');
+  document.querySelectorAll('.cu-btn').forEach(b=>b.classList.toggle('active',b.dataset.cu===cu));
+  const mini=document.getElementById('bmMini');
+  if(mini){ mini.querySelector('.bm-base').src=cu==='m'?'mq-mf.webp':'mq-f.webp';
+    mini.querySelectorAll('.bm-mini-on').forEach(im=>{ im.src=cu==='m'?'mq-mf-'+im.dataset.g+'.webp':'mq-f-'+im.dataset.g+'-on.webp'; }); }
+  const sx=document.getElementById('cSex'); if(sx && sx.value!==cu) sx.value=cu;
+}
+document.querySelectorAll('.cu-btn').forEach(b=>b.addEventListener('click',()=>aplicarCuerpo(b.dataset.cu,true)));
+{ const sx=document.getElementById('cSex'); if(sx) sx.addEventListener('change',()=>aplicarCuerpo(sx.value,true)); }
+aplicarCuerpo(load('forja_cuerpo','h'));
 function renderMiniAvatar(musculosSel, R){
   const wrap=document.getElementById('bmMiniWrap'); if(!wrap) return;
   const grupos=[...new Set(musculosSel.map(k=>k==='abdomen'?'abs':k))];
