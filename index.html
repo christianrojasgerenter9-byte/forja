@@ -2641,6 +2641,7 @@ function tecTintar(src,modo){
 /* Videos específicos por ejercicio, en orden de preferencia (el último es el genérico del tipo) */
 function tecVideo(nombre,tipo){
   const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(/martillo/.test(n) && /mochila|botella/.test(n)) return ['curl-martillo-mochila',tipo];
   if(/fondos?.*silla|fondos? de tricep/.test(n)) return ['fondos-silla',tipo];
   if(tipo==='curl' && !/barra|martillo|concentrado|predicador|scott/.test(n)){
     if(/botella|mochila/.test(n)) return ['curl-botellas','curl-mancuernas',tipo];
