@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v151';
+const VERSION = 'forja-v152';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -158,6 +158,9 @@ self.addEventListener('fetch', evento => {
 
   if (request.method !== 'GET') return;          // POST/PUT van directo a la red
   if (esEnVivo(url)) return;                     // Firestore y auth, sin tocar
+  // Videos: directo a la red. iPhone pide los videos por pedazos (Range)
+  // y si el SW responde el archivo completo, el video se queda congelado.
+  if (request.headers.has('range') || /\.(mp4|webm|mov)(\?|$)/i.test(url)) return;
 
   if (request.mode === 'navigate') {
     evento.respondWith(redPrimero(request));

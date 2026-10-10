@@ -2664,6 +2664,10 @@ function abrirTecnica(nombre,k){
   let fi=0;
   vid.onerror=()=>{ fi++; if(fi<fuentes.length){ vid.src=fuentes[fi]; return; } vid.style.display='none'; svgEl.style.display=''; };
   vid.src=fuentes[0];
+  vid.muted=true; vid.defaultMuted=true; vid.playsInline=true; vid.loop=true;
+  vid.setAttribute('muted',''); vid.setAttribute('playsinline',''); vid.setAttribute('webkit-playsinline','');
+  vid.load(); vid.play().catch(()=>{});
+  vid.onclick=()=>{ if(vid.paused) vid.play().catch(()=>{}); };
   const A=Object.assign({},d.a), B=Object.assign({},d.a,d.b);
   const ORD=['torso','thL','thR','shL','shR','uaL','uaR','faL','faR'];
   const clip=Object.keys(C).map(q=>'<clipPath id="tecC'+q+'" clipPathUnits="userSpaceOnUse"><polygon points="'+C[q].map(p=>p.map(Math.round).join(',')).join(' ')+'"/></clipPath>').join('');
