@@ -2659,8 +2659,8 @@ function abrirTecnica(nombre,k){
   const vid=bg.querySelector('.tec-vid'), svgEl=bg.querySelector('.tec-stage svg');
   vid.style.display='none'; svgEl.style.display='';
   vid.oncanplay=()=>{ vid.style.display='block'; svgEl.style.display='none'; cancelAnimationFrame(tecRAF); vid.play().catch(()=>{}); };
-  /* Mujer: primero tec/mujer/<video>.mp4; si no existe, el de hombre; si no, el androide */
-  const vbase=tecVideo(nombre,tipo), fuentes=(load('forja_cuerpo','h')==='m'?['tec/mujer/'+vbase+'.mp4']:[]).concat(['tec/'+vbase+'.mp4']);
+  /* Videos en la carpeta principal: <video>.mp4 · mujer: mujer-<video>.mp4 (si falta, el de hombre; si no, el androide) */
+  const vbase=tecVideo(nombre,tipo), fuentes=(load('forja_cuerpo','h')==='m'?['mujer-'+vbase+'.mp4']:[]).concat([vbase+'.mp4','tec/'+vbase+'.mp4']);
   let fi=0;
   vid.onerror=()=>{ fi++; if(fi<fuentes.length){ vid.src=fuentes[fi]; return; } vid.style.display='none'; svgEl.style.display=''; };
   vid.src=fuentes[0];
