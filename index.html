@@ -2395,11 +2395,11 @@ const HOME_VOL = {
   ]},
   brazo:{label:'Brazo',ex:[
     {n:'Curl de bíceps con mochila cargada',s:4,r:'8-10',max:'12'},
-    {n:'Fondos de tríceps en silla con lastre',s:4,r:'8',max:'12'},
     {n:'Curl martillo con mochila cargada',s:3,r:'10',max:'12'},
+    {n:'Fondos de tríceps en silla con lastre',s:4,r:'8',max:'12'},
     {n:'Curl sentado alternado',s:3,r:'10 c/brazo',max:'12'},
-    {n:'Extensión de tríceps con mochila (nuca)',s:3,r:'10',max:'12'},
     {n:'Curl concentrado con botella pesada',s:3,r:'10 c/brazo',max:'12'},
+    {n:'Extensión de tríceps con mochila (nuca)',s:3,r:'10',max:'12'},
   ]},
   pierna:{label:'Pierna',ex:[
     {n:'Sentadilla búlgara con mochila',s:4,r:'8 c/pierna',max:'12'},
@@ -3345,8 +3345,10 @@ function renderExercises(){
   /* Los ya hechos se van al final: el siguiente ejercicio pendiente sube hasta arriba */
   ex.sort((a,b)=>(doneToday[a.n]?1:0)-(doneToday[b.n]?1:0));
   const idxSiguiente = ex.findIndex(e=>!doneToday[e.n]);
+  /* Tiempo estimado: ~45 s por serie + ~75 s de descanso, 1 min de cambio entre ejercicios y 5 min de calentamiento */
+  const series=ex.reduce((t,e)=>t+(+e.s||3),0), minEst=Math.round((series*120+ex.length*60)/60)+5;
   document.getElementById('exCountPill').textContent =
-    ex.length+' ejercicios'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
+    ex.length+' ejercicios · ~'+minEst+' min'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
   renderMiniAvatar(musculosSel, R);
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
