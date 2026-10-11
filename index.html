@@ -2211,7 +2211,6 @@ const HOME_ROUTINES = {
     {n:'Fondos de tríceps en silla', s:4, r:'12', max:'20'},
     {n:'Curl martillo con mochila', s:3, r:'12', max:'15'},
     {n:'Extensión de tríceps con botella (nuca)', s:3, r:'12-15', max:'18'},
-    {n:'Flexiones diamante', s:3, r:'al fallo', max:'20'},
     {n:'Curl concentrado con botella', s:3, r:'12 c/brazo', max:'15'},
   ]},
   pierna:  { label:'Pierna', ex:[
@@ -2451,7 +2450,6 @@ const HOME_DEF = {
     {n:'Extensión de tríceps con botella',s:4,r:'15',max:'20'},
     {n:'Fondos de tríceps en silla (al fallo)',s:3,r:'al fallo',max:'25'},
     {n:'Curl concentrado ligero',s:3,r:'15 c/brazo',max:'20'},
-    {n:'Flexiones diamante (finisher)',s:2,r:'al fallo',max:'25'},
   ]},
   pierna:{label:'Pierna',ex:[
     {n:'Sentadillas (ritmo alto)',s:4,r:'25',max:'35'},
@@ -2641,6 +2639,7 @@ function tecTintar(src,modo){
 /* Videos específicos por ejercicio, en orden de preferencia (el último es el genérico del tipo) */
 function tecVideo(nombre,tipo){
   const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(/extension/.test(n) && /botella|mochila|nuca/.test(n)) return ['extension-triceps-botella',tipo];
   if(/martillo/.test(n) && /mochila|botella/.test(n)) return ['curl-martillo-mochila',tipo];
   if(/fondos?.*silla|fondos? de tricep/.test(n)) return ['fondos-silla',tipo];
   if(tipo==='curl' && !/barra|martillo|concentrado|predicador|scott/.test(n)){
