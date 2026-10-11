@@ -2639,6 +2639,7 @@ function tecTintar(src,modo){
 /* Videos específicos por ejercicio, en orden de preferencia (el último es el genérico del tipo) */
 function tecVideo(nombre,tipo){
   const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(/curl/.test(n) && /sentado/.test(n) && /alternado/.test(n)) return ['curl-sentado-alternado','curl-mancuernas',tipo];
   if(/extension/.test(n) && /botella|mochila|nuca/.test(n)) return ['extension-triceps-botella',tipo];
   if(/martillo/.test(n) && /mochila|botella/.test(n)) return ['curl-martillo-mochila',tipo];
   if(/fondos?.*silla|fondos? de tricep/.test(n)) return ['fondos-silla',tipo];
