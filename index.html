@@ -2647,6 +2647,8 @@ function tecVideo(nombre,tipo){
   if(/press militar/.test(n) && /mochila|ladrillo/.test(n)) return ['press-militar-mochila',tipo];
   if(/elevaciones? laterales?/.test(n) && /ladrillo/.test(n)) return ['elevaciones-laterales-ladrillos',tipo];
   if(/elevaciones? frontales?/.test(n) && /ladrillo/.test(n)) return ['elevaciones-frontales-ladrillos',tipo];
+  if(/pajaro/.test(n) && /ladrillo/.test(n)) return ['pajaros-ladrillos',tipo];
+  if(/remo al menton/.test(n) && /mochila/.test(n)) return ['remo-menton-mochila',tipo];
   if(tipo==='curl' && !/barra|martillo|concentrado|predicador|scott/.test(n)){
     if(/botella|mochila/.test(n)) return ['curl-botellas','curl-mancuernas',tipo];
     if(/mancuerna|alternado|inclinado|sentado|superserie/.test(n)) return ['curl-mancuernas',tipo];
