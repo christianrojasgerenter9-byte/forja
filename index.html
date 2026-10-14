@@ -2650,6 +2650,7 @@ function tecVideo(nombre,tipo){
   if(/pajaro/.test(n) && /ladrillo/.test(n)) return ['pajaros-ladrillos',tipo];
   if(/remo al menton/.test(n) && /mochila/.test(n)) return ['remo-menton-mochila',tipo];
   if(/sentadilla/.test(n) && /bulgara/.test(n) && /mochila/.test(n)) return ['sentadilla-bulgara-mochila',tipo];
+  if(/peso muerto/.test(n) && /una pierna|unilateral/.test(n) && /botella/.test(n)) return ['peso-muerto-una-pierna-botella',tipo];
   if(/sentadilla/.test(n) && /mochila/.test(n) && !/bulgara|sumo|salto/.test(n)) return ['sentadilla-mochila',tipo];
   if(tipo==='curl' && !/barra|martillo|concentrado|predicador|scott/.test(n)){
     if(/botella|mochila/.test(n)) return ['curl-botellas','curl-mancuernas',tipo];
