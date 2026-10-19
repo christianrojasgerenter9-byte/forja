@@ -519,7 +519,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .ex-video svg{width:15px;height:15px;fill:var(--orange)}
 .tec-bg{position:fixed;inset:0;z-index:120;background:rgba(5,5,7,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
 .tec-bg.open{display:flex}
-.tec-card{width:100%;max-width:380px;background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;padding:18px 18px 16px;position:relative}
+.tec-card{width:100%;max-width:380px;max-height:calc(100vh - 40px);overflow-y:auto;background:var(--surface-solid);border:1px solid var(--line);border-radius:22px;padding:18px 18px 16px;position:relative}
 .tec-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-size:18px;display:grid;place-items:center;cursor:pointer}
 .tec-name{font-size:18px;font-weight:800;margin:2px 44px 12px 0;line-height:1.2}
 .tec-stage{position:relative;border-radius:16px;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.06),rgba(255,255,255,0) 70%);border:1px solid var(--line)}
@@ -529,6 +529,17 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .tec-tips{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .tec-tips li{display:flex;gap:9px;font-size:13.5px;line-height:1.4;color:var(--text)}
 .tec-tips li b{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--molten-soft);color:var(--orange);font-size:11px;display:grid;place-items:center}
+.tec-ap{margin-top:14px;padding:13px 14px;border-radius:14px;background:var(--molten-soft);border:1px solid var(--line)}
+.tec-ap-k{font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--orange)}
+.tec-ap-n{font-size:15px;font-weight:800;margin:2px 0 9px}
+.tec-ap ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;counter-reset:ap}
+.tec-ap li{display:flex;gap:9px;font-size:13px;line-height:1.4;counter-increment:ap}
+.tec-ap li::before{content:counter(ap);flex:0 0 auto;width:20px;height:20px;border-radius:50%;border:1px solid var(--orange);color:var(--orange);font-size:11px;font-weight:800;display:grid;place-items:center}
+.tec-ap-ojo{margin:10px 0 0;font-size:12.5px;line-height:1.4;color:var(--amber);font-weight:700}
+.tec-ap-vid{width:100%;max-height:260px;object-fit:cover;border-radius:12px;background:#000;margin-bottom:10px;display:none}
+.tec-tec-k{margin:14px 0 -4px;font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.ex-apa{margin-top:5px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.ex-apa b{color:var(--orange);font-weight:800}
 .ex-done{background:var(--molten-soft);border:1px solid var(--line);color:var(--text)}
 .ex-done.is-done{background:var(--green);color:#04120a;border-color:transparent}
 .ex-pr{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:11px 14px;border-radius:12px;background:var(--molten-soft);border:1px solid var(--line);transition:.16s}
@@ -1349,7 +1360,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="mode-toggle" id="modeToggle">
           <button class="mode-btn active" type="button" data-mode="gym">🏋️ Gimnasio</button>
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
-          <button class="mode-btn" type="button" data-mode="park" title="Parque de calistenia">🌳 Parque</button>
+          <button class="mode-btn" type="button" data-mode="park" title="Calistenia">🤸 Calistenia</button>
         </div>
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
@@ -2223,7 +2234,7 @@ const HOME_ROUTINES = {
   ]},
 };
 
-/* ----------- Datos: rutinas PARQUE DE CALISTENIA (barras, paralelas, peso corporal) ----------- */
+/* ----------- Datos: rutinas CALISTENIA (barras, paralelas, peso corporal) ----------- */
 const PARK_ROUTINES = {
   pecho:   { label:'Pecho', ex:[
     {n:'Fondos en paralelas (inclinado al frente)', s:4, r:'8-12', max:'20'},
@@ -2651,6 +2662,10 @@ function tecVideo(nombre,tipo){
   if(/remo al menton/.test(n) && /mochila/.test(n)) return ['remo-menton-mochila',tipo];
   if(/sentadilla/.test(n) && /bulgara/.test(n) && /mochila/.test(n)) return ['sentadilla-bulgara-mochila',tipo];
   if(/zancadas? con carga/.test(n)) return ['zancadas-carga',tipo];
+  if(/cristo/.test(n) && /acostado/.test(n)) return ['cristos-mancuernas-acostado',tipo];
+  if(/press de pecho/.test(n) && /ladrillo/.test(n)) return ['press-pecho-mancuernas-ladrillos',tipo];
+  if(/flexion/.test(n) && /lastrad|mochila/.test(n)) return ['flexiones-lastradas-mochila',tipo];
+  if(/pantorrilla/.test(n) && /carga/.test(n)) return ['pantorrilla-carga',tipo];
   if(/puente de gluteo con peso/.test(n)) return ['puente-gluteo-peso',tipo];
   if(/peso muerto/.test(n) && /una pierna|unilateral/.test(n) && /botella/.test(n)) return ['peso-muerto-una-pierna-botella',tipo];
   if(/sentadilla/.test(n) && /mochila/.test(n) && !/bulgara|sumo|salto/.test(n)) return ['sentadilla-mochila',tipo];
@@ -2660,13 +2675,62 @@ function tecVideo(nombre,tipo){
   }
   return [tipo];
 }
+/* Guía de aparatos del gym: cómo ajustarlos antes de empezar. Video opcional: aparato-<id>.mp4 en la carpeta principal */
+const APARATOS={
+  rack:{n:'Rack (jaula) de sentadilla',p:['Pon los ganchos a la altura de tu clavícula: debes sacar la barra sin ponerte de puntitas.','Coloca los brazos de seguridad un poco abajo de tu punto más bajo. Si fallas, la barra cae ahí y no sobre ti.','Carga el mismo peso en cada lado (la barra sola pesa 20 kg) y pon los clips.','Saca la barra con los dos pies debajo, da 2 o 3 pasos atrás y empieza.'],o:'Sin brazos de seguridad, no entrenes pesado solo.'},
+  barra:{n:'Barra y discos',p:['La barra olímpica pesa 20 kg y la corta o “Z” unos 10 kg. Súmale los discos.','Pon el mismo peso en cada lado y asegúralo con los clips.','Agárrala con las manos a la misma distancia del centro; las marcas lisas de la barra te sirven de guía.','Al descargar, quita un disco de un lado y luego del otro.'],o:'Nunca cargues ni descargues un solo lado completo: la barra se voltea.'},
+  banco:{n:'Banco ajustable',p:['Elige el ángulo con el pasador: plano, inclinado (30–45°) o vertical.','Revisa que el pasador quede bien metido antes de sentarte.','Apoya cabeza, espalda alta y glúteos; pies firmes en el piso.','Siéntate con las mancuernas sobre los muslos y súbelas al momento de recostarte.'],o:'Si el asiento también se ajusta, súbelo un poco en inclinado para no resbalarte.'},
+  bancas:{n:'Dos bancas planas',p:['Pon dos bancas paralelas, separadas más o menos lo largo de tus piernas.','Manos en el borde de una banca, talones sobre la otra.','Revisa que ninguna se mueva antes de empezar.','Para hacerlo más fácil, apoya los pies en el piso.'],o:'No bajes más allá de 90° en el codo: cuida el hombro.'},
+  polea:{n:'Polea (cable)',p:['Sube o baja el carro con el pasador: arriba para tríceps, a la altura de la cara para face pull.','Engancha el agarre con el mosquetón: cuerda o barra recta.','Escoge el peso metiendo el pasador en la placa. Empieza ligero.','Da un paso atrás para que las placas no lleguen a tocar arriba.'],o:'Regresa lento: soltar de golpe azota las placas.'},
+  jalon:{n:'Máquina de jalón al pecho',p:['Ajusta el rodillo para que tus muslos queden bien sujetos y no te levantes.','Pon el pasador en el peso.','De pie, toma la barra más abierta que tus hombros y siéntate llevándola contigo.','Al terminar, ponte de pie para regresar la barra sin soltarla.'],o:'Jala hacia el pecho, nunca detrás de la nuca.'},
+  remobajo:{n:'Remo en polea baja',p:['Siéntate y apoya los pies en las plataformas, rodillas un poco dobladas.','Engancha el agarre en “V” si no está puesto.','Elige el peso con el pasador.','Toma el agarre inclinándote al frente con la espalda recta y luego siéntate derecho.'],o:'No te balancees para jalar: que trabaje la espalda, no el impulso.'},
+  prensa:{n:'Prensa de pierna',p:['Ajusta el respaldo para que tus rodillas se acerquen al pecho sin que se despegue la cadera.','Carga el mismo peso en ambos lados.','Pies a la anchura de hombros, en el centro de la plataforma.','Empuja un poco, gira las manijas de seguridad para liberar el carro y vuelve a cerrarlas al terminar.'],o:'Nunca bloquees las rodillas arriba.'},
+  extcuad:{n:'Máquina de extensión de cuádriceps',p:['Ajusta el respaldo para que tu rodilla quede alineada con el eje de giro de la máquina.','Baja el rodillo hasta que quede sobre el tobillo, no sobre el pie.','Elige el peso con el pasador.','Agárrate de las manijas laterales para no despegarte del asiento.'],o:'Sube con control y aguanta 1 segundo arriba.'},
+  pantorrilla:{n:'Máquina de pantorrilla',p:['Ajusta las almohadillas a la altura de tus hombros, con las rodillas casi rectas.','Apoya solo la punta del pie en el borde del escalón.','Elige el peso.','Si tiene seguro, quítalo para liberar el peso y vuelve a ponerlo al terminar.'],o:'Baja el talón todo lo que puedas para estirar completo.'},
+  dominadas:{n:'Barra de dominadas',p:['Agárrate con las palmas al frente, un poco más abierto que los hombros.','Si todavía no sales completas, usa la máquina asistida: más peso = más ayuda.','Otra opción: amarra una liga a la barra y apoya la rodilla o el pie.','Empieza colgado con los brazos rectos.'],o:'Baja completo en cada repetición.'},
+  capitan:{n:'Estación de fondos (silla romana)',p:['Súbete con el escalón y apoya los antebrazos en los cojines.','Espalda pegada al respaldo; toma las manijas.','Deja que las piernas cuelguen rectas antes de empezar.','Si no hay estación, cuélgate de la barra de dominadas.'],o:'Sube con el abdomen, no columpiando las piernas.'},
+  rueda:{n:'Rueda abdominal',p:['Ponte de rodillas sobre una colchoneta.','Toma la rueda por las dos manijas, debajo de los hombros.','Rueda hacia adelante solo hasta donde mantengas la espalda recta.'],o:'Si te molesta la espalda baja, acorta el recorrido.'},
+  mancuernas:{n:'Mancuernas',p:['El número de la mancuerna es su peso: revisa si está en kg o lb.','Empieza con un peso que puedas mover limpio en todas las repeticiones.','Tómalas del rack de frente, con la espalda recta.','Al terminar, regrésalas a su lugar, en orden.'],o:'No las avientes al piso: bájalas a las rodillas y luego al suelo.'},
+  barrafija:{n:'Barra fija (alta)',p:['Elige una barra donde quedes colgado sin que los pies toquen el piso.','Revisa que esté firme y seca; si está mojada o con polvo, sécala o usa magnesia.','Agárrala con el pulgar alrededor de la barra, no encima.','Empieza colgado con los brazos rectos y los hombros activos, no sueltos.'],o:'Si todavía no sales completas, amarra una liga a la barra y apoya el pie.'},
+  barrabaja:{n:'Barra baja',p:['Usa una barra a la altura de tu cadera o pecho.','Más alta = más fácil; más baja = más difícil.','Para los ejercicios colgado abajo de la barra, cuerpo recto y talones en el piso.','Revisa que esté firme antes de cargarle tu peso.'],o:'Mantén el cuerpo recto como tabla, sin dejar caer la cadera.'},
+  paralelas:{n:'Paralelas',p:['Escoge paralelas un poco más abiertas que tus hombros.','Súbete con los brazos rectos y los hombros abajo, lejos de las orejas.','Inclinado al frente trabaja pecho; con el torso vertical trabaja tríceps.','Si todavía no sales, empieza solo con la bajada, lenta.'],o:'Baja hasta que el codo llegue a 90°, no más.'},
+  banca:{n:'Banca',p:['Revisa que esté firme y que no esté mojada.','Apoya manos o pies en la orilla más estable.','Usa la altura que te deje hacer el movimiento completo.'],o:'Si se mueve o resbala, cambia de banca.'}
+};
+function aparatoDe(nombre){
+  const n=String(nombre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(typeof mode!=='undefined' && mode==='park'){
+    let c=null;
+    if(/paralela/.test(n)) c='paralelas';
+    else if(/barra baja|australiano/.test(n)) c='barrabaja';
+    else if(/dominada|chin-up|colgad/.test(n)) c='barrafija';
+    else if(/banca/.test(n)) c='banca';
+    return c?Object.assign({id:c},APARATOS[c]):null;
+  }
+  if(/mochila|botella|silla|ladrillo|lastr|toalla|garrafa|carga|casa|paralela|parque|puerta/.test(n)) return null;
+  let id=null;
+  if(/jalon/.test(n)) id='jalon';
+  else if(/remo/.test(n) && /polea/.test(n)) id='remobajo';
+  else if(/polea/.test(n)) id='polea';
+  else if(/prensa/.test(n)) id='prensa';
+  else if(/extension de cuadriceps/.test(n)) id='extcuad';
+  else if(/elevacion de pantorrilla/.test(n)) id='pantorrilla';
+  else if(/sentadilla con barra|press militar con barra/.test(n)) id='rack';
+  else if(/dominada/.test(n)) id='dominadas';
+  else if(/colgado/.test(n)) id='capitan';
+  else if(/peso muerto|barra/.test(n)) id='barra';
+  else if(/entre bancas/.test(n)) id='bancas';
+  else if(/banco|press frances|pullover/.test(n)) id='banco';
+  else if(/rueda abdominal|ab wheel/.test(n)) id='rueda';
+  else if(/mancuerna|curl concentrado|elevaciones laterales|elevaciones frontales|pajaros|press arnold/.test(n)) id='mancuernas';
+  return id?Object.assign({id},APARATOS[id]):null;
+}
 function abrirTecnica(nombre,k){
   let bg=document.getElementById('tecModal');
   if(!bg){
     bg=document.createElement('div'); bg.id='tecModal'; bg.className='tec-bg';
-    bg.innerHTML='<div class="tec-card" role="dialog" aria-modal="true"><button type="button" class="tec-x" aria-label="Cerrar">×</button><div class="tec-name"></div><div class="tec-stage"><span class="tec-fase"></span><svg viewBox="-280 -380 1200 1740" preserveAspectRatio="xMidYMid meet"></svg><video class="tec-vid" muted loop playsinline preload="auto" style="display:none"></video></div><ul class="tec-tips"></ul></div>';
+    bg.innerHTML='<div class="tec-card" role="dialog" aria-modal="true"><button type="button" class="tec-x" aria-label="Cerrar">×</button><div class="tec-name"></div><div class="tec-stage"><span class="tec-fase"></span><svg viewBox="-280 -380 1200 1740" preserveAspectRatio="xMidYMid meet"></svg><video class="tec-vid" muted loop playsinline preload="auto" style="display:none"></video></div><div class="tec-ap" style="display:none"></div><div class="tec-tec-k" style="display:none">Técnica</div><ul class="tec-tips"></ul></div>';
     document.body.appendChild(bg);
-    const cerrar=()=>{ bg.classList.remove('open'); cancelAnimationFrame(tecRAF); const v=bg.querySelector('.tec-vid'); try{v.pause();}catch(e){} };
+    const cerrar=()=>{ bg.classList.remove('open'); cancelAnimationFrame(tecRAF); bg.querySelectorAll('video').forEach(v=>{ try{v.pause();}catch(e){} }); };
     bg.querySelector('.tec-x').onclick=cerrar;
     bg.onclick=e=>{ if(e.target===bg) cerrar(); };
   }
@@ -2697,6 +2761,17 @@ function abrirTecnica(nombre,k){
   [['w',base],['r',on]].forEach(([m,src])=>tecTintar(src,m).then(u=>{ const gg=svg.querySelector('[data-tint="'+m+'"]'); if(!gg) return; gg.querySelectorAll('image').forEach(im=>im.setAttribute('href',u)); gg.style.opacity=1; }));
   const G=[...svg.querySelectorAll('[data-p]')].map(el=>({el,q:el.dataset.p}));
   bg.querySelector('.tec-name').textContent=nombre;
+  const ap=aparatoDe(nombre), apEl=bg.querySelector('.tec-ap');
+  bg.querySelector('.tec-tec-k').style.display=ap?'':'none';
+  if(ap){
+    apEl.style.display='';
+    apEl.innerHTML='<div class="tec-ap-k">Antes de empezar · ajusta el aparato</div><div class="tec-ap-n">'+ap.n+'</div><video class="tec-ap-vid" muted loop playsinline autoplay preload="auto"></video><ol>'+ap.p.map(x=>'<li><span>'+x+'</span></li>').join('')+'</ol><p class="tec-ap-ojo">Ojo: '+ap.o+'</p>';
+    const av=apEl.querySelector('.tec-ap-vid');
+    av.oncanplay=()=>{ av.style.display='block'; av.play().catch(()=>{}); };
+    av.onerror=()=>{ av.remove(); };
+    av.muted=true; av.setAttribute('muted',''); av.setAttribute('webkit-playsinline','');
+    av.src='aparato-'+ap.id+'.mp4';
+  } else { apEl.style.display='none'; apEl.innerHTML=''; }
   bg.querySelector('.tec-tips').innerHTML=d.t.map((x,i)=>'<li><b>'+(i+1)+'</b><span>'+x+'</span></li>').join('');
   const fase=bg.querySelector('.tec-fase');
   const keys=new Set(Object.keys(A).concat(Object.keys(B)));
@@ -3369,7 +3444,7 @@ function renderExercises(){
     const c=document.createElement('div');c.className='ex-card'+(isDone?' is-hecho':'')+(i===idxSiguiente?' es-siguiente':'');
     c.innerHTML=`
       <div class="ex-top">
-        <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}</div>
+        <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}${(a=>a?'<div class="ex-apa">Aparato: <b>'+a.n+'</b> · en “Cómo se hace” te enseñamos a ajustarlo</div>':'')(aparatoDe(e.n))}</div>
         ${exAvatarHTML(e.n,e._k,isDone||seriesHoy(e.n).length>0)}
       </div>
       <div class="serie-box">
