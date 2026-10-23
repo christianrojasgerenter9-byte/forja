@@ -1,3 +1,6 @@
+/* © 2026 Christian Alejandro Rojas Franco. Todos los derechos reservados.
+   R.O.S.A. es software propietario de su autor; esta app la integra con licencia de uso
+   no exclusiva y revocable. La integración no transfiere la propiedad de R.O.S.A. */
 /* ============================================================
    FORJA — Rosa (asistente de IA)
    Burbuja flotante con chat, voz y accesos a secciones.
