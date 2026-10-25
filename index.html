@@ -4822,16 +4822,39 @@ function initRestTimer(){
     }catch(e){}
   }
 
-  /* ---- aviso al terminar ---- */
+  /* ---- aviso al terminar: silbato de entrenador (dos toques cortos y uno largo) ---- */
+  function silbato(c){
+    const t0=c.currentTime+.05;
+    const sal=c.createDynamicsCompressor(); sal.connect(c.destination);
+    // ruido para el "aire" del silbato
+    const largo=Math.ceil(c.sampleRate*1.6), buf=c.createBuffer(1,largo,c.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<largo;i++) d[i]=Math.random()*2-1;
+    [[0,.16],[.24,.16],[.48,.75]].forEach(([t,dur])=>{
+      const ini=t0+t, fin=ini+dur;
+      // tono principal ~2.9 kHz con el trino de la bolita (≈30 Hz)
+      const o=c.createOscillator(), o2=c.createOscillator(); o.type='sine'; o2.type='sine';
+      o.frequency.setValueAtTime(2750,ini); o.frequency.linearRampToValueAtTime(2950,ini+.05);
+      o2.frequency.setValueAtTime(5500,ini); o2.frequency.linearRampToValueAtTime(5900,ini+.05);
+      const lfo=c.createOscillator(); lfo.type='sine'; lfo.frequency.value=31;
+      const prof=c.createGain(); prof.gain.value=170; lfo.connect(prof); prof.connect(o.frequency);
+      const prof2=c.createGain(); prof2.gain.value=340; lfo.connect(prof2); prof2.connect(o2.frequency);
+      const trem=c.createGain(); trem.gain.value=.55;
+      const tremL=c.createGain(); tremL.gain.value=.35; lfo.connect(tremL); tremL.connect(trem.gain);
+      const g=c.createGain(), g2=c.createGain(); g2.gain.value=.18;
+      o.connect(trem); o2.connect(g2); g2.connect(trem); trem.connect(g); g.connect(sal);
+      const r=c.createBufferSource(); r.buffer=buf;
+      const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2900; bp.Q.value=6;
+      const gr=c.createGain(); gr.gain.value=.15; r.connect(bp); bp.connect(gr); gr.connect(g);
+      g.gain.setValueAtTime(.0001,ini);
+      g.gain.exponentialRampToValueAtTime(.5,ini+.025);
+      g.gain.setValueAtTime(.5,fin-.04);
+      g.gain.exponentialRampToValueAtTime(.0001,fin);
+      [o,o2,lfo,r].forEach(n=>{ n.start(ini); n.stop(fin+.02); });
+    });
+    setTimeout(()=>{ try{ c.close(); }catch(e){} }, 1600);
+  }
   function alarm(){
-    try{const c=new (window.AudioContext||window.webkitAudioContext)();
-      [0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;
-        o.connect(g);g.connect(c.destination);
-        g.gain.setValueAtTime(.001,c.currentTime+t);
-        g.gain.exponentialRampToValueAtTime(.4,c.currentTime+t+.02);
-        g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);
-        o.start(c.currentTime+t);o.stop(c.currentTime+t+.22);});
-    }catch(e){}
+    try{ silbato(new (window.AudioContext||window.webkitAudioContext)()); }catch(e){}
     try{ if(navigator.vibrate) navigator.vibrate([300,120,300,120,300]); }catch(e){}
     try{
       if('Notification' in window && Notification.permission==='granted'){
