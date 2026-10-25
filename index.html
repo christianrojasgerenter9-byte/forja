@@ -4770,7 +4770,64 @@ function initRestTimer(){
       keepEl.play().catch(()=>{});
     }catch(e){}
   }
-  function keepOff(){ try{ if(keepEl) keepEl.pause(); }catch(e){} }
+  function keepOff(){
+    try{
+      if(keepEl){
+        keepEl.pause();
+        if(alarmaFin){ keepEl.loop=true; keepEl.volume=0.0001; keepEl.src=keepURL; }
+      }
+    }catch(e){}
+    alarmaFin=0;
+    if(alarmaURL){ try{ URL.revokeObjectURL(alarmaURL); }catch(e){} alarmaURL=null; }
+  }
+
+  /* ---- silbato dentro de la pista de audio ----
+     En segundo plano el celular congela el JavaScript, así que el aviso no puede
+     depender de un setTimeout. Se arma una pista «silencio del descanso + silbato»
+     y la reproduce el propio reproductor de audio, que sigue sonando aunque
+     la app esté minimizada o la pantalla bloqueada. */
+  const SR_PISTA=16000, MAX_PISTA=20*60;
+  let alarmaURL=null, alarmaFin=0, silbatoPCM=null;
+  async function pcmSilbato(){
+    if(silbatoPCM) return silbatoPCM;
+    const c=new OfflineAudioContext(1,Math.ceil(SR_PISTA*1.6),SR_PISTA);
+    silbato(c);
+    const b=await c.startRendering();
+    return (silbatoPCM=b.getChannelData(0));
+  }
+  function wavConSilbato(seg,pcm){
+    const sil=Math.max(0,Math.round(SR_PISTA*seg)), n=sil+pcm.length;
+    const buf=new ArrayBuffer(44+n), v=new DataView(buf), u=new Uint8Array(buf,44);
+    const w=(o,t)=>{ for(let i=0;i<t.length;i++) v.setUint8(o+i,t.charCodeAt(i)); };
+    w(0,'RIFF'); v.setUint32(4,36+n,true); w(8,'WAVEfmt ');
+    v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+    v.setUint32(24,SR_PISTA,true); v.setUint32(28,SR_PISTA,true); v.setUint16(32,1,true); v.setUint16(34,8,true);
+    w(36,'data'); v.setUint32(40,n,true);
+    u.fill(128,0,sil);
+    for(let i=0;i<pcm.length;i++) u[sil+i]=Math.max(0,Math.min(255,128+Math.round(pcm[i]*127)));
+    return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+  }
+  async function programarSilbato(){
+    try{
+      if(!corriendo() || !keepEl || !('OfflineAudioContext' in window)) return;
+      if((st.dl-Date.now())/1000>MAX_PISTA) return;
+      const pcm=await pcmSilbato();
+      if(!corriendo()) return;
+      const dl=st.dl, r=Math.max(0,(dl-Date.now())/1000);
+      const url=wavConSilbato(r,pcm);
+      if(!corriendo() || st.dl!==dl){ URL.revokeObjectURL(url); return; }
+      if(alarmaURL) URL.revokeObjectURL(alarmaURL);
+      alarmaURL=url; alarmaFin=dl;
+      keepEl.loop=false; keepEl.volume=1; keepEl.src=url;
+      if(!keepEl.dataset.fin){
+        keepEl.dataset.fin='1';
+        keepEl.addEventListener('ended',()=>{ if(alarmaFin && corriendo() && restante()<=0) terminar(); });
+      }
+      await keepEl.play();
+    }catch(e){
+      try{ alarmaFin=0; keepEl.loop=true; keepEl.volume=0.0001; keepEl.src=keepURL; keepEl.play().catch(()=>{}); }catch(_){}
+    }
+  }
 
   /* ---- ficha fuera de la app: pantalla de bloqueo / notificaciones ---- */
   function media(){
@@ -4853,8 +4910,8 @@ function initRestTimer(){
     });
     setTimeout(()=>{ try{ c.close(); }catch(e){} }, 1600);
   }
-  function alarm(){
-    try{ silbato(new (window.AudioContext||window.webkitAudioContext)()); }catch(e){}
+  function alarm(sinSonido){
+    if(!sinSonido){ try{ silbato(new (window.AudioContext||window.webkitAudioContext)()); }catch(e){} }
     try{ if(navigator.vibrate) navigator.vibrate([300,120,300,120,300]); }catch(e){}
     try{
       if('Notification' in window && Notification.permission==='granted'){
@@ -4901,13 +4958,16 @@ function initRestTimer(){
     let r=restante(); if(r<=0){ desdeInputs(); r=restante(); }
     if(r<=0) return;
     st.dl=Date.now()+r*1000; st.p=null; sonoAlFinal=false;
-    guardar(); pedirPermiso(); keepOn(); media(); notiPinta(); correLoop();
+    guardar(); pedirPermiso(); keepOn(); programarSilbato(); media(); notiPinta(); correLoop();
   }
   function pausar(){ st.p=restante(); st.dl=0; guardar(); keepOff(); notiCerrar(); media(); render(); }
   function terminar(){
-    st.p=0; st.dl=0; guardar(); keepOff(); mediaLimpia(); render();
+    /* si la pista ya trae el silbato (sonando o ya sonó), no se repite */
+    const pista=!!(alarmaFin && keepEl && (keepEl.ended || !keepEl.paused));
+    st.p=0; st.dl=0; guardar(); mediaLimpia(); render();
+    if(pista && !keepEl.ended) setTimeout(keepOff,2200); else keepOff();
     mini.classList.remove('on');
-    if(!sonoAlFinal){ sonoAlFinal=true; alarm(); }
+    if(!sonoAlFinal){ sonoAlFinal=true; alarm(pista); }
   }
   function cancelar(){ st.p=st.t; st.dl=0; guardar(); keepOff(); mediaLimpia(); if(raf)clearTimeout(raf); raf=null; render(); }
 
@@ -4935,7 +4995,7 @@ function initRestTimer(){
   minEl.value=Math.floor(st.t/60); secEl.value=st.t%60;
   if(corriendo()){
     if(restante()<=0){ sonoAlFinal=false; terminar(); }
-    else { keepOn(); media(); correLoop(); }
+    else { keepOn(); programarSilbato(); media(); correLoop(); }
   }else render();
 
   window.FORJADescanso={abrir:abrir, arrancar:arrancar, pausar:pausar, cancelar:cancelar, restante:restante};
