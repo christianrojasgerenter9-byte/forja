@@ -4412,7 +4412,7 @@ function renderRec(){
     if(permiso==='default'){ try{ permiso=await Notification.requestPermission(); }catch(e){} }
     if(permiso!=='granted'){ renderRec(); alert('Para recibir avisos permite las notificaciones de FORJA en tu navegador 🔔'); return; }
     recOn=true; save('forja_rec_on',true);
-    recArrancar(); renderRec();
+    recArrancar(); renderRec(); suscribirPush();
     try{
       navigator.serviceWorker.ready.then(reg=>reg.showNotification('Listo, te recuerdo 🔥',{
         body:'Mañana, tarde y noche te pregunto si ya entrenaste (con FORJA abierta o en segundo plano).', icon:'forja-icono-192.png', tag:'forja-ok'
@@ -4723,6 +4723,34 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkNue
   }
 })();
 window.addEventListener('focus',()=>checkNuevoDia(true));
+/* ===== Recordatorio para volver (push desde el servidor) =====
+   El celular se suscribe a notificaciones push (llave VAPID del servidor de Rosa)
+   y guarda la suscripción en su propio documento de Firestore junto con la fecha
+   de su último entreno. Cada tarde el servidor revisa quién lleva 3, 5, 7, 10, 14,
+   21 o 30 días sin entrenar y le manda un recordatorio, aunque FORJA esté cerrada. */
+const VAPID_PUBLICA='BCVMN3Lt5GJ1JjHChvAK83C9_ZL27N3HaVABXLqafzD_wWzfK8kyjzyxax5xX0LR2vD0ANfA2mgsHgmgJeLEJ3k';
+let pushSubStr=load('forja_push_sub','');
+function ultimoEntrenoISO(){
+  let u='';
+  try{ Object.keys(series||{}).forEach(f=>{ if(/^\d{4}-\d\d-\d\d$/.test(f) && f>u) u=f; }); }catch(e){}
+  try{ if(doneToday && Object.keys(doneToday).length && doneDate>u) u=doneDate; }catch(e){}
+  try{ const d=FORJARacha.datos()||{}; Object.keys(d).forEach(f=>{ if(/^\d{4}-\d\d-\d\d$/.test(f) && d[f] && d[f].h>0 && f>u) u=f; }); }catch(e){}
+  return u;
+}
+async function suscribirPush(){
+  try{
+    if(!fbUser || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    if(!('Notification' in window) || Notification.permission!=='granted') return;
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      const b=VAPID_PUBLICA.replace(/-/g,'+').replace(/_/g,'/'), raw=atob(b+'='.repeat((4-b.length%4)%4));
+      sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:Uint8Array.from(raw,c=>c.charCodeAt(0))});
+    }
+    const str=JSON.stringify(sub);
+    if(str!==pushSubStr){ pushSubStr=str; save('forja_push_sub',str); cloudSync(); }
+  }catch(e){}
+}
 /* ===== Integración Firebase: cuentas reales + guardado en la nube ===== */
 function cloudSync(){
   if(!FB_ON || !fbUser) return;
@@ -4733,6 +4761,8 @@ function cloudSync(){
       prs:prs, measures:measures, exset:exset, mode:mode, goal:(goal||null), series:series,
       dias:(typeof FORJARacha!=='undefined'? FORJARacha.datos() : {}),
       hoyGrupos:(hoyGrupos||null), hoyFecha:(hoyFecha||''),
+      ultimoEntreno:ultimoEntrenoISO(),
+      ...(pushSubStr ? {pushSub:pushSubStr} : {}),
       updated:Date.now()
     },{merge:true}).catch(()=>{});
   },800);
@@ -4852,6 +4882,7 @@ if(FB_ON){
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
+      suscribirPush();
       try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); renderRec(); renderDiaBanner(); calc(); renderDiet(); applyPlan(); renderHome(); }catch(e){}
       enterApp();
     } else {
