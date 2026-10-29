@@ -2018,6 +2018,7 @@ function checkVigenciaPro(){
   if(plan!=='pro') return false;
   if(relojAtrasado()){ plan='free'; store.set('forja_plan', JSON.stringify(plan)); return true; }
   if(proHasta && String(proHasta) >= hoyKey()) return false;
+  if(proHasta) save('forja_pro_vencio', String(proHasta));   /* para avisarle que renueve */
   plan='free'; proHasta='';
   store.set('forja_plan', JSON.stringify(plan));
   store.set('forja_pro_hasta', JSON.stringify(proHasta));
@@ -2034,9 +2035,55 @@ function diasRestantesPrueba(){
   return Math.max(0, TRIAL_DIAS - Math.floor((b-a)/86400000));
 }
 function pruebaActiva(){ return plan!=='pro' && diasRestantesPrueba()>0; }
+/* ----------- Aviso de vencimiento de PRO -----------
+   5 días antes: banner para renovar. Faltando 2 días o menos: además una
+   notificación del sistema (una vez al día). Si ya venció: banner para recuperarlo. */
+function fechaLarga(iso){
+  try{ return new Date(iso+'T12:00:00').toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'}); }catch(e){ return iso; }
+}
+function diasParaVencer(){
+  if(plan!=='pro' || !proHasta) return null;
+  const a=new Date(hoyKey()+'T00:00:00'), b=new Date(String(proHasta)+'T00:00:00');
+  const d=Math.round((b-a)/86400000);
+  return isNaN(d)?null:d;
+}
+function notiVencePro(d){
+  try{
+    if(d>2 || load('forja_aviso_vence','')===hoyKey()) return;
+    if(!('Notification' in window) || Notification.permission!=='granted' || !navigator.serviceWorker) return;
+    save('forja_aviso_vence', hoyKey());
+    const t = d<=0 ? 'Tu PRO vence hoy' : d===1 ? 'Tu PRO vence mañana' : 'Tu PRO vence en '+d+' días';
+    navigator.serviceWorker.ready.then(r=>r.showNotification('FORJA · '+t,{
+      body:'Renueva para no perder tu entrenador inteligente, tu coach y tu dieta.',
+      icon:'forja-icono-192.png', badge:'forja-icono-192.png', tag:'forja-vence-pro', data:{url:'./'}
+    })).catch(()=>{});
+  }catch(e){}
+}
 function renderTrial(){
   const b=document.getElementById('trialBanner'); if(!b) return;
-  if(plan==='pro'){ b.style.display='none'; return; }
+  if(plan==='pro'){
+    const d=diasParaVencer();
+    if(d===null || d>5){ b.style.display='none'; return; }
+    const cuando = d<=0 ? 'vence hoy' : d===1 ? 'vence mañana' : 'vence el '+fechaLarga(proHasta);
+    b.style.display='flex';
+    b.innerHTML='<div class="tb-ic">⏳</div><div class="tb-tx">'+
+      '<div class="tb-t">Tu Modo PRO '+cuando+'</div>'+
+      '<div class="tb-d">Renueva a tiempo y sigue con tu entrenador inteligente, coach y dieta personalizada. Tu progreso no se pierde.</div></div>'+
+      '<button type="button" class="tb-go" data-go="suscripcion">Renovar PRO</button>';
+    b.querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
+    notiVencePro(d);
+    return;
+  }
+  const vencio=load('forja_pro_vencio','');
+  if(vencio){
+    b.style.display='flex';
+    b.innerHTML='<div class="tb-ic">⭐</div><div class="tb-tx">'+
+      '<div class="tb-t">Tu Modo PRO terminó el '+fechaLarga(vencio)+'</div>'+
+      '<div class="tb-d">Tus registros siguen guardados. Renueva para recuperar el entrenador inteligente, tu coach y tu dieta.</div></div>'+
+      '<button type="button" class="tb-go" data-go="suscripcion">Renovar PRO</button>';
+    b.querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
+    return;
+  }
   const d=diasRestantesPrueba();
   b.style.display='flex';
   if(d>0){
@@ -4542,7 +4589,7 @@ document.getElementById('codeActivate').onclick=async ()=>{
 
   if(elegido){
     plan='pro'; proHasta=(elegido && elegido.vence) ? String(elegido.vence) : '';
-    save('forja_plan',plan); save('forja_pro_hasta',proHasta);
+    save('forja_plan',plan); save('forja_pro_hasta',proHasta); save('forja_pro_vencio','');
     const av=document.getElementById('proAviso'); if(av) av.style.display='none';
     applyPlan();
     msg.style.color='var(--green)'; msg.textContent='✓ ¡PRO activado! Bienvenido, guerrero 🔥';
