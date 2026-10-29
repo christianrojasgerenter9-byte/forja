@@ -842,6 +842,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .enfoque-banner button{flex-shrink:0;padding:8px 14px;border-radius:99px;background:var(--molten);
   color:#EAF6FB;font-weight:700;font-size:13px}
 .enfoque-banner.choose{background:var(--surface-2);border-color:var(--line)}
+.onb-paso{text-align:center;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--muted-2);margin-bottom:4px}
+.onb-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 16px}
+.onb-dots i{width:22px;height:4px;border-radius:4px;background:var(--line)}
+.onb-dots i.on{background:var(--orange)}
+.onb-res{background:var(--surface-2);border:1px solid var(--orange);border-radius:14px;padding:14px;margin:4px 0 14px;text-align:center}
+.onb-res b{display:block;font-size:20px;margin:4px 0}
+.onb-res span{color:var(--muted);font-size:13px}
+.onb-go{width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;color:#fff;background:var(--molten)}
+.onb-skip{display:block;margin:12px auto 0;background:none;border:0;color:var(--muted-2);font-size:12.5px;cursor:pointer;text-decoration:underline}
 .goal-opt{display:block;width:100%;text-align:left;padding:16px;border-radius:14px;margin-bottom:12px;
   background:var(--surface-2);border:1px solid var(--line);color:var(--text);transition:.15s;cursor:pointer}
 .goal-opt:hover{border-color:var(--orange);box-shadow:var(--glow)}
@@ -1787,6 +1796,21 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     <p style="text-align:center;color:var(--muted);font-size:14px;margin:6px 0 18px">Elige tu meta y te cargamos rutinas enfocadas.</p>
     <button class="goal-opt" type="button" data-goal="volumen"><b>💪 Volumen</b><span>Ganar masa muscular y fuerza · cargas altas, pocas reps, descansos largos</span></button>
     <button class="goal-opt" type="button" data-goal="definicion"><b>🔥 Definición</b><span>Marcar músculo y quemar grasa · más reps, descanso corto, ritmo alto</span></button>
+  </div>
+</div>
+
+<!-- Bienvenida: primera rutina en 60 segundos -->
+<div class="modal-bg" id="onbModal">
+  <div class="pro-modal" id="onbCaja"></div>
+</div>
+<!-- Pedir avisos al terminar el primer ejercicio -->
+<div class="modal-bg" id="notiModal">
+  <div class="pro-modal" style="text-align:center">
+    <div style="font-size:44px;line-height:1;margin:4px 0 8px">🔥</div>
+    <div class="pro-tagline" id="notiTit">¡Primer ejercicio hecho!</div>
+    <p style="color:var(--muted);font-size:14px;margin:8px 0 18px;line-height:1.5">¿Te aviso cuando toque tu siguiente entreno? Así no pierdes la racha. Solo te escribo cuando haga falta.</p>
+    <button class="onb-go" id="notiSi" type="button">🔔 Sí, avísame</button>
+    <button class="onb-skip" id="notiNo" type="button">Ahora no</button>
   </div>
 </div>
 
@@ -3329,6 +3353,108 @@ function goalPresc(g){
   if(g==='volumen')    return {s:4, r:'6-10',  max:'12'};
   return null;
 }
+/* ===== Bienvenida: primera rutina en 60 segundos =====
+   A quien todavía no ha entrenado nunca: 3 preguntas (dónde, cuánto tiempo, qué
+   busca) y le arma la rutina de hoy. Al terminar su primer ejercicio, le pide
+   permiso para avisarle del siguiente entreno (así funcionan los recordatorios). */
+function limiteHoy(){ const l=load('forja_lim_hoy',null); return (l && l.f===hoyKey()) ? l.n : 0; }
+const ONB_TIEMPO={15:2, 30:3, 45:5};
+const ONB_META={
+  bajar:   {t:'Bajar grasa',   g:['pierna','abs'],   goal:'definicion'},
+  musculo: {t:'Ganar músculo', g:['pecho','brazo'],  goal:'volumen'},
+  tonificar:{t:'Tonificar',    g:['pierna','hombro'],goal:'definicion'},
+};
+let onb={};
+function nuncaHaEntrenado(){
+  try{ return !ultimoEntrenoISO() && !Object.keys(series||{}).length; }catch(e){ return false; }
+}
+function abrirBienvenida(){
+  if(load('forja_onb_ok',false) || !nuncaHaEntrenado()) return;
+  onb={paso:1}; pintarBienvenida();
+  document.getElementById('onbModal').classList.add('open');
+}
+function cerrarBienvenida(){ save('forja_onb_ok',true); document.getElementById('onbModal').classList.remove('open'); }
+function pintarBienvenida(){
+  const c=document.getElementById('onbCaja'); if(!c) return;
+  const dots='<div class="onb-dots">'+[1,2,3].map(i=>'<i class="'+(i<=onb.paso?'on':'')+'"></i>').join('')+'</div>';
+  const opc=(dato,val,tit,sub)=>'<button class="goal-opt" type="button" data-'+dato+'="'+val+'"><b>'+tit+'</b><span>'+sub+'</span></button>';
+  const nombre=(displayName||'').split(' ')[0];
+  let h='';
+  if(onb.paso===1){
+    h='<div class="pro-tagline">¡Bienvenido'+(nombre?', '+nombre:'')+'! 💪</div>'+
+      '<p style="text-align:center;color:var(--muted);font-size:14px;margin:6px 0 2px">3 preguntas y te armo tu rutina de hoy.</p>'+dots+
+      '<div class="onb-paso">1 · ¿DÓNDE VAS A ENTRENAR?</div>'+
+      opc('lugar','home','🏠 En casa','Sin pesas: mochila, silla, botellas')+
+      opc('lugar','gym','🏋️ En el gimnasio','Máquinas, barras y mancuernas')+
+      opc('lugar','park','🤸 Calistenia','Barras, paralelas y peso corporal');
+  } else if(onb.paso===2){
+    h='<div class="pro-tagline">¿Cuánto tiempo tienes hoy?</div>'+dots+
+      '<div class="onb-paso">2 · TIEMPO</div>'+
+      opc('min','15','⚡ Rápida · ~20 min','2 ejercicios · para arrancar')+
+      opc('min','30','🔥 Normal · ~30 min','3 ejercicios · lo ideal para empezar')+
+      opc('min','45','💪 Completa · ~45 min','5 ejercicios · si ya entrenas');
+  } else if(onb.paso===3){
+    h='<div class="pro-tagline">¿Qué buscas?</div>'+dots+
+      '<div class="onb-paso">3 · TU OBJETIVO</div>'+
+      opc('meta','bajar','🔥 Bajar grasa','Pierna y abdomen: los que más queman')+
+      opc('meta','musculo','💪 Ganar músculo','Pecho y brazo para empezar')+
+      opc('meta','tonificar','✨ Tonificar','Pierna y hombro, cuerpo firme');
+  } else {
+    const R=getRoutines(), gr=(gruposElegidosHoy()||[]).map(k=>R[k]&&R[k].label).filter(Boolean).join(' + ');
+    h='<div class="pro-tagline">Tu rutina de hoy está lista</div>'+
+      '<div class="onb-res"><span>'+(onb.lugar==='home'?'🏠 En casa':onb.lugar==='park'?'🤸 Calistenia':'🏋️ Gimnasio')+' · '+ONB_META[onb.meta].t+'</span>'+
+      '<b>'+(gr||'Rutina del día')+'</b><span>'+(document.getElementById('exCountPill')||{}).textContent.split(' · ').slice(0,2).join(' · ')+'</span></div>'+
+      '<p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.5">Registra tus series con <b>⊕ Serie</b> y usa el ⏱️ Descanso entre ellas. ¡Tú puedes!</p>'+
+      '<button class="onb-go" type="button" id="onbGo">¡Empezar ahora!</button>';
+  }
+  if(onb.paso<4) h+='<button class="onb-skip" type="button" id="onbSkip">Prefiero explorar solo</button>';
+  c.innerHTML=h;
+  c.querySelectorAll('[data-lugar]').forEach(b=>b.onclick=()=>{
+    onb.lugar=b.dataset.lugar; mode=onb.lugar; save('forja_mode',mode);
+    try{ renderModeToggle(); }catch(e){}
+    onb.paso=2; pintarBienvenida();
+  });
+  c.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{ onb.min=+b.dataset.min; onb.paso=3; pintarBienvenida(); });
+  c.querySelectorAll('[data-meta]').forEach(b=>b.onclick=()=>{
+    onb.meta=b.dataset.meta;
+    const M=ONB_META[onb.meta];
+    if(plan==='pro' && !goal && mode!=='park'){ goal=M.goal; save('forja_goal',goal); }
+    save('forja_lim_hoy',{f:hoyKey(), n:ONB_TIEMPO[onb.min]});
+    const gr=M.g.map(resolverGrupo).filter(Boolean);
+    setGruposHoy(gr.length?gr:null);
+    try{ renderMuscleTabs(); renderEnfoque(); }catch(e){}
+    cloudSync();
+    onb.paso=4; pintarBienvenida();
+  });
+  const btnGo=c.querySelector('#onbGo');
+  if(btnGo) btnGo.onclick=()=>{ cerrarBienvenida(); try{ go('rutinas'); }catch(e){} setTimeout(()=>{ try{ subirAlSiguiente(); }catch(e){} },300); };
+  const sk=c.querySelector('#onbSkip');
+  if(sk) sk.onclick=cerrarBienvenida;
+}
+/* Pide los avisos justo después del primer logro (máximo 2 veces, en días distintos) */
+function trasEjercicioHecho(){
+  try{
+    if(!('Notification' in window) || Notification.permission!=='default') return;
+    const n=load('forja_noti_pedida',{v:0,f:''});
+    if(n.v>=2 || n.f===hoyKey()) return;
+    save('forja_noti_pedida',{v:n.v+1,f:hoyKey()});
+    document.getElementById('notiTit').textContent = n.v ? '¡Otro ejercicio hecho! 💪' : '¡Primer ejercicio hecho!';
+    setTimeout(()=>document.getElementById('notiModal').classList.add('open'),600);
+  }catch(e){}
+}
+(function(){
+  const si=document.getElementById('notiSi'), no=document.getElementById('notiNo'), m=document.getElementById('notiModal');
+  if(!si) return;
+  no.onclick=()=>m.classList.remove('open');
+  si.onclick=async()=>{
+    m.classList.remove('open');
+    let p='default'; try{ p=await Notification.requestPermission(); }catch(e){}
+    if(p==='granted'){
+      suscribirPush();
+      try{ navigator.serviceWorker.ready.then(r=>r.showNotification('Listo, te aviso 🔔',{body:'Si pasan unos días sin entrenar, te recuerdo para que no pierdas la racha.',icon:'forja-icono-192.png',tag:'forja-ok'})); }catch(e){}
+    }
+  };
+})();
 function openGoal(){ document.getElementById('goalModal').classList.add('open'); }
 function closeGoal(){ document.getElementById('goalModal').classList.remove('open'); }
 function renderEnfoque(){
@@ -3595,6 +3721,14 @@ function renderExercises(){
       ex.push(Object.assign({}, e, {_g:R[k].label, _k:k}));
     });
   });
+  /* Rutina corta (bienvenida): intercala los grupos y deja solo los que caben en el tiempo elegido */
+  const lim=limiteHoy();
+  if(lim && ex.length>lim){
+    const porG={}; ex.forEach(e=>(porG[e._k]=porG[e._k]||[]).push(e));
+    const colas=Object.values(porG), mezcla=[];
+    while(mezcla.length<ex.length) colas.forEach(c=>{ if(c.length) mezcla.push(c.shift()); });
+    ex.length=0; mezcla.slice(0,lim).forEach(e=>ex.push(e));
+  }
   const varios = musculosSel.length>1;
   /* Los ya hechos se van al final: el siguiente ejercicio pendiente sube hasta arriba */
   ex.sort((a,b)=>(doneToday[a.n]?1:0)-(doneToday[b.n]?1:0));
@@ -3602,7 +3736,7 @@ function renderExercises(){
   /* Tiempo estimado: ~45 s por serie + ~75 s de descanso, 1 min de cambio entre ejercicios y 5 min de calentamiento */
   const series=ex.reduce((t,e)=>t+(+e.s||3),0), minEst=Math.round((series*120+ex.length*60)/60)+5;
   document.getElementById('exCountPill').textContent =
-    ex.length+' ejercicios · ~'+minEst+' min'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '');
+    ex.length+' ejercicios · ~'+minEst+' min'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '')+(lim?' · rutina corta':'');
   renderMiniAvatar(musculosSel, R);
   ex.forEach((e,i)=>{
     const isDone=!!doneToday[e.n];
@@ -3688,7 +3822,7 @@ function renderExercises(){
     const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
     if(objetivo && seriesEfectivas(k)>=objetivo && !doneToday[k]){
       doneToday[k]=true; save('forja_done',doneToday);
-      renderExercises(); renderHome(); subirAlSiguiente(); return;
+      renderExercises(); renderHome(); subirAlSiguiente(); trasEjercicioHecho(); return;
     }
     renderExercises(); renderHome();
   });
@@ -3742,7 +3876,7 @@ function renderExercises(){
     const objetivo=parseInt((exset[k]&&exset[k].s) ?? 0,10);
     if(objetivo && seriesEfectivas(k)>=objetivo && !doneToday[k]){
       doneToday[k]=true; save('forja_done',doneToday);
-      renderExercises(); renderHome(); subirAlSiguiente(); return;
+      renderExercises(); renderHome(); subirAlSiguiente(); trasEjercicioHecho(); return;
     }
     renderExercises(); renderHome();
   });
@@ -3768,7 +3902,7 @@ function renderExercises(){
   g.querySelectorAll('.ex-done').forEach(b=>b.onclick=()=>{
     const k=b.dataset.ex; doneToday[k]=!doneToday[k]; save('forja_done',doneToday);
     renderExercises(); renderHome();
-    if(doneToday[k]) subirAlSiguiente();
+    if(doneToday[k]){ subirAlSiguiente(); trasEjercicioHecho(); }
   });
   /* El PR se escribe directo en su casilla */
   g.querySelectorAll('[data-prin]').forEach(inp=>{
@@ -4883,6 +5017,7 @@ if(FB_ON){
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
       suscribirPush();
+      setTimeout(abrirBienvenida, 900);
       try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); renderRec(); renderDiaBanner(); calc(); renderDiet(); applyPlan(); renderHome(); }catch(e){}
       enterApp();
     } else {
