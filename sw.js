@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v183';
+const VERSION = 'forja-v184';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
