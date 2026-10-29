@@ -277,7 +277,16 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .smart-m>div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 9px}
 .smart-m small{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--muted-2)}
 .smart-m b{font-family:'Anton',sans-serif;font-size:18px;font-weight:400;color:var(--text)}
-.smart-m .hoy{border-color:var(--orange)}
+.smart-m.una{grid-template-columns:1fr}
+.smart-m .cambia{border-color:var(--orange)}
+.smart-m .cambia small{color:var(--orange)}
+.smart-m s{color:var(--muted-2);font-size:14px;text-decoration-thickness:2px}
+.smart-a{font-family:'Anton',sans-serif;font-size:19px;letter-spacing:.02em;margin-top:6px;color:var(--text)}
+.smart.subir .smart-a{color:var(--orange)}
+.smart.bajar .smart-a{color:#FF9F43}
+.sf .sf-u{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:3px 6px;font-size:13px;letter-spacing:0;cursor:pointer;color:var(--text)}
+.carga-eq{font-size:11.5px;color:var(--muted-2);margin:-2px 0 9px;line-height:1.5}
+.carga-eq input{width:42px;padding:2px 4px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;text-align:center}
 .smart-t{font-size:12px;color:var(--muted);line-height:1.4}
 .smart-tip{font-size:11.5px;color:var(--muted-2);margin-bottom:10px}
 .smart-lock{width:100%;text-align:left;border:1px dashed var(--line);background:transparent;color:var(--muted);
@@ -2170,13 +2179,14 @@ function invitarAPro(){
 function seriesDe(fecha, ex){ return (series[fecha] && series[fecha][ex]) || []; }
 function seriesHoy(ex){ return seriesDe(hoyKey(), ex); }
 
-function agregarSerie(ex, peso, reps, drop, rpe){
+function agregarSerie(ex, peso, reps, drop, rpe, extra){
   const k=hoyKey();
   if(!series[k]) series[k]={};
   if(!series[k][ex]) series[k][ex]=[];
   const reg={p:peso, r:reps};
   if(drop) reg.d=drop;
   if(Number.isFinite(rpe)) reg.e=rpe;
+  if(extra) Object.assign(reg, extra);
   series[k][ex].push(reg);
   /* Se recortan los meses viejos para no llenar el almacenamiento */
   const claves=Object.keys(series).sort();
@@ -2210,10 +2220,10 @@ function sesionAnterior(ex){
 function textoAnterior(ex){
   const a=sesionAnterior(ex);
   if(!a) return 'Primera vez que lo registras';
-  const pesos=[...new Set(a.sets.map(x=>x.p).filter(Boolean))];
+  const pesos=[...new Set(a.sets.filter(x=>x.p).map(x=>txtCarga(ex,x.p,x)))];
   const reps=a.sets.map(x=>x.r).join(', ');
   const cuando = a.dias===1 ? 'ayer' : 'hace '+a.dias+' dias';
-  return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' kg × ' : '') + reps
+  return 'La vez pasada ('+cuando+'): ' + (pesos.length? pesos.join('/')+' × ' : '') + reps
        + (a.sets.some(x=>x.d) ? ' · con Reto Súper Sayayin' : '');
 }
 
@@ -2263,7 +2273,9 @@ function chipsHTML(ex){
     else { num++; lbl=num; }
     return '<div class="serie-row'+(x.d?' is-drop':'')+(chipNuevo&&chipNuevo.ex===ex&&chipNuevo.i===n?' es-nueva':'')+'">'+
       '<span class="sr-n">'+lbl+'</span>'+
-      (x.p?'<span class="sr-v">'+x.p+'</span><span class="sr-u">kg</span><span class="sr-x">×</span>':'')+
+      (x.p?(x.u&&x.u!=='kg'
+        ? '<span class="sr-v">'+x.c+'</span><span class="sr-u">'+UNIDADES[x.u].k+'</span><span class="sr-x">×</span>'
+        : '<span class="sr-v">'+x.p+'</span><span class="sr-u">kg</span><span class="sr-x">×</span>'):'')+
       '<span class="sr-v">'+x.r+'</span><span class="sr-u">reps</span>'+
       (Number.isFinite(x.e)?'<span class="sc-rpe">RPE '+x.e+'</span>':'')+
       (x.d?'<span class="sc-tag">SS '+x.d+'</span>':'')+
@@ -3504,7 +3516,7 @@ function detectarRecord(ex, peso, reps){
       const pesos=prev.map(x=>x.p).filter(v=>v>0); if(prs[ex]) pesos.push(+prs[ex]);
       if(!pesos.length) return null;
       const max=Math.max(...pesos); if(peso<=max) return null;
-      return {ex, val:fmtKg(peso)+' kg × '+reps, ant:'Antes: '+fmtKg(max)+' kg', corto:fmtKg(peso)+' kg × '+reps};
+      return {ex, val:txtCarga(ex,peso)+' × '+reps, ant:'Antes: '+txtCarga(ex,max), corto:txtCarga(ex,peso)+' × '+reps};
     }
     const sin=prev.filter(x=>!x.p).map(x=>+x.r).filter(v=>v>0);
     if(!sin.length) return null;
@@ -3657,10 +3669,10 @@ function renderMuscleTabs(){
 /* Arranca los campos con lo ultimo que hiciste: casi siempre es lo correcto */
 function sugPeso(ex){
   const hoy=seriesHoy(ex);
-  if(hoy.length) return hoy[hoy.length-1].p ?? '';
-  const m=sugMeta(ex); if(m) return m.p!=null ? fmtKg(m.p) : '';
+  if(hoy.length) return aUnidad(ex, hoy[hoy.length-1].p ?? '');
+  const m=sugMeta(ex); if(m) return m.p!=null ? aUnidad(ex,+fmtKg(m.p)) : '';
   const a=sesionAnterior(ex);
-  return a ? (a.sets[a.sets.length-1].p ?? '') : '';
+  return a ? aUnidad(ex, a.sets[a.sets.length-1].p ?? '') : '';
 }
 function sugReps(ex){
   const hoy=seriesHoy(ex);
@@ -3682,6 +3694,28 @@ function sugReps(ex){
 let metaEj={};      /* {ejercicio:{r,max}} se llena al pintar las tarjetas */
 let rirSel={};      /* {ejercicio: repeticiones en recámara elegidas} */
 const fmtKg=v=>String(Math.round(v*100)/100);
+/* Cargas caseras: en casa no hay discos, se cuentan ladrillos o botellas.
+   Por dentro todo se guarda en kg (récords y progreso); en pantalla se ve en piezas. */
+let cargaPeso=Object.assign({lad:4,bot:1.5}, load('forja_cargas',{}));
+let unidadEj=load('forja_unidad',{});
+const UNIDADES={kg:{k:'KG',uno:'kg',varios:'kg'},lad:{k:'🧱',uno:'ladrillo',varios:'ladrillos'},bot:{k:'🧴',uno:'botella',varios:'botellas'}};
+function unidadDe(ex){
+  if(unidadEj[ex]) return unidadEj[ex];
+  if(mode==='home'){ if(/ladrillo|mochila|garrafa/i.test(ex)) return 'lad'; if(/botella/i.test(ex)) return 'bot'; }
+  return 'kg';
+}
+function kgPorUnidad(u){ return u==='kg'?1:(+cargaPeso[u]||1); }
+function aUnidad(ex,kg){
+  if(kg==null||kg==='') return '';
+  const u=unidadDe(ex); if(u==='kg') return kg;
+  return Math.max(0.5,Math.round(kg/kgPorUnidad(u)*2)/2);
+}
+function txtCarga(ex,kg,reg,corto){
+  if(kg==null) return '';
+  const u=(reg&&reg.u)||unidadDe(ex); if(u==='kg') return fmtKg(kg)+' kg';
+  const n=(reg&&reg.c)||aUnidad(ex,kg), U=UNIDADES[u];
+  return corto ? n+' '+U.k : n+' '+(n===1?U.uno:U.varios);
+}
 function rangoReps(t){
   t=String(t||'');
   if(/seg|min|''|"/i.test(t)) return null;
@@ -3710,48 +3744,71 @@ function sugInteligente(ex){
   const [a,b]=ultimasSesiones(ex,2);
   if(!a) return {tipo:'inicio'};
   if(a.rpe==null) return {tipo:'sinrpe'};
-  const ant=(a.p?fmtKg(a.p)+' kg × ':'')+a.minR;
+  const u=unidadDe(ex), casera=!!(a.p && u!=='kg'), pieza=kgPorUnidad(u), U=UNIDADES[u];
+  const base={antP:a.p, antR:a.minR};
+  const nReps=n=>n===1?'1 repetición':n+' repeticiones';
+  /* Descarga: dos sesiones seguidas al límite */
   if(a.rpe>=9.5 && b && b.rpe!=null && b.rpe>=9.5){
-    const p=a.p?Math.max(0.5,Math.round(a.p*0.9*2)/2):null, r=a.p?a.minR:Math.max(lo,a.minR-2);
-    return {tipo:'bajar', ant, p, r, delta:a.p?'−'+fmtKg(a.p-p)+' kg':'−'+(a.minR-r)+' reps',
-      txt:'Dos sesiones al límite (RPE '+a.rpe+'). Hoy descarga un poco para recuperar fuerza y no lesionarte.'};
+    if(a.p){
+      const p=casera?Math.max(pieza,a.p-pieza):Math.max(0.5,Math.round(a.p*0.9*2)/2);
+      return {...base,tipo:'bajar',que:'peso',p,r:a.minR,
+        delta:casera?'−1 '+U.uno:'−'+fmtKg(a.p-p)+' kg',
+        txt:'Dos sesiones al límite (RPE '+a.rpe+'). Hoy '+(casera?'quita 1 '+U.uno:'baja '+fmtKg(a.p-p)+' kg')+' y haz las mismas '+a.minR+' repeticiones para recuperar fuerza.'};
+    }
+    const r=Math.max(lo,a.minR-2);
+    return {...base,tipo:'bajar',que:'reps',p:null,r,delta:'−'+(a.minR-r)+' reps',
+      txt:'Dos sesiones al límite (RPE '+a.rpe+'). Hoy haz '+nReps(r)+' para recuperar fuerza.'};
   }
   if(a.rpe>=9 || a.minR<lo){
-    return {tipo:'mantener', ant, p:a.p, r:Math.max(lo,a.minR), delta:'Mantén',
-      txt:a.minR<lo ? 'Aún no llegas a '+lo+' reps en todas las series. Repite el peso hasta lograrlo.'
-                    : 'La vez pasada quedó exigente (RPE '+a.rpe+'). Repite y busca que se sienta más fácil.'};
+    return {...base,tipo:'mantener',que:'igual',p:a.p,r:Math.max(lo,a.minR),delta:'Igual',
+      txt:a.minR<lo ? 'Aún no llegas a '+lo+' repeticiones en todas las series. Misma carga hasta lograrlo.'
+                    : 'La vez pasada quedó exigente (RPE '+a.rpe+'). Repite igual y busca que se sienta más fácil.'};
   }
   const listo=a.rpe<=8 && b && b.rpe!=null && b.rpe<=8.5 && b.p===a.p && b.minR>=lo;
   if(!listo){
-    return {tipo:'confirmar', ant, p:a.p, r:a.minR, delta:'Confirma',
+    return {...base,tipo:'confirmar',que:'igual',p:a.p,r:a.minR,delta:'Igual',
       txt:'Vas bien (RPE '+a.rpe+'). Repite una sesión más igual de sólida y la próxima subimos.'};
   }
-  if(a.p){
-    const pct=a.rpe<=7?0.05:0.025;
-    const paso=a.p>=20?1.25:0.5;   /* discos de 1.25 kg por lado en barra; 0.5 kg en cargas caseras */
-    let inc=Math.max(paso,Math.round(a.p*pct/paso)*paso);
-    if(inc>a.p*0.05) inc=Math.max(paso,Math.floor(a.p*0.05/paso)*paso);
-    return {tipo:'subir', ant, p:a.p+inc, r:Math.min(a.minR,hi), delta:'+'+fmtKg(inc)+' kg',
-      txt:'2 sesiones con todas las reps y RPE '+a.rpe+': toca subir '+(pct*100)+' %.'};
+  /* En casa y sin peso: primero repeticiones hasta el máximo, luego +1 pieza */
+  if(!a.p || casera){
+    if(a.minR<hi){
+      const r=Math.min(hi,a.minR+(a.rpe<=7?2:1)), d=r-a.minR;
+      return {...base,tipo:'subir',que:'reps',p:a.p,r,delta:'+'+d+(d===1?' rep':' reps'),
+        txt:(casera?'Mismos '+txtCarga(ex,a.p)+', ':'')+(d===1?'una repetición más':d+' repeticiones más')+' en cada serie. Cuando llegues a '+hi+', '+(casera?'sumamos 1 '+U.uno+'.':'lo hacemos más difícil.')};
+    }
+    if(casera) return {...base,tipo:'subir',que:'peso',p:a.p+pieza,r:lo,delta:'+1 '+U.uno,
+      txt:'Ya dominas '+hi+' repeticiones. Agrega 1 '+U.uno+' (≈'+fmtKg(pieza)+' kg más) y regresa a '+lo+' repeticiones.'};
+    return {...base,tipo:'subir',que:'tecnica',p:null,r:lo,delta:'Más difícil',
+      txt:'Ya dominas '+hi+' reps. Hoy baja en 3 segundos (tempo lento) o pasa a una variante más difícil y vuelve a '+lo+' reps.'};
   }
-  if(a.minR<hi){
-    const r=Math.min(hi,a.minR+(a.rpe<=7?2:1));
-    return {tipo:'subir', ant, p:null, r, delta:'+'+(r-a.minR)+(r-a.minR===1?' rep':' reps'),
-      txt:'2 sesiones sólidas (RPE '+a.rpe+'): suma repeticiones hasta llegar a '+hi+'.'};
-  }
-  return {tipo:'subir', ant, p:null, r:lo, delta:'Más difícil',
-    txt:'Ya dominas '+hi+' reps. Hoy baja en 3 segundos (tempo lento) o pasa a una variante más difícil y vuelve a '+lo+' reps.'};
+  const pct=a.rpe<=7?0.05:0.025;
+  const paso=a.p>=20?1.25:0.5;   /* discos de 1.25 kg por lado en barra; 0.5 kg en mancuernas ligeras */
+  let inc=Math.max(paso,Math.round(a.p*pct/paso)*paso);
+  if(inc>a.p*0.05) inc=Math.max(paso,Math.floor(a.p*0.05/paso)*paso);
+  const r=Math.min(a.minR,hi);
+  return {...base,tipo:'subir',que:'peso',p:a.p+inc,r,delta:'+'+fmtKg(inc)+' kg',
+    txt:'2 sesiones con todas las repeticiones y RPE '+a.rpe+'. Sube '+fmtKg(inc)+' kg y haz las mismas '+r+' repeticiones.'};
 }
 function smartHTML(ex){
   const s=sugInteligente(ex); if(!s) return '';
   const pro=plan==='pro';
-  if(s.tipo==='inicio') return pro?'<div class="smart-tip">⚡ Registra tus series y marca cuántas te quedaban: con 2 sesiones te digo cuánto subir.</div>':'';
-  if(!pro) return '<button class="smart-lock" type="button" data-smartpro>🔒 <b>Entrenador inteligente</b> · con PRO te digo cuánto subir hoy según tu esfuerzo</button>';
+  if(s.tipo==='inicio') return pro?'<div class="smart-tip">⚡ Registra tus series y marca cuántas te quedaban: con 2 sesiones te digo qué subir.</div>':'';
+  if(!pro) return '<button class="smart-lock" type="button" data-smartpro>🔒 <b>Entrenador inteligente</b> · con PRO te digo qué subir hoy según tu esfuerzo</button>';
   if(s.tipo==='sinrpe') return '<div class="smart-tip">⚡ Marca «¿Cuántas más podías?» al registrar cada serie para que te ajuste la carga.</div>';
-  const hoy=(s.p?fmtKg(s.p)+' kg × ':'')+s.r;
+  const accion = s.tipo==='bajar' ? (s.que==='peso'?'⬇ BAJA EL PESO':'⬇ BAJA LAS REPETICIONES')
+               : s.que==='peso' ? '⬆ SUBE EL PESO'
+               : s.que==='reps' ? '⬆ SUBE LAS REPETICIONES'
+               : s.que==='tecnica' ? '⬆ HAZLO MÁS DIFÍCIL'
+               : s.r!==s.antR ? '= MISMA CARGA · COMPLETA '+s.r+' REPS' : '= REPITE IGUAL';
+  const celda=(lbl,ant,hoy,cambia)=>'<div class="'+(cambia?'cambia':'')+'"><small>'+lbl+(cambia?' · CAMBIA':'')+'</small><b>'+
+      (cambia?'<s>'+ant+'</s> → '+hoy:hoy)+'</b></div>';
+  const conPeso=s.antP||s.p;
+  const cP=conPeso?celda('PESO',txtCarga(ex,s.antP,null,1)||'—',txtCarga(ex,s.p,null,1)||'Sin peso',s.p!==s.antP):'';
+  const cR=celda('REPS',s.antR,s.r,s.r!==s.antR);
   return '<div class="smart '+(s.tipo==='subir'?'subir':s.tipo==='bajar'?'bajar':'')+'">'+
-    '<div class="smart-h">⚡ Sugerencia FORJA<span class="smart-d">'+s.delta+'</span></div>'+
-    '<div class="smart-m"><div><small>ANTERIOR</small><b>'+s.ant+'</b></div><div class="hoy"><small>META DE HOY</small><b>'+hoy+'</b></div></div>'+
+    '<div class="smart-h">⚡ Meta de hoy<span class="smart-d">'+s.delta+'</span></div>'+
+    '<div class="smart-a">'+accion+'</div>'+
+    '<div class="smart-m'+(conPeso?'':' una')+'">'+cP+cR+'</div>'+
     '<div class="smart-t">'+s.txt+'</div></div>';
 }
 function sugMeta(ex){
@@ -3882,14 +3939,17 @@ function renderExercises(){
       </div>
       <div class="serie-box">
         <div class="serie-hist">${textoAnterior(e.n)}</div>
+        ${(u=>u==='kg'?'':'<div class="carga-eq">'+UNIDADES[u].k+' Cuenta '+UNIDADES[u].varios+', no kilos. 1 '+UNIDADES[u].uno+' ≈ <input data-cargak="'+u+'" inputmode="decimal" value="'+kgPorUnidad(u)+'" aria-label="Kilos por '+UNIDADES[u].uno+'"> kg · toca '+UNIDADES[u].k+' para cambiar</div>')(mode==='home'?unidadDe(e.n):'kg')}
         ${smartHTML(e.n)}
         <div class="serie-rows">${chipsHTML(e.n)}</div>
         <div class="serie-add">
           <label class="sm-pr"><span>PR</span>
             <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal (PR) en kg" title="Tu récord personal en kg">
           </label>
-          <label class="sf"><span class="sf-k">KG</span>
-            <input class="serie-in" inputmode="decimal" placeholder="--" data-sp="${e.n}" value="${sugPeso(e.n)}">
+          <label class="sf">${mode==='home'
+              ? '<button type="button" class="sf-k sf-u" data-unid="'+e.n+'" title="Cambiar: kg, ladrillos o botellas">'+UNIDADES[unidadDe(e.n)].k+'</button>'
+              : '<span class="sf-k">KG</span>'}
+            <input class="serie-in" inputmode="decimal" placeholder="--" data-sp="${e.n}" value="${sugPeso(e.n)}" aria-label="Carga en ${UNIDADES[unidadDe(e.n)].varios}">
           </label>
           <label class="sf"><span class="sf-k">RPS</span>
             <input class="serie-in" inputmode="numeric" placeholder="--" data-sr="${e.n}" value="${sugReps(e.n)}">
@@ -3940,15 +4000,28 @@ function renderExercises(){
     // evitar que Enter recargue/pierda foco de forma rara
     inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') inp.blur(); });
   });
+  g.querySelectorAll('[data-unid]').forEach(b=>b.onclick=ev=>{
+    ev.preventDefault();
+    const k=b.dataset.unid, orden=['kg','lad','bot'];
+    unidadEj[k]=orden[(orden.indexOf(unidadDe(k))+1)%orden.length];
+    save('forja_unidad',unidadEj); renderExercises();
+  });
+  g.querySelectorAll('[data-cargak]').forEach(inp=>inp.onchange=()=>{
+    const v=parseFloat(String(inp.value).replace(',','.'));
+    if(v>0 && v<=40){ cargaPeso[inp.dataset.cargak]=v; save('forja_cargas',cargaPeso); }
+    renderExercises();
+  });
   g.querySelectorAll('[data-sadd]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.sadd;
     const cp=g.querySelector('[data-sp="'+CSS.escape(k)+'"]');
     const cr=g.querySelector('[data-sr="'+CSS.escape(k)+'"]');
     const reps=parseInt(cr.value,10);
     if(!reps){ cr.focus(); return; }
-    const peso=parseFloat(String(cp.value).replace(',','.'));
-    const recNuevo=detectarRecord(k, isNaN(peso)?null:peso, reps);
-    agregarSerie(k, isNaN(peso)?null:peso, reps, null, rirSel[k]!=null ? 10-rirSel[k] : undefined);
+    const cuantos=parseFloat(String(cp.value).replace(',','.'));
+    const un=unidadDe(k);
+    const peso=isNaN(cuantos)||cuantos<=0 ? null : Math.round(cuantos*kgPorUnidad(un)*100)/100;
+    const recNuevo=detectarRecord(k, peso, reps);
+    agregarSerie(k, peso, reps, null, rirSel[k]!=null ? 10-rirSel[k] : undefined, (peso && un!=='kg') ? {u:un, c:cuantos} : null);
     if(recNuevo) setTimeout(()=>mostrarRecord(recNuevo),350);
     chipNuevo={ex:k, i:seriesHoy(k).length-1};
     /* Al completar las series planeadas, el ejercicio se marca solo */
