@@ -875,6 +875,15 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .onb-res b{display:block;font-size:20px;margin:4px 0}
 .onb-res span{color:var(--muted);font-size:13px}
 .onb-go{width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;color:#fff;background:var(--molten)}
+.enc-q{font-weight:800;font-size:14.5px;margin:16px 0 8px;text-align:left}
+.enc-stars{display:flex;gap:6px;justify-content:center}
+.enc-star{background:none;border:0;font-size:34px;cursor:pointer;color:#3a3a44;padding:0 2px;line-height:1}
+.enc-star.on{color:var(--orange)}
+.enc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.enc-chip{border:1px solid #33333d;background:#1c1c22;color:var(--text,#eee);border-radius:999px;padding:8px 12px;font-size:13px;cursor:pointer}
+.enc-chip.on{border-color:var(--orange);background:rgba(78,138,34,.22);color:#fff}
+.enc-txt{width:100%;min-height:70px;border-radius:12px;border:1px solid #33333d;background:#1c1c22;color:inherit;padding:10px;font:inherit;font-size:14px;resize:vertical;box-sizing:border-box}
+.enc-msg{min-height:18px;font-size:13px;margin:10px 0 0;color:#ff5a5a}
 .onb-skip{display:block;margin:12px auto 0;background:none;border:0;color:var(--muted-2);font-size:12.5px;cursor:pointer;text-decoration:underline}
 .goal-opt{display:block;width:100%;text-align:left;padding:16px;border-radius:14px;margin-bottom:12px;
   background:var(--surface-2);border:1px solid var(--line);color:var(--text);transition:.15s;cursor:pointer}
@@ -1423,6 +1432,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         </div>
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
+        <div class="trial-banner" id="encBanner" style="display:none"></div>
         <div class="coach-help">
           <div class="ch-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
           <div class="ch-tx">
@@ -1852,6 +1862,33 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
     <div class="rec-ej" id="retoEj"></div>
     <p style="color:var(--muted);font-size:13.5px;margin:12px 0 16px;line-height:1.5">Crea tu cuenta gratis, arma tu rutina y demuestra que puedes superarlo.</p>
     <button class="onb-go" id="retoOk" type="button">¡Acepto el reto!</button>
+  </div>
+</div>
+<!-- Encuesta de satisfacción: 5 días de PRO de regalo -->
+<div class="modal-bg" id="encModal" style="z-index:300">
+  <div class="pro-modal" style="max-height:92vh;overflow:auto">
+    <button class="pro-close" id="encClose" type="button">✕</button>
+    <div id="encForm">
+      <div style="font-size:40px;line-height:1;margin:4px 0 8px">🎁</div>
+      <div class="pro-tagline">Califica FORJA</div>
+      <p style="color:var(--muted);font-size:13.5px;margin:6px 0 4px;line-height:1.5">Contesta 4 preguntas (1 minuto) y te regalamos <b>5 días de Modo PRO</b>.</p>
+      <div class="enc-q">1. ¿Qué calificación le das a FORJA?</div>
+      <div class="enc-stars" id="encStars"></div>
+      <div class="enc-q">2. ¿Qué es lo que más te gusta? <span style="font-weight:400;color:var(--muted)">(elige las que quieras)</span></div>
+      <div class="enc-chips" id="encGusta"></div>
+      <div class="enc-q">3. ¿Recomendarías FORJA a un amigo?</div>
+      <div class="enc-chips" id="encRecom"></div>
+      <div class="enc-q">4. ¿Qué mejorarías o qué te gustaría que tuviera?</div>
+      <textarea class="enc-txt" id="encMejora" maxlength="600" placeholder="Escríbelo con confianza 💪"></textarea>
+      <div class="enc-msg" id="encMsg"></div>
+      <button class="onb-go" id="encEnviar" type="button" style="margin-top:8px">Enviar y recibir mis 5 días PRO</button>
+    </div>
+    <div id="encGracias" style="display:none;text-align:center">
+      <div style="font-size:44px;line-height:1;margin:4px 0 8px">🔥</div>
+      <div class="pro-tagline">¡Gracias, guerrero!</div>
+      <p id="encGraciasTx" style="color:var(--muted);font-size:14px;margin:10px 0 18px;line-height:1.5"></p>
+      <button class="onb-go" id="encOk" type="button">¡A entrenar!</button>
+    </div>
   </div>
 </div>
 <!-- Pedir avisos al terminar el primer ejercicio -->
@@ -2666,6 +2703,7 @@ function go(id){
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
 window.addEventListener('hashchange', function(){
   const id = location.hash.slice(1);
+  if(id==='encuesta'){ try{ FORJAEncuesta.abrir(); }catch(e){} return; }
   if(id && document.getElementById('view-'+id)) go(id);
 });
 (function(){
@@ -5117,6 +5155,102 @@ async function suscribirPush(){
     if(str!==pushSubStr){ pushSubStr=str; save('forja_push_sub',str); cloudSync(); }
   }catch(e){}
 }
+/* ===== Encuesta de satisfacción: 5 días de PRO de regalo (una vez por cuenta) =====
+   Se abre desde el banner de Inicio o con el enlace …/forja/#encuesta (para compartir).
+   Las respuestas se guardan en usuarios/{uid}.encuesta en Firestore. */
+const FORJAEncuesta=(function(){
+  const DIAS_REGALO=5;
+  const GUSTA=['Rutinas','Entrenador inteligente','Animaciones','Cargas caseras','Racha y progreso','Diseño','Coach'];
+  const RECOM=['Sí','Tal vez','No'];
+  let estrellas=0, gusta=new Set(), recom='', pendiente=(location.hash==='#encuesta');
+  const $=id=>document.getElementById(id);
+  const hecha=()=>!!load('forja_encuesta','');
+  function sumarDias(iso,n){ const d=new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+  function pintar(){
+    $('encStars').innerHTML=[1,2,3,4,5].map(i=>'<button type="button" class="enc-star'+(i<=estrellas?' on':'')+'" data-v="'+i+'" aria-label="'+i+' estrellas">★</button>').join('');
+    $('encGusta').innerHTML=GUSTA.map(g=>'<button type="button" class="enc-chip'+(gusta.has(g)?' on':'')+'" data-g="'+g+'">'+g+'</button>').join('');
+    $('encRecom').innerHTML=RECOM.map(r=>'<button type="button" class="enc-chip'+(recom===r?' on':'')+'" data-r="'+r+'">'+r+'</button>').join('');
+    $('encStars').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ estrellas=+b.dataset.v; pintar(); });
+    $('encGusta').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ const g=b.dataset.g; gusta.has(g)?gusta.delete(g):gusta.add(g); pintar(); });
+    $('encRecom').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ recom=b.dataset.r; pintar(); });
+  }
+  function banner(){
+    const b=$('encBanner'); if(!b) return;
+    if(!fbUser || hecha()){ b.style.display='none'; return; }
+    b.style.display='flex';
+    b.innerHTML='<div class="tb-ic">🎁</div><div class="tb-tx"><div class="tb-t">Califica FORJA y gana 5 días PRO</div>'+
+      '<div class="tb-d">Son 4 preguntas rápidas. Tu opinión nos ayuda a mejorar la app.</div></div>'+
+      '<button type="button" class="tb-go" id="encBannerGo">Calificar</button>';
+    $('encBannerGo').onclick=abrir;
+  }
+  function cerrar(){ $('encModal').classList.remove('open'); if(location.hash==='#encuesta'){ try{ history.replaceState(null,'','#inicio'); }catch(e){} } }
+  function abrir(){
+    if(!fbUser){ pendiente=true; return; }           /* se abre al iniciar sesión */
+    pendiente=false;
+    const yaHecha=hecha();
+    $('encForm').style.display=yaHecha?'none':'block';
+    $('encGracias').style.display=yaHecha?'block':'none';
+    if(yaHecha) $('encGraciasTx').textContent='Ya contestaste la encuesta y recibiste tu regalo. ¡Gracias por ayudarnos a mejorar FORJA!';
+    $('encMsg').textContent='';
+    pintar();
+    $('encModal').classList.add('open');
+  }
+  async function enviar(){
+    const msg=$('encMsg');
+    if(!estrellas){ msg.textContent='Elige de 1 a 5 estrellas.'; return; }
+    if(!recom){ msg.textContent='Dinos si recomendarías FORJA.'; return; }
+    if(!fbUser || !FB_ON){ msg.textContent='Inicia sesión para recibir tu regalo.'; return; }
+    const btn=$('encEnviar'); btn.disabled=true; btn.textContent='Enviando…';
+    try{
+      const ref=fbDB.collection('usuarios').doc(fbUser.uid);
+      let previa=null;
+      try{ const snap=await ref.get(); previa=snap.exists && snap.data().encuesta; }catch(e){}
+      const hoy=hoyKey();
+      let texto;
+      if(previa && previa.fecha){
+        save('forja_encuesta', previa.fecha);
+        texto='Ya habías contestado la encuesta antes; el regalo es una vez por cuenta. ¡Gracias de nuevo!';
+      } else {
+        let nuevoHasta=proHasta;
+        if(plan==='pro' && !proHasta){
+          texto='Ya tienes Modo PRO sin fecha de vencimiento, así que tu PRO sigue igual. ¡Gracias por tu opinión!';
+        } else {
+          const base=(plan==='pro' && proHasta && String(proHasta)>=hoy) ? String(proHasta) : hoy;
+          nuevoHasta=sumarDias(base, DIAS_REGALO);
+          plan='pro'; proHasta=nuevoHasta;
+          save('forja_plan',plan); save('forja_pro_hasta',proHasta); save('forja_pro_vencio','');
+          texto='Te regalamos 5 días de Modo PRO: ahora lo tienes hasta el '+fechaLarga(nuevoHasta)+'. ¡Aprovéchalo!';
+        }
+        const respuestas={
+          fecha:new Date().toISOString(), estrellas:estrellas, gusta:[...gusta], recomienda:recom,
+          mejora:String($('encMejora').value||'').trim().slice(0,600),
+          plan:plan, regaloHasta:(nuevoHasta||'')
+        };
+        await conTiempoLimite(ref.set({encuesta:respuestas, plan:plan, proHasta:(proHasta||''), updated:Date.now()},{merge:true}));
+        save('forja_encuesta', respuestas.fecha);
+        try{ applyPlan(); }catch(e){}
+        try{ renderTrial(); }catch(e){}
+      }
+      $('encGraciasTx').textContent=texto;
+      $('encForm').style.display='none'; $('encGracias').style.display='block';
+      banner();
+    }catch(e){
+      msg.textContent='No se pudo enviar. Revisa tu internet e inténtalo de nuevo.';
+    }finally{ btn.disabled=false; btn.textContent='Enviar y recibir mis 5 días PRO'; }
+  }
+  function enlazar(){
+    if(!$('encModal')) return;
+    $('encClose').onclick=cerrar; $('encOk').onclick=cerrar;
+    $('encEnviar').onclick=enviar;
+    $('encModal').addEventListener('click',e=>{ if(e.target.id==='encModal') cerrar(); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',enlazar); else enlazar();
+  return {
+    abrir:abrir,
+    alEntrar:function(){ banner(); if(pendiente) setTimeout(abrir,600); }
+  };
+})();
+
 /* ===== Integración Firebase: cuentas reales + guardado en la nube ===== */
 function cloudSync(){
   if(!FB_ON || !fbUser) return;
@@ -5227,6 +5361,7 @@ if(FB_ON){
       if(Array.isArray(d.logs)) logs=d.logs;
       if(d.plan) plan=d.plan;
       if(typeof d.proHasta==='string') proHasta=d.proHasta;
+      if(d.encuesta && d.encuesta.fecha) save('forja_encuesta', d.encuesta.fecha);
       /* Solo aceptamos los "Hecho" de la nube si son de HOY; si no, arrancamos en cero */
       if(d.doneToday && d.doneDate === hoyKey()){ doneToday=d.doneToday; doneDate=d.doneDate; }
       else {
@@ -5248,6 +5383,7 @@ if(FB_ON){
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
       if(checkVigenciaPro()) invitarAPro();
+      try{ FORJAEncuesta.alEntrar(); }catch(e){}
       suscribirPush();
       setTimeout(abrirBienvenida, 900);
       try{ renderModeToggle(); renderMuscleTabs(); renderExercises(); fillProgSelects(); renderProgress(); renderMeasures(); renderRec(); renderDiaBanner(); calc(); renderDiet(); applyPlan(); renderHome(); }catch(e){}
