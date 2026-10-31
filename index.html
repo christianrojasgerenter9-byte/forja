@@ -1433,6 +1433,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
         <div class="trial-banner" id="encBanner" style="display:none"></div>
+        <div class="trial-banner" id="refBanner" style="display:none"></div>
         <div class="coach-help">
           <div class="ch-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
           <div class="ch-tx">
@@ -5155,6 +5156,80 @@ async function suscribirPush(){
     if(str!==pushSubStr){ pushSubStr=str; save('forja_push_sub',str); cloudSync(); }
   }catch(e){}
 }
+/* ===== Referidos: 10 días de PRO por cada amigo que se registra con tu enlace y entrena =====
+   El enlace es …/forja/?ref=UID&de=Nombre. El invitado guarda «referidoPor» en su cuenta;
+   el servidor de Rosa revisa cada día quién ya entrenó y le suma 10 días a quien lo invitó
+   en el campo «proRegalo» (la app lo aplica al abrir). Sin límite de amigos. */
+const FORJAReferidos=(function(){
+  const $=id=>document.getElementById(id);
+  const URL_APP='https://christianrojasgerenter9-byte.github.io/forja/';
+  let premiados=0;
+  try{
+    const q=new URLSearchParams(location.search), r=q.get('ref');
+    if(r && /^[A-Za-z0-9]{10,40}$/.test(r)){
+      save('forja_ref', r); save('forja_ref_de', String(q.get('de')||'').replace(/[<>]/g,'').slice(0,40));
+      try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){}
+    }
+  }catch(e){}
+  /* Bienvenida en la pantalla de registro */
+  function bienvenida(){
+    const de=load('forja_ref_de',''), gate=$('authGate');
+    if(!de || !gate || $('refHola')) return;
+    const p=document.createElement('div'); p.id='refHola';
+    p.style.cssText='margin:12px auto 14px;max-width:420px;padding:10px 14px;border-radius:12px;border:1px solid var(--orange);background:rgba(78,138,34,.15);font-size:14px;text-align:center';
+    p.textContent='🔥 Llegaste invitado por '+de+'. Crea tu cuenta y entrena gratis 21 días.';
+    const card=gate.querySelector('.auth-card')||gate, marca=card.querySelector('.auth-brand');
+    card.insertBefore(p, marca ? marca.nextSibling : card.firstChild);
+  }
+  function enlace(){
+    const n=String(displayName||'').trim().split(/\s+/)[0]||'';
+    return URL_APP+'?ref='+encodeURIComponent(fbUser.uid)+(n?'&de='+encodeURIComponent(n):'');
+  }
+  async function invitar(){
+    if(!fbUser) return;
+    const url=enlace();
+    const txt='Estoy entrenando con FORJA 💪 Rutinas para casa, gym o calistenia y te dice qué subir cada sesión. Pruébala gratis 21 días con mi enlace: ';
+    try{ if(navigator.share){ await navigator.share({title:'FORJA',text:txt,url:url}); return; } }catch(e){ if(e && e.name==='AbortError') return; }
+    window.open('https://wa.me/?text='+encodeURIComponent(txt+url),'_blank','noopener');
+  }
+  function banner(){
+    const b=$('refBanner'); if(!b) return;
+    if(!fbUser){ b.style.display='none'; return; }
+    b.style.display='flex';
+    const extra = premiados ? ' Llevas '+premiados+' amigo'+(premiados===1?'':'s')+' y '+(premiados*10)+' días ganados.' : '';
+    b.innerHTML='<div class="tb-ic">🤝</div><div class="tb-tx"><div class="tb-t">Invita amigos y gana 10 días PRO por cada uno</div>'+
+      '<div class="tb-d">Cuando tu amigo crea su cuenta con tu enlace y hace su primer entrenamiento, te sumamos 10 días. Sin límite.'+extra+'</div></div>'+
+      '<button type="button" class="tb-go" id="refBannerGo">Invitar</button>';
+    $('refBannerGo').onclick=invitar;
+  }
+  function alEntrar(d,user){
+    d=d||{};
+    premiados=Number(d.referidosPremiados)||0;
+    /* 1) Días ganados por invitar (los pone el servidor en proRegalo) */
+    const hoy=hoyKey(), regalo=String(d.proRegalo||'');
+    if(/^\d{4}-\d\d-\d\d$/.test(regalo) && regalo>=hoy && !(plan==='pro' && !proHasta) && regalo>String(proHasta||'')){
+      const antes=(plan==='pro' && proHasta>=hoy) ? proHasta : '';
+      plan='pro'; proHasta=regalo;
+      save('forja_plan',plan); save('forja_pro_hasta',proHasta); save('forja_pro_vencio','');
+      if(load('forja_regalo_visto','')!==regalo){
+        save('forja_regalo_visto',regalo);
+        setTimeout(()=>{ try{ alert('🎉 ¡Tus amigos entrenaron! Ganaste días de Modo PRO: ahora lo tienes hasta el '+fechaLarga(regalo)+'.'); }catch(e){} },1500);
+      }
+      cloudSync();
+    }
+    /* 2) Si esta cuenta es nueva y llegó con enlace, guardar quién la invitó */
+    const ref=load('forja_ref','');
+    const creado=Number(d.creado)||Date.parse(user && user.metadata && user.metadata.creationTime)||0;
+    if(ref && !d.referidoPor && user && ref!==user.uid && Date.now()-creado < 3*864e5){
+      fbDB.collection('usuarios').doc(user.uid).set({referidoPor:ref, referidoDe:load('forja_ref_de','')},{merge:true})
+        .then(()=>{ save('forja_ref',''); }).catch(()=>{});
+    } else if(ref && d.referidoPor){ save('forja_ref',''); }
+    banner();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bienvenida); else bienvenida();
+  return { alEntrar:alEntrar, invitar:invitar };
+})();
+
 /* ===== Encuesta de satisfacción: 5 días de PRO de regalo (una vez por cuenta) =====
    Se abre desde el banner de Inicio o con el enlace …/forja/#encuesta (para compartir).
    Las respuestas se guardan en usuarios/{uid}.encuesta en Firestore. */
@@ -5382,6 +5457,7 @@ if(FB_ON){
       else { hoyGrupos=null; hoyFecha=hoyKey(); }
       session=user.email;
       if(!getRoutines()[currentMuscle]) currentMuscle=Object.keys(getRoutines())[0];
+      try{ FORJAReferidos.alEntrar(d,user); }catch(e){}
       if(checkVigenciaPro()) invitarAPro();
       try{ FORJAEncuesta.alEntrar(); }catch(e){}
       suscribirPush();
