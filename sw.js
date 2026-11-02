@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v184';
+const VERSION = 'forja-v189';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -16,7 +16,7 @@ const CASCARA = [
   './index.html',
   './forja-racha.js',
   './forja-coach.js',
-  './forja-recetas.js','./forja-diario.js','./forja-tema.css','./forja-aro.png','./forja-marco.png','./forja-boton.png','./forja-icono-caja.png','./forja-fondo.jpg',
+  './forja-recetas.js','./forja-diario.js','./forja-rosa.js','./forja-tema.css','./forja-aro.png','./forja-marco.png','./forja-boton.png','./forja-icono-caja.png','./forja-fondo.jpg',
   './manifest.json',
   './forja-icono-192.png',
   './forja-icono-512.png',
@@ -177,6 +177,21 @@ self.addEventListener('fetch', evento => {
 
 self.addEventListener('message', evento => {
   if (evento.data === 'actualizar-ya') self.skipWaiting();
+});
+
+/* ---------- Recordatorio enviado por el servidor (push) ---------- */
+
+self.addEventListener('push', evento => {
+  let d = {};
+  try { d = evento.data ? evento.data.json() : {}; } catch (e) { d = { cuerpo: evento.data ? evento.data.text() : '' }; }
+  evento.waitUntil(self.registration.showNotification(d.titulo || 'FORJA', {
+    body: d.cuerpo || 'Tu entrenamiento te espera 🔥',
+    icon: 'forja-icono-192.png',
+    badge: 'forja-icono-192.png',
+    tag: d.etiqueta || 'forja-push',
+    renotify: true,
+    data: { url: d.url || './' }
+  }));
 });
 
 /* ---------- Toque en un recordatorio: abre FORJA ---------- */
