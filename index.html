@@ -2502,12 +2502,114 @@ const HOME_DEF = {
   ]},
 };
 
+const PARK_VOL = {
+  pecho:   { label:'Pecho', ex:[
+    {n:'Fondos en paralelas (inclinado al frente)',s:5,r:'6-8',max:'12'},
+    {n:'Flexiones con pies en banca',s:4,r:'8-10',max:'15'},
+    {n:'Flexiones explosivas (con palmada)',s:4,r:'6',max:'10'},
+    {n:'Flexiones en barra baja',s:4,r:'10',max:'15'},
+    {n:'Flexiones diamante',s:3,r:'8-10',max:'15'},
+    {n:'Flexiones lentas (tempo 3 seg)',s:3,r:'6',max:'10'},
+  ]},
+  espalda: { label:'Espalda', ex:[
+    {n:'Dominadas agarre prono',s:5,r:'5-8',max:'12'},
+    {n:'Dominadas agarre ancho',s:4,r:'5-6',max:'10'},
+    {n:'Dominadas supinas (chin-ups)',s:4,r:'6-8',max:'12'},
+    {n:'Remo australiano en barra baja',s:4,r:'10',max:'15'},
+    {n:'Remo australiano con pies en banca',s:3,r:'8-10',max:'12'},
+    {n:'Colgado activo en barra (scapular pull)',s:3,r:'10',max:'15'},
+  ]},
+  hombro:  { label:'Hombro', ex:[
+    {n:'Flexión en pica con pies en banca',s:4,r:'6-8',max:'12'},
+    {n:'Pike push-ups (flexión en pica)',s:4,r:'8-10',max:'15'},
+    {n:'Parada de manos contra pared (hold)',s:4,r:'30 seg',max:'60 seg'},
+    {n:'Fondos en paralelas (torso vertical)',s:4,r:'8',max:'12'},
+    {n:'Pájaros en barra baja (deltoide posterior)',s:3,r:'10',max:'15'},
+    {n:'Flexiones pseudo planche (manos a la cadera)',s:3,r:'8',max:'12'},
+  ]},
+  brazo:   { label:'Brazo', ex:[
+    {n:'Chin-ups agarre cerrado (bíceps)',s:5,r:'6-8',max:'10'},
+    {n:'Fondos en paralelas (tríceps)',s:5,r:'8-10',max:'15'},
+    {n:'Curl de bíceps en barra baja (australiano)',s:4,r:'10',max:'12'},
+    {n:'Extensión de tríceps en barra baja',s:4,r:'8-10',max:'12'},
+    {n:'Flexiones diamante',s:3,r:'10',max:'15'},
+    {n:'Fondos en banca (tríceps)',s:3,r:'12',max:'20'},
+  ]},
+  pierna:  { label:'Pierna', ex:[
+    {n:'Pistol squat asistida (barra)',s:4,r:'6 c/pierna',max:'10'},
+    {n:'Sentadilla búlgara en banca',s:4,r:'8-10 c/pierna',max:'12'},
+    {n:'Step-ups en banca',s:4,r:'10 c/pierna',max:'12'},
+    {n:'Zancadas caminando',s:4,r:'12 c/pierna',max:'16'},
+    {n:'Sentadilla con salto',s:3,r:'10',max:'15'},
+    {n:'Elevación de pantorrilla en escalón (1 pierna)',s:4,r:'12 c/pierna',max:'20'},
+  ]},
+  abdomen: { label:'Abdomen', ex:[
+    {n:'Elevación de piernas colgado',s:4,r:'8-10',max:'15'},
+    {n:'L-sit en paralelas',s:4,r:'15 seg',max:'30 seg'},
+    {n:'Windshield wipers colgado (oblicuos)',s:3,r:'6 c/lado',max:'10'},
+    {n:'Rodillas al pecho colgado',s:3,r:'12',max:'15'},
+    {n:'Dragon flag en banca (negativas)',s:3,r:'5',max:'8'},
+    {n:'Plancha (plank)',s:3,r:'45 seg',max:'90 seg'},
+  ]},
+};
+const PARK_DEF = {
+  pecho:   { label:'Pecho', ex:[
+    {n:'Fondos en paralelas (inclinado al frente)',s:4,r:'12-15',max:'20'},
+    {n:'Flexiones con pies en banca',s:4,r:'15',max:'25'},
+    {n:'Flexiones en barra baja',s:3,r:'15-20',max:'25'},
+    {n:'Flexiones explosivas (con palmada)',s:3,r:'10',max:'15'},
+    {n:'Flexiones diamante',s:3,r:'al fallo',max:'20'},
+    {n:'Burpees (finisher)',s:3,r:'12',max:'15'},
+  ]},
+  espalda: { label:'Espalda', ex:[
+    {n:'Dominadas agarre prono',s:4,r:'8-10',max:'15'},
+    {n:'Remo australiano en barra baja',s:4,r:'15',max:'20'},
+    {n:'Dominadas supinas (chin-ups)',s:3,r:'10',max:'15'},
+    {n:'Dominadas agarre ancho',s:3,r:'al fallo',max:'12'},
+    {n:'Colgado activo en barra (scapular pull)',s:3,r:'12',max:'15'},
+    {n:'Colgado en barra (hold)',s:3,r:'40 seg',max:'60 seg'},
+  ]},
+  hombro:  { label:'Hombro', ex:[
+    {n:'Pike push-ups (flexión en pica)',s:4,r:'12-15',max:'20'},
+    {n:'Fondos en paralelas (torso vertical)',s:3,r:'12',max:'15'},
+    {n:'Pájaros en barra baja (deltoide posterior)',s:3,r:'15',max:'20'},
+    {n:'Parada de manos contra pared (hold)',s:3,r:'30 seg',max:'60 seg'},
+    {n:'Plancha con toque de hombro',s:3,r:'20',max:'30'},
+    {n:'Burpees (finisher)',s:3,r:'10',max:'15'},
+  ]},
+  brazo:   { label:'Brazo', ex:[
+    {n:'Chin-ups agarre cerrado (bíceps)',s:4,r:'10',max:'15'},
+    {n:'Fondos en paralelas (tríceps)',s:4,r:'12-15',max:'20'},
+    {n:'Curl de bíceps en barra baja (australiano)',s:3,r:'15',max:'20'},
+    {n:'Extensión de tríceps en barra baja',s:3,r:'12-15',max:'20'},
+    {n:'Fondos en banca (tríceps)',s:3,r:'al fallo',max:'30'},
+    {n:'Flexiones diamante',s:3,r:'al fallo',max:'20'},
+  ]},
+  pierna:  { label:'Pierna', ex:[
+    {n:'Sentadilla con salto',s:4,r:'20',max:'25'},
+    {n:'Zancadas caminando',s:4,r:'16 c/pierna',max:'22'},
+    {n:'Sentadilla búlgara en banca',s:3,r:'12-15 c/pierna',max:'20'},
+    {n:'Step-ups en banca',s:3,r:'15 c/pierna',max:'20'},
+    {n:'Elevación de pantorrilla en escalón',s:4,r:'25',max:'35'},
+    {n:'Sentadilla isométrica en pared',s:3,r:'50 seg',max:'90 seg'},
+  ]},
+  abdomen: { label:'Abdomen', ex:[
+    {n:'Rodillas al pecho colgado',s:4,r:'15-20',max:'25'},
+    {n:'Elevación de piernas colgado',s:3,r:'12',max:'20'},
+    {n:'Windshield wipers colgado (oblicuos)',s:3,r:'10 c/lado',max:'15'},
+    {n:'Mountain climbers',s:3,r:'40 seg',max:'60 seg'},
+    {n:'L-sit en paralelas',s:3,r:'20 seg',max:'30 seg'},
+    {n:'Plancha (plank)',s:3,r:'60 seg',max:'90 seg'},
+  ]},
+};
+
 function getRoutines(){
-  if(mode==='park') return PARK_ROUTINES;
   if(plan==='pro' && goal){
+    if(mode==='park') return goal==='volumen'?PARK_VOL:PARK_DEF;
     if(mode==='home') return goal==='volumen'?HOME_VOL:HOME_DEF;
     return goal==='volumen'?GYM_VOL:GYM_DEF;
   }
+  if(mode==='park') return PARK_ROUTINES;
   return mode==='home' ? HOME_ROUTINES : ROUTINES;
 }
 
@@ -2688,6 +2790,9 @@ function tecVideo(nombre,tipo){
   if(/pike|pica/.test(n)) return ['pike-push-ups',tipo];
   if(/plancha/.test(n) && /mochila|lastre|peso|carga/.test(n)) return ['plancha-mochila',tipo];
   if(/plancha/.test(n) && !/lateral|circuito/.test(n)) return ['plancha',tipo];
+  if(/crunch/.test(n) && !/circuito|bicicleta|polea|cable|inverso|oblicuo/.test(n)) return ['crunch-abdominal',tipo];
+  if(/russian|giro ruso/.test(n)) return ['russian-twist-botella',tipo];
+  if(/mountain|escalador/.test(n)) return ['mountain-climbers',tipo];
   if(/rueda abdominal|ab wheel|deslizamiento/.test(n)) return ['rueda-abdominal-trapo',tipo];
   if(/elevacion de piernas/.test(n) && !/colgado|barra/.test(n)) return ['elevacion-piernas-pausa',tipo];
   if(/press militar/.test(n) && /mochila|ladrillo/.test(n)) return ['press-militar-mochila',tipo];
