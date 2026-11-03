@@ -3001,8 +3001,11 @@ function tecVideo(nombre,tipo){
   if(/rueda abdominal|ab wheel|deslizamiento/.test(n)) return ['rueda-abdominal-trapo',tipo];
   if(/elevacion de piernas/.test(n) && !/colgado|barra/.test(n)) return ['elevacion-piernas-pausa',tipo];
   if(/press militar/.test(n) && /mochila|ladrillo/.test(n)) return ['press-militar-mochila',tipo];
+  if(/press de hombro/.test(n) && /botella|mochila/.test(n)) return ['press-hombro-botellas',tipo];
   if(/elevaciones? laterales?/.test(n) && /ladrillo/.test(n)) return ['elevaciones-laterales-ladrillos',tipo];
+  if(/elevaciones? laterales?/.test(n) && /botella/.test(n)) return ['elevaciones-laterales-botellas',tipo];
   if(/elevaciones? frontales?/.test(n) && /ladrillo/.test(n)) return ['elevaciones-frontales-ladrillos',tipo];
+  if(/elevaciones? frontales?/.test(n) && /mochila/.test(n)) return ['elevaciones-frontales-mochila',tipo];
   if(/pajaro/.test(n) && /ladrillo/.test(n)) return ['pajaros-ladrillos',tipo];
   if(/remo al menton/.test(n) && /mochila/.test(n)) return ['remo-menton-mochila',tipo];
   if(/remo inclinado/.test(n) && /mochila/.test(n)) return ['remo-inclinado-mochila',tipo];
