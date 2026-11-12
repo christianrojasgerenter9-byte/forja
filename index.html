@@ -207,6 +207,30 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
               border-radius:999px;padding:8px 16px;font-size:12.5px;cursor:pointer}
 .btn-descanso:hover{border-color:var(--orange);color:var(--orange)}
 .btn-descanso.on{border-color:#7A8A5E;color:#C9D8A8;background:rgba(122,138,94,.14)}
+/* ---- Calentamiento guiado (3 min) ---- */
+.calent{margin:14px 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.calent.hecho{border-style:dashed;opacity:.85}
+.calent-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.calent-t{font-weight:800;font-size:15px}
+.calent-t span{color:var(--orange)}
+.calent-d{font-size:12.5px;color:var(--muted)}
+.calent-ls{display:flex;flex-wrap:wrap;gap:6px}
+.calent-ls span{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--muted-2)}
+.calent-go{background:var(--molten);color:#fff;border:0;border-radius:999px;padding:10px 18px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:var(--glow)}
+.calent.hecho .calent-go{background:transparent;border:1px solid var(--line);color:var(--muted);box-shadow:none}
+.calent-ov{position:fixed;inset:0;z-index:9999;background:#050A10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+.calent-ov.open{display:flex}
+.calent-ov .co-step{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.calent-ov .co-n{font-size:clamp(24px,6vw,36px);font-weight:900;line-height:1.15;max-width:520px}
+.calent-ov .co-c{font-size:14.5px;color:var(--muted-2);max-width:420px;line-height:1.45}
+.calent-ov .co-t{font-size:clamp(72px,22vw,120px);font-weight:900;color:var(--orange);line-height:1;font-variant-numeric:tabular-nums}
+.calent-ov .co-sig{font-size:12.5px;color:var(--muted)}
+.calent-ov .co-dots{display:flex;gap:6px}
+.calent-ov .co-dots i{width:22px;height:5px;border-radius:9px;background:var(--line)}
+.calent-ov .co-dots i.on{background:var(--orange)}
+.calent-ov .co-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.calent-ov .co-btns button{border:1px solid var(--line);background:var(--surface-2);color:var(--text);border-radius:999px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer}
+.calent-ov .co-btns .co-x{color:var(--muted)}
 .fjcal-day.descansomarcado{border-style:dashed;border-color:#7A8A5E;color:#C9D8A8;opacity:.9}
 .ex-grp{display:inline-block;margin-left:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
         color:var(--orange);border:1px solid var(--orange);border-radius:999px;padding:2px 7px;vertical-align:2px}
@@ -1457,6 +1481,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
         <div class="muscle-tabs" id="muscleTabs"></div>
         <div class="muscle-pista" id="musclePista"></div>
         <button type="button" class="btn-descanso" id="btnDescansoHoy">Hoy descanso</button>
+        <div class="calent" id="calentCard"></div>
         <div class="ex-grid" id="exGrid"></div>
         <div class="bm-mini-wrap" id="bmMiniWrap" style="display:none">
           <span class="bm-mini-tag">Progreso de hoy</span>
@@ -4146,9 +4171,123 @@ function exAvatarHTML(nombre,k,encendido){
   const L=Math.round(BW/2-c[0]*W), T=Math.round(Math.min(0,Math.max(BH-H,BH/2-c[1]*H)));
   return '<div class="ex-av'+(encendido?' on':'')+'" aria-hidden="true"><div class="ex-av-in" style="left:'+L+'px;top:'+T+'px;width:'+Math.round(W)+'px;height:'+Math.round(H)+'px"><img class="bm-base" src="mq-'+z.v+'.webp" alt=""><img class="ex-av-on" src="mq-'+z.v+'-'+z.g+'-on.webp" alt=""></div></div>';
 }
+/* ===== Calentamiento guiado: 6 movimientos x 30 s = 3 min, según el músculo del día ===== */
+const CALENT_GEN=[
+  {n:'Marcha en el lugar',c:'Sube las rodillas a la altura de la cadera y mueve los brazos.'},
+  {n:'Jacks sin salto',c:'Abre un pie al lado y sube los brazos; cierra y cambia de lado. Sin brincar.'}
+];
+const CALENT_MUSC={
+  pecho:[{n:'Círculos de brazos',c:'Brazos estirados a los lados: círculos chicos que crecen poco a poco.'},
+         {n:'Abrazos abiertos',c:'Abre los brazos atrás sacando el pecho y luego cruza al frente.'},
+         {n:'Flexiones en la pared',c:'Manos en la pared a la altura del pecho; baja lento y empuja.'},
+         {n:'Giros de torso',c:'Pies fijos, gira el tronco a cada lado con los brazos sueltos.'}],
+  espalda:[{n:'Gato-vaca de pie',c:'Manos en los muslos: redondea la espalda y luego saca el pecho.'},
+           {n:'Remo sin peso',c:'Brazos al frente, jala los codos atrás y aprieta los omóplatos.'},
+           {n:'Brazos en Y y T',c:'Sube los brazos en Y, luego ábrelos en T. Pulgares arriba.'},
+           {n:'Giros de torso',c:'Pies fijos, gira el tronco a cada lado con los brazos sueltos.'}],
+  hombro:[{n:'Círculos de hombros',c:'Sube los hombros a las orejas y gíralos hacia atrás, lento.'},
+          {n:'Círculos de brazos',c:'Brazos estirados a los lados: 15 s hacia adelante y 15 s hacia atrás.'},
+          {n:'Brazos en Y y T',c:'Sube los brazos en Y, luego ábrelos en T. Pulgares arriba.'},
+          {n:'Press al aire',c:'Puños a la altura de los hombros; empuja arriba y baja controlado.'}],
+  brazo:[{n:'Círculos de muñecas y codos',c:'Gira las muñecas 15 s y luego los antebrazos desde el codo.'},
+         {n:'Curl al aire',c:'Codos pegados al cuerpo: sube y baja los puños apretando el bíceps.'},
+         {n:'Tríceps al aire',c:'Brazos arriba, dobla los codos detrás de la cabeza y estira.'},
+         {n:'Círculos de brazos',c:'Brazos estirados a los lados: círculos chicos que crecen poco a poco.'}],
+  pierna:[{n:'Sentadilla lenta sin peso',c:'Baja en 3 segundos, cadera atrás y pecho arriba; sube normal.'},
+          {n:'Balanceo de pierna',c:'Apóyate en una silla o pared; balancea una pierna 15 s y cambia.'},
+          {n:'Zancada atrás alterna',c:'Da un paso atrás y baja la rodilla sin tocar el piso; alterna.'},
+          {n:'Círculos de cadera',c:'Manos en la cintura, dibuja círculos grandes con la cadera.'}],
+  abs:[{n:'Rodilla al codo de pie',c:'Sube una rodilla y llévale el codo contrario; alterna lados.'},
+       {n:'Inclinaciones laterales',c:'Brazo arriba, inclina el tronco al lado contrario; alterna.'},
+       {n:'Giros de torso',c:'Pies fijos, gira el tronco a cada lado con los brazos sueltos.'},
+       {n:'Círculos de cadera',c:'Manos en la cintura, dibuja círculos grandes con la cadera.'}]
+};
+CALENT_MUSC.abdomen=CALENT_MUSC.abs;
+const CALENT_SEG=30;
+function calentHoy(){ return load('forja_calent_dia',{})[hoyKey()]; }
+function calentLista(){
+  const ks=(musculosSel||[]).filter(k=>CALENT_MUSC[k]);
+  const esp=[], vistos={};
+  const porK=ks.length>1?2:4;
+  (ks.length?ks:['pecho']).forEach(k=>CALENT_MUSC[k].slice(0,porK).forEach(m=>{ if(!vistos[m.n]){vistos[m.n]=1; esp.push(m);} }));
+  if(ks.length>1){ Object.values(CALENT_MUSC).flat().forEach(m=>{ if(esp.length<4 && !vistos[m.n]){vistos[m.n]=1; esp.push(m);} }); }
+  return CALENT_GEN.concat(esp.slice(0,4));
+}
+function renderCalent(){
+  const box=document.getElementById('calentCard'); if(!box) return;
+  const L=calentLista(), hecho=!!calentHoy();
+  box.className='calent'+(hecho?' hecho':'');
+  box.innerHTML='<div class="calent-top"><div><div class="calent-t">🔥 Calentamiento <span>· 3 min</span></div>'+
+    '<div class="calent-d">'+(hecho?'Listo por hoy ✓ Ya puedes darle a la rutina.':'6 movimientos de 30 s, sin peso. Te guía con cuenta regresiva.')+'</div></div>'+
+    '<button type="button" class="calent-go" id="calentGo">'+(hecho?'Repetir':'Empezar calentamiento')+'</button></div>'+
+    '<div class="calent-ls">'+L.map(m=>'<span>'+m.n+'</span>').join('')+'</div>';
+  document.getElementById('calentGo').onclick=()=>calentIniciar(L);
+}
+let calentEst=null;
+function calentBeep(f,d){
+  try{ const c=new (window.AudioContext||window.webkitAudioContext)(), o=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,c.currentTime); g.gain.exponentialRampToValueAtTime(.4,c.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+d+.02);
+    setTimeout(()=>{ try{c.close();}catch(e){} }, (d+.3)*1000); }catch(e){}
+}
+function calentPintar(){
+  const e=calentEst, m=e.L[e.i], prep=e.prep;
+  document.getElementById('coStep').textContent=prep?'Prepárate':'Movimiento '+(e.i+1)+' de '+e.L.length;
+  document.getElementById('coDots').innerHTML=e.L.map((x,j)=>'<i class="'+(j<e.i||(j===e.i&&!prep)?'on':'')+'"></i>').join('');
+  document.getElementById('coN').textContent=m.n;
+  document.getElementById('coC').textContent=m.c;
+  document.getElementById('coT').textContent=e.t;
+  const sg=e.L[e.i+1]; document.getElementById('coSig').textContent=prep?'Empieza en…':(sg?'Sigue: '+sg.n:'Último movimiento');
+  document.getElementById('coPausa').textContent=e.pausa?'Seguir':'Pausa';
+}
+function calentTick(){
+  const e=calentEst; if(!e||e.pausa) return;
+  e.t--;
+  if(e.t>0 && e.t<=3) calentBeep(660,.12);
+  if(e.t<=0){
+    if(e.prep){ e.prep=false; e.t=CALENT_SEG; calentBeep(990,.35); try{navigator.vibrate&&navigator.vibrate(120);}catch(x){} }
+    else calentSiguiente();
+  }
+  if(calentEst) calentPintar();
+}
+function calentSiguiente(){
+  const e=calentEst; if(!e) return;
+  if(e.i>=e.L.length-1){ calentFin(true); return; }
+  e.i++; e.t=CALENT_SEG; e.prep=false; calentBeep(990,.35);
+  try{navigator.vibrate&&navigator.vibrate(120);}catch(x){}
+  calentPintar();
+}
+function calentIniciar(L){
+  calentBotones(); calentFin(false,true);
+  calentEst={L:L,i:0,t:5,prep:true,pausa:false};
+  try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(w=>{ if(calentEst) calentEst.wl=w; else w.release(); }).catch(()=>{}); }catch(e){}
+  calentEst.iv=setInterval(calentTick,1000);
+  document.getElementById('calentOv').classList.add('open');
+  calentPintar();
+}
+function calentFin(completo,silencio){
+  const e=calentEst; if(e){ clearInterval(e.iv); try{ e.wl&&e.wl.release(); }catch(x){} }
+  calentEst=null;
+  const ov=document.getElementById('calentOv'); if(ov) ov.classList.remove('open');
+  if(completo){
+    const d=load('forja_calent_dia',{}); d[hoyKey()]=1; save('forja_calent_dia',d);
+    calentBeep(880,.2); setTimeout(()=>calentBeep(1180,.4),220);
+    try{navigator.vibrate&&navigator.vibrate([120,80,240]);}catch(x){}
+    renderCalent();
+    try{ document.getElementById('exGrid').scrollIntoView({behavior:'smooth',block:'start'}); }catch(x){}
+  }
+}
+function calentBotones(){
+  const b=id=>document.getElementById(id);
+  if(!b('calentOv')||b('calentOv').dataset.ok) return; b('calentOv').dataset.ok=1;
+  b('coPausa').onclick=()=>{ if(calentEst){ calentEst.pausa=!calentEst.pausa; calentPintar(); } };
+  b('coSaltar').onclick=()=>{ if(!calentEst) return; if(calentEst.prep){ calentEst.prep=false; calentEst.t=CALENT_SEG; calentPintar(); } else calentSiguiente(); };
+  b('coSalir').onclick=()=>calentFin(false);
+}
 function renderExercises(){
   const g=document.getElementById('exGrid'); g.innerHTML='';
   renderEnfoque();
+  try{ renderCalent(); }catch(e){}
   const R=getRoutines();
   musculosSel = musculosSel.filter(k=>R[k]);
   if(!musculosSel.length) musculosSel=[currentMuscle && R[currentMuscle] ? currentMuscle : Object.keys(R)[0]];
@@ -4173,8 +4312,8 @@ function renderExercises(){
   /* Los ya hechos se van al final: el siguiente ejercicio pendiente sube hasta arriba */
   ex.sort((a,b)=>(doneToday[a.n]?1:0)-(doneToday[b.n]?1:0));
   const idxSiguiente = ex.findIndex(e=>!doneToday[e.n]);
-  /* Tiempo estimado: ~45 s por serie + ~75 s de descanso, 1 min de cambio entre ejercicios y 5 min de calentamiento */
-  const series=ex.reduce((t,e)=>t+(+e.s||3),0), minEst=Math.round((series*120+ex.length*60)/60)+5;
+  /* Tiempo estimado: ~45 s por serie + ~75 s de descanso, 1 min de cambio entre ejercicios y 3 min de calentamiento guiado */
+  const series=ex.reduce((t,e)=>t+(+e.s||3),0), minEst=Math.round((series*120+ex.length*60)/60)+3;
   document.getElementById('exCountPill').textContent =
     ex.length+' ejercicios · ~'+minEst+' min'+(varios ? ' · '+musculosSel.map(k=>R[k].label).join(' + ') : '')+(lim?' · rutina corta':'');
   renderMiniAvatar(musculosSel, R);
@@ -6368,5 +6507,18 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <script src="forja-diario.js"></script>
 <script src="forja-rosa.js"></script>
 <link rel="stylesheet" href="forja-tema.css?v=143">
+<div class="calent-ov" id="calentOv" role="dialog" aria-modal="true" aria-label="Calentamiento guiado">
+  <div class="co-step" id="coStep"></div>
+  <div class="co-dots" id="coDots"></div>
+  <div class="co-n" id="coN"></div>
+  <div class="co-c" id="coC"></div>
+  <div class="co-t" id="coT">30</div>
+  <div class="co-sig" id="coSig"></div>
+  <div class="co-btns">
+    <button type="button" id="coPausa">Pausa</button>
+    <button type="button" id="coSaltar">Siguiente →</button>
+    <button type="button" class="co-x" id="coSalir">Salir</button>
+  </div>
+</div>
 </body>
 </html>
