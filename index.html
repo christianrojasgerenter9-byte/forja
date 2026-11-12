@@ -2045,6 +2045,21 @@ try{
     FB_ON=true;
   }
 }catch(e){ FB_ON=false; }
+/* ===== De qué red llega cada persona: ?src=tiktok&v=3mitos =====
+   Se guarda la primera llegada (la que cuenta para saber qué red vende) y la última. */
+(function(){
+  try{
+    const q=new URLSearchParams(location.search), limpio=x=>String(x||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);
+    const s=limpio(q.get('src')||q.get('utm_source')), v=limpio(q.get('v')||q.get('utm_content'));
+    if(!s) return;
+    const d={s:s, v:v, f:new Date().toISOString().slice(0,10)};
+    if(!localStorage.getItem('forja_src')) localStorage.setItem('forja_src',JSON.stringify(d));
+    localStorage.setItem('forja_src_ult',JSON.stringify(d));
+    try{ firebase.analytics().logEvent('llegada_red',{red:s, video:v||'-'}); }catch(e){}
+  }catch(e){}
+})();
+function origenRed(){ try{ return JSON.parse(localStorage.getItem('forja_src')||'null'); }catch(e){ return null; } }
+function evento(n,p){ try{ const o=origenRed()||{}; firebase.analytics().logEvent(n,Object.assign({red:o.s||'directo', video:o.v||'-'},p||{})); }catch(e){} }
 
 /* ----------- Almacenamiento con respaldo (funciona aquí y al publicarla) ----------- */
 const _mem = {};
@@ -5588,6 +5603,7 @@ document.getElementById('codeActivate').onclick=async ()=>{
     plan='pro'; proHasta=(elegido && elegido.vence) ? String(elegido.vence) : '';
     save('forja_plan',plan); save('forja_pro_hasta',proHasta); save('forja_pro_vencio','');
     const av=document.getElementById('proAviso'); if(av) av.style.display='none';
+    evento('suscripcion_pro',{vence:proHasta||'-'});
     applyPlan();
     msg.style.color='var(--green)'; msg.textContent='✓ ¡PRO activado! Bienvenido, guerrero 🔥';
     setTimeout(()=>{ closePro(); if(!goal) openGoal(); },1300);
@@ -5930,6 +5946,7 @@ function cloudSync(){
       hoyGrupos:(hoyGrupos||null), hoyFecha:(hoyFecha||''),
       ultimoEntreno:ultimoEntrenoISO(),
       ...(pushSubStr ? {pushSub:pushSubStr} : {}),
+      ...(origenRed() ? {origen:origenRed()} : {}),
       updated:Date.now()
     },{merge:true}).catch(()=>{});
   },800);
@@ -5973,7 +5990,7 @@ if(FB_ON){
     err.textContent='Creando cuenta…';
     try{
       const cred=await conTiempoLimite(fbAuth.createUserWithEmailAndPassword(email,p));
-      displayName=name;
+      displayName=name; evento('sign_up',{method:'correo'});
       try{ await conTiempoLimite(fbDB.collection('usuarios').doc(cred.user.uid).set({name:name, plan:'free', creado:Date.now(), avisoAceptado:true, avisoVersion:AVISO_VERSION, avisoFecha:new Date().toISOString()},{merge:true})); }catch(e){}
       err.textContent='';
     }catch(e){ err.textContent=fbError(e); }
@@ -6005,6 +6022,7 @@ if(FB_ON){
     err.textContent='Conectando con Google…';
     try{
       const cred=await fbAuth.signInWithPopup(prov);
+      try{ if(cred.additionalUserInfo && cred.additionalUserInfo.isNewUser) evento('sign_up',{method:'google'}); }catch(e){}
       await guardarPerfilGoogle(cred);
       err.textContent='';
     }catch(e){
