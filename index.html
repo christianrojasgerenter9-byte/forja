@@ -1009,6 +1009,22 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .mode-btn{white-space:nowrap;padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
 .mode-btn.active{background:var(--molten);color:#EAF6FB}
 .mode-btn:hover:not(.active){color:var(--text)}
+.nivel-cali{margin:12px 0 4px}
+.nivel-cali .nc-k{font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.nivel-cali .nc-bts{display:flex;gap:6px;flex-wrap:wrap}
+.nivel-cali button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.nivel-cali button.on{border-color:var(--orange);color:var(--text);background:var(--molten-soft)}
+.nivel-cali .nc-d{font-size:12.5px;color:var(--muted-2);margin-top:7px;line-height:1.4}
+.ex-que{font-size:12.5px;line-height:1.4;color:var(--muted-2);margin-top:6px;font-weight:400}
+.ex-que b{color:var(--orange);font-weight:700}
+.tec-cali{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.tec-cali .tc-q{font-size:14px;line-height:1.45;color:var(--text)}
+.tec-cali .tc-m{font-size:12.5px;color:var(--muted)}
+.tec-cali .tc-m b{color:var(--orange)}
+.tec-cali .tc-box{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4}
+.tec-cali .tc-box b{display:block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.tec-cali .tc-err b{color:#FF8A65}
+.tec-cali .tc-fac b{color:var(--orange)}
 @media(max-width:480px){.mode-btn{padding:9px 12px;font-size:13px}}
 .cu-btn{white-space:nowrap;padding:9px 18px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
 .cu-btn.active{background:var(--molten);color:#EAF6FB}
@@ -1467,6 +1483,7 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
           <button class="mode-btn" type="button" data-mode="home">🏠 En casa</button>
           <button class="mode-btn" type="button" data-mode="park" title="Calistenia">🤸 Calistenia</button>
         </div>
+        <div class="nivel-cali" id="nivelCali" style="display:none"></div>
         <div class="dia-banner" id="diaBanner" style="display:none"></div>
         <div class="trial-banner" id="trialBanner" style="display:none"></div>
         <div class="coach-help">
@@ -2524,6 +2541,224 @@ const PARK_ROUTINES = {
   ]},
 };
 
+/* ----------- Calistenia por nivel: Fácil · Intermedio · Avanzado ----------- */
+const PARK_NIVELES={
+  facil:{label:'Fácil',ic:'🟢',d:'Nunca has entrenado o no te sale ni una dominada. Aquí aprendes los movimientos base.'},
+  intermedio:{label:'Intermedio',ic:'🟡',d:'Ya haces 10 flexiones seguidas y al menos 3 dominadas.'},
+  avanzado:{label:'Avanzado',ic:'🔴',d:'Haces 10 dominadas y 15 fondos limpios. Toca subir la dificultad.'}
+};
+const PARK_FACIL={
+  pecho:{label:'Pecho',ex:[
+    {n:'Flexiones inclinadas (manos en banca)',s:3,r:'8-12',max:'15'},
+    {n:'Flexiones con rodillas apoyadas',s:3,r:'8-10',max:'15'},
+    {n:'Fondos en banca con rodillas dobladas',s:3,r:'8',max:'12'},
+    {n:'Plancha alta (brazos estirados)',s:3,r:'20 seg',max:'40 seg'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Colgado en barra (hold)',s:3,r:'15 seg',max:'30 seg'},
+    {n:'Remo australiano en barra alta',s:3,r:'8-10',max:'15'},
+    {n:'Dominada negativa (bajar lento)',s:3,r:'3',max:'6'},
+    {n:'Superman en el piso',s:3,r:'12',max:'15'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Flexión en pica con manos en banca',s:3,r:'6-8',max:'12'},
+    {n:'Plancha con toque de hombro (rodillas)',s:3,r:'10',max:'16'},
+    {n:'Pájaros en barra alta',s:3,r:'10',max:'15'},
+    {n:'Elevaciones Y-T boca abajo',s:3,r:'10',max:'15'},
+  ]},
+  brazo:{label:'Brazo',ex:[
+    {n:'Fondos en banca con rodillas dobladas',s:3,r:'8-10',max:'15'},
+    {n:'Curl australiano en barra alta',s:3,r:'8',max:'12'},
+    {n:'Chin-up negativa (bajar lento)',s:3,r:'3',max:'6'},
+    {n:'Flexiones diamante con rodillas',s:3,r:'6-8',max:'12'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadilla a la banca',s:3,r:'12',max:'20'},
+    {n:'Zancada atrás agarrado de la barra',s:3,r:'8 c/pierna',max:'12'},
+    {n:'Step-up en escalón bajo',s:3,r:'10 c/pierna',max:'15'},
+    {n:'Puente de glúteo',s:3,r:'15',max:'25'},
+    {n:'Elevación de pantorrilla en escalón',s:3,r:'15',max:'25'},
+  ]},
+  abdomen:{label:'Abdomen',ex:[
+    {n:'Plancha en antebrazos',s:3,r:'20 seg',max:'45 seg'},
+    {n:'Bicho muerto (dead bug)',s:3,r:'8 c/lado',max:'12'},
+    {n:'Rodillas al pecho sentado en banca',s:3,r:'10',max:'15'},
+    {n:'Plancha lateral con rodilla apoyada',s:3,r:'15 seg c/lado',max:'30 seg'},
+  ]},
+};
+const PARK_INTER={
+  pecho:{label:'Pecho',ex:[
+    {n:'Flexiones clásicas',s:4,r:'10-12',max:'20'},
+    {n:'Flexiones con pies en banca',s:3,r:'10',max:'15'},
+    {n:'Fondos en paralelas (inclinado al frente)',s:3,r:'6-8',max:'12'},
+    {n:'Flexiones en barra baja',s:3,r:'12',max:'20'},
+    {n:'Flexiones diamante',s:3,r:'8',max:'15'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Dominadas agarre prono',s:4,r:'4-6',max:'10'},
+    {n:'Remo australiano en barra baja',s:4,r:'10-12',max:'15'},
+    {n:'Dominadas supinas (chin-ups)',s:3,r:'5-6',max:'10'},
+    {n:'Colgado activo en barra (scapular pull)',s:3,r:'10',max:'15'},
+    {n:'Colgado en barra (hold)',s:3,r:'30 seg',max:'45 seg'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Pike push-ups (flexión en pica)',s:4,r:'8-10',max:'15'},
+    {n:'Plancha con toque de hombro',s:3,r:'16',max:'24'},
+    {n:'Pájaros en barra baja (deltoide posterior)',s:3,r:'12',max:'15'},
+    {n:'Fondos en paralelas (torso vertical)',s:3,r:'6-8',max:'12'},
+    {n:'Flexiones lentas (tempo 3 seg)',s:3,r:'6',max:'10'},
+  ]},
+  brazo:{label:'Brazo',ex:[
+    {n:'Chin-ups agarre cerrado (bíceps)',s:4,r:'5-6',max:'10'},
+    {n:'Fondos en banca (tríceps)',s:4,r:'12',max:'20'},
+    {n:'Curl de bíceps en barra baja (australiano)',s:3,r:'10',max:'15'},
+    {n:'Flexiones diamante',s:3,r:'8',max:'15'},
+    {n:'Fondos en paralelas (tríceps)',s:3,r:'6',max:'10'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Sentadilla libre',s:4,r:'20',max:'30'},
+    {n:'Zancadas caminando',s:3,r:'12 c/pierna',max:'16'},
+    {n:'Step-ups en banca',s:3,r:'10 c/pierna',max:'15'},
+    {n:'Sentadilla búlgara en banca',s:3,r:'8 c/pierna',max:'12'},
+    {n:'Elevación de pantorrilla en escalón',s:4,r:'20',max:'30'},
+  ]},
+  abdomen:{label:'Abdomen',ex:[
+    {n:'Rodillas al pecho colgado',s:4,r:'10',max:'15'},
+    {n:'Plancha (plank)',s:3,r:'45 seg',max:'90 seg'},
+    {n:'Mountain climbers',s:3,r:'30 seg',max:'45 seg'},
+    {n:'Hollow body con piernas dobladas',s:3,r:'20 seg',max:'40 seg'},
+    {n:'Plancha lateral',s:3,r:'30 seg c/lado',max:'45 seg'},
+  ]},
+};
+const PARK_AVANZ={
+  pecho:{label:'Pecho',ex:[
+    {n:'Fondos en paralelas profundos (tempo 3 seg)',s:4,r:'10',max:'15'},
+    {n:'Flexiones arqueras',s:4,r:'6 c/lado',max:'10'},
+    {n:'Flexiones pseudo planche (manos a la cadera)',s:4,r:'8',max:'12'},
+    {n:'Flexiones explosivas (con palmada)',s:3,r:'10',max:'15'},
+    {n:'Flexiones diamante',s:3,r:'15',max:'25'},
+  ]},
+  espalda:{label:'Espalda',ex:[
+    {n:'Dominadas agarre ancho',s:4,r:'8-10',max:'15'},
+    {n:'Dominadas arqueras',s:3,r:'4 c/lado',max:'8'},
+    {n:'Dominadas en L (L-sit pull-up)',s:3,r:'5',max:'8'},
+    {n:'Remo australiano con pies en banca',s:4,r:'12',max:'15'},
+    {n:'Front lever recogido (tuck hold)',s:3,r:'10 seg',max:'20 seg'},
+  ]},
+  hombro:{label:'Hombro',ex:[
+    {n:'Flexión en pica con pies en banca',s:4,r:'10',max:'15'},
+    {n:'Flexión en parada de manos contra pared (negativa)',s:4,r:'4',max:'8'},
+    {n:'Parada de manos contra pared (hold)',s:3,r:'45 seg',max:'60 seg'},
+    {n:'Pseudo planche lean (hold)',s:3,r:'20 seg',max:'30 seg'},
+    {n:'Fondos en paralelas (torso vertical)',s:3,r:'12',max:'15'},
+  ]},
+  brazo:{label:'Brazo',ex:[
+    {n:'Chin-ups agarre cerrado (bíceps)',s:4,r:'8-10',max:'12'},
+    {n:'Fondos en paralelas (tríceps)',s:4,r:'15',max:'25'},
+    {n:'Extensión de tríceps en barra baja',s:4,r:'10',max:'15'},
+    {n:'Curl de bíceps en barra baja (australiano)',s:4,r:'12',max:'15'},
+    {n:'Flexiones diamante',s:3,r:'20',max:'30'},
+  ]},
+  pierna:{label:'Pierna',ex:[
+    {n:'Pistol squat asistida (barra)',s:4,r:'6 c/pierna',max:'10'},
+    {n:'Sentadilla búlgara en banca',s:4,r:'10 c/pierna',max:'12'},
+    {n:'Sentadilla con salto',s:4,r:'15',max:'20'},
+    {n:'Shrimp squat asistida',s:3,r:'5 c/pierna',max:'8'},
+    {n:'Elevación de pantorrilla en escalón (1 pierna)',s:4,r:'15 c/pierna',max:'20'},
+  ]},
+  abdomen:{label:'Abdomen',ex:[
+    {n:'Elevación de piernas colgado',s:4,r:'8-10',max:'15'},
+    {n:'L-sit en paralelas',s:4,r:'15 seg',max:'30 seg'},
+    {n:'Windshield wipers colgado (oblicuos)',s:3,r:'6 c/lado',max:'10'},
+    {n:'Dragon flag en banca (negativas)',s:3,r:'5',max:'8'},
+    {n:'Hollow body hold',s:3,r:'30 seg',max:'45 seg'},
+  ]},
+};
+function nivelCali(){ const v=load('forja_cali_nivel','facil'); return PARK_NIVELES[v]?v:'facil'; }
+function parkPorNivel(){ const v=nivelCali(); return v==='avanzado'?PARK_AVANZ:(v==='intermedio'?PARK_INTER:PARK_FACIL); }
+
+/* ----------- Explicación de cada ejercicio de calistenia, para quien empieza de cero -----------
+   q: qué es · m: qué trabaja · p: paso a paso · e: error común · f: si todavía no te sale */
+const CALI_INFO={
+ 'Flexiones inclinadas (manos en banca)':{q:'Una lagartija con las manos en una banca o barra alta. Mientras más alta, más fácil.',m:'Pecho, hombros y tríceps',p:['Manos en el borde de la banca, a lo ancho de los hombros.','Pies atrás hasta que el cuerpo quede recto como tabla.','Baja el pecho hasta casi tocar la banca, codos a 45° del cuerpo.','Empuja hasta estirar los brazos sin trabar los codos.'],e:'Dejar caer la cadera. Aprieta abdomen y glúteos todo el tiempo.',f:'Usa algo más alto, como una barra a la altura de la cintura o la pared.'},
+ 'Flexiones con rodillas apoyadas':{q:'Lagartija normal pero apoyando las rodillas en el piso en lugar de los pies.',m:'Pecho, hombros y tríceps',p:['Rodillas en el piso (pon algo suave debajo).','Manos un poco más abiertas que los hombros.','Rodillas, cadera y cabeza en línea recta.','Baja el pecho al piso en 2 segundos y empuja.'],e:'Sacar la cadera hacia arriba. La línea rodilla-cabeza debe ser recta.',f:'Haz las flexiones inclinadas en banca.'},
+ 'Fondos en banca con rodillas dobladas':{q:'Bajas y subes el cuerpo con las manos apoyadas atrás en una banca.',m:'Tríceps (parte de atrás del brazo) y pecho',p:['Siéntate en la orilla de la banca, manos junto a la cadera.','Desliza la cadera al frente; pies apoyados y rodillas dobladas a 90°.','Dobla los codos hacia atrás hasta 90° y baja la cadera.','Empuja con las manos hasta estirar los brazos.'],e:'Abrir los codos hacia los lados. Deben apuntar hacia atrás.',f:'Baja menos, solo hasta la mitad.'},
+ 'Plancha alta (brazos estirados)':{q:'Te quedas quieto en la posición de arriba de una lagartija.',m:'Abdomen, hombros y pecho',p:['Manos bajo los hombros, brazos estirados.','Pies juntos atrás, cuerpo recto de cabeza a talones.','Aprieta abdomen y glúteos; respira normal.','Aguanta el tiempo indicado.'],e:'Hundir la espalda baja. Si pasa, descansa y vuelve a empezar.',f:'Apoya las rodillas.'},
+ 'Colgado en barra (hold)':{q:'Solo te cuelgas de la barra. Fortalece agarre y hombros: es la base para la dominada.',m:'Antebrazos, agarre y espalda',p:['Agarra la barra con las palmas al frente, a lo ancho de los hombros.','Despega los pies y quédate colgado.','Hombros un poco abajo, lejos de las orejas.','Aguanta el tiempo y baja con cuidado.'],e:'Soltarte de golpe. Apoya los pies antes de soltar.',f:'Deja la punta de los pies apoyada en el piso o en un escalón.'},
+ 'Remo australiano en barra alta':{q:'Te cuelgas por debajo de una barra a la altura del pecho y jalas tu cuerpo hacia ella. Es la dominada "acostada" y fácil.',m:'Espalda y bíceps',p:['Barra a la altura del pecho. Agárrala y camina con los pies hacia adelante.','Cuerpo recto e inclinado hacia atrás, talones en el piso.','Jala el pecho hacia la barra juntando los omóplatos.','Baja lento hasta estirar los brazos.'],e:'Doblar la cadera. Mantén el cuerpo como tabla.',f:'Párate más vertical (pies más cerca de la barra).'},
+ 'Dominada negativa (bajar lento)':{q:'Empiezas arriba de la barra (saltando o con un escalón) y solo bajas muy lento. Es la mejor forma de aprender la dominada.',m:'Espalda y bíceps',p:['Sube con un brinco o un escalón hasta que la barbilla pase la barra.','Despega los pies.','Baja contando 5 segundos hasta estirar los brazos.','Apoya los pies y repite.'],e:'Bajar de golpe. Lo que sirve es la bajada lenta.',f:'Haz más remo australiano y colgado en barra unas semanas.'},
+ 'Superman en el piso':{q:'Boca abajo, levantas brazos y piernas al mismo tiempo, como volando.',m:'Espalda baja y glúteos',p:['Acuéstate boca abajo, brazos estirados al frente.','Levanta brazos, pecho y piernas unos centímetros.','Aguanta 2 segundos arriba.','Baja controlado.'],e:'Levantar mucho el cuello. Mira al piso.',f:'Levanta solo brazos o solo piernas.'},
+ 'Flexión en pica con manos en banca':{q:'Una lagartija con la cadera muy arriba (forma de V invertida) y las manos en una banca. Trabaja el hombro.',m:'Hombros y tríceps',p:['Manos en la banca, pies en el piso caminando hacia ella.','Sube la cadera hasta formar una V invertida.','Dobla los codos y baja la cabeza hacia la banca.','Empuja de regreso.'],e:'Bajar el pecho en lugar de la cabeza. La cabeza va entre las manos.',f:'Haz menos recorrido o camina los pies más lejos.'},
+ 'Plancha con toque de hombro (rodillas)':{q:'En plancha con rodillas apoyadas, tocas un hombro con la mano contraria, alternando.',m:'Hombros y abdomen',p:['Plancha alta con rodillas en el piso.','Sin mover la cadera, toca el hombro izquierdo con la mano derecha.','Regresa la mano y cambia de lado.','Cada toque cuenta 1.'],e:'Balancear la cadera. Abre un poco las rodillas para estabilizar.',f:'Hazlo en la pared, de pie.'},
+ 'Pájaros en barra alta':{q:'Colgado de una barra alta inclinado hacia atrás, abres los brazos para trabajar la parte de atrás del hombro.',m:'Hombro posterior y espalda alta',p:['Agarra la barra con palmas hacia abajo, cuerpo inclinado atrás.','Brazos estirados con codos apenas doblados.','Abre los brazos hacia los lados llevando el pecho a la barra.','Regresa lento.'],e:'Jalar con los bíceps. El movimiento es abrir, no jalar.',f:'Párate más vertical.'},
+ 'Elevaciones Y-T boca abajo':{q:'Boca abajo en el piso, levantas los brazos formando una Y y luego una T.',m:'Hombro posterior y espalda alta',p:['Acuéstate boca abajo con la frente apoyada.','Brazos arriba en Y, pulgares hacia el techo.','Levanta los brazos 3 segundos y bájalos.','Ábrelos en T y repite. Y + T = 1.'],e:'Usar la espalda baja. Solo se mueven brazos y omóplatos.',f:'Hazlo de pie, inclinado hacia adelante.'},
+ 'Curl australiano en barra alta':{q:'Colgado por debajo de una barra alta, jalas tu cuerpo doblando solo los codos, como un curl de bíceps.',m:'Bíceps',p:['Agarra la barra con palmas hacia ti.','Cuerpo recto e inclinado atrás.','Dobla los codos llevando la frente a la barra; codos fijos.','Baja lento.'],e:'Usar la espalda. Los codos no se mueven de lugar.',f:'Párate más vertical.'},
+ 'Chin-up negativa (bajar lento)':{q:'Como la dominada negativa pero con palmas hacia ti: trabaja más el bíceps.',m:'Bíceps y espalda',p:['Sube con un brinco hasta tener la barbilla arriba de la barra.','Palmas hacia ti, a lo ancho de los hombros.','Baja contando 5 segundos.','Apoya y repite.'],e:'Soltarte abajo de golpe.',f:'Haz curl australiano unas semanas.'},
+ 'Flexiones diamante con rodillas':{q:'Lagartija con las manos juntas formando un diamante y rodillas apoyadas. Trabaja mucho el tríceps.',m:'Tríceps y pecho',p:['Junta pulgares e índices formando un diamante bajo el pecho.','Rodillas en el piso, cuerpo recto.','Baja el pecho a las manos con codos pegados.','Empuja.'],e:'Abrir los codos. Van pegados al cuerpo.',f:'Hazlas con manos en banca.'},
+ 'Sentadilla a la banca':{q:'Te sientas en una banca y te paras sin usar las manos. Enseña a hacer bien la sentadilla.',m:'Piernas y glúteos',p:['Párate de espaldas a la banca, pies al ancho de los hombros.','Cadera atrás y baja hasta apenas tocar la banca.','Sin dejarte caer, empuja con los talones y párate.','Brazos al frente para equilibrar.'],e:'Dejarte caer sentado. Solo roza la banca.',f:'Usa una banca más alta.'},
+ 'Zancada atrás agarrado de la barra':{q:'Das un paso grande hacia atrás y bajas la rodilla, sosteniéndote de una barra para no perder el equilibrio.',m:'Piernas y glúteos',p:['Agarra una barra baja con una mano.','Da un paso grande atrás con una pierna.','Baja la rodilla de atrás casi al piso.','Empuja con la pierna de adelante y regresa.'],e:'La rodilla de adelante se va hacia adentro.',f:'Baja menos.'},
+ 'Step-up en escalón bajo':{q:'Subes a un escalón o banca baja con una pierna y bajas.',m:'Piernas y glúteos',p:['Pon todo el pie en el escalón.','Empuja con esa pierna y sube.','Baja controlado con la misma pierna.','Haz todas las de un lado y cambia.'],e:'Impulsarte con la pierna de abajo.',f:'Usa un escalón más bajo.'},
+ 'Puente de glúteo':{q:'Acostado boca arriba, subes la cadera apretando los glúteos.',m:'Glúteos y femorales',p:['Boca arriba, rodillas dobladas, pies en el piso.','Empuja con los talones y sube la cadera.','Aprieta glúteos 2 segundos arriba.','Baja lento.'],e:'Arquear la espalda. Sube hasta que rodilla-cadera-hombro estén en línea.',f:'Haz menos repeticiones con pausa arriba.'},
+ 'Elevación de pantorrilla en escalón':{q:'Parado en la orilla de un escalón, subes y bajas los talones.',m:'Pantorrillas',p:['Punta de los pies en el escalón, talones al aire.','Agárrate de algo para el equilibrio.','Sube en puntas lo más alto que puedas.','Baja los talones por debajo del escalón.'],e:'Rebotar. Sube y baja lento.',f:'Hazlo en el piso plano.'},
+ 'Plancha en antebrazos':{q:'Te quedas recto apoyado en antebrazos y puntas de los pies.',m:'Abdomen y espalda baja',p:['Codos bajo los hombros, antebrazos en el piso.','Pies juntos atrás, cuerpo recto.','Aprieta abdomen y glúteos.','Aguanta respirando normal.'],e:'Cadera muy alta o muy abajo.',f:'Apoya las rodillas.'},
+ 'Bicho muerto (dead bug)':{q:'Boca arriba con brazos y piernas arriba, estiras un brazo y la pierna contraria sin despegar la espalda del piso.',m:'Abdomen profundo',p:['Boca arriba, brazos al techo, rodillas dobladas a 90° en el aire.','Pega la espalda baja al piso.','Estira brazo derecho atrás y pierna izquierda al frente.','Regresa y cambia de lado.'],e:'Despegar la espalda baja. Si pasa, estira menos.',f:'Mueve solo las piernas.'},
+ 'Rodillas al pecho sentado en banca':{q:'Sentado en la orilla de una banca, llevas las rodillas al pecho y las estiras.',m:'Abdomen',p:['Siéntate en la orilla, manos atrás agarrando la banca.','Inclina el torso un poco atrás, pies en el aire.','Lleva las rodillas al pecho.','Estira las piernas sin tocar el piso.'],e:'Usar impulso. Hazlo lento.',f:'Apoya los pies entre repeticiones.'},
+ 'Plancha lateral con rodilla apoyada':{q:'De lado, apoyado en un antebrazo y la rodilla, mantienes la cadera arriba.',m:'Oblicuos (costados del abdomen)',p:['Acuéstate de lado, codo bajo el hombro.','Rodillas dobladas apoyadas.','Sube la cadera hasta la línea recta.','Aguanta y cambia de lado.'],e:'Dejar caer la cadera.',f:'Aguanta menos tiempo.'},
+ 'Flexiones clásicas':{q:'La lagartija de siempre, con las manos y las puntas de los pies en el piso.',m:'Pecho, hombros y tríceps',p:['Manos un poco más abiertas que los hombros.','Cuerpo recto de cabeza a talones.','Baja el pecho casi al piso en 2 segundos.','Empuja hasta estirar los brazos.'],e:'Cadera caída o codos muy abiertos.',f:'Apoya las rodillas.'},
+ 'Flexiones con pies en banca':{q:'Lagartija con los pies arriba de una banca. Cuesta más y carga la parte alta del pecho.',m:'Pecho alto, hombros y tríceps',p:['Pies en la banca, manos en el piso.','Cuerpo recto.','Baja la cara hacia el piso entre las manos.','Empuja.'],e:'Doblar la cadera.',f:'Haz flexiones clásicas.'},
+ 'Fondos en paralelas (inclinado al frente)':{q:'En las barras paralelas, bajas y subes el cuerpo con los brazos, inclinando el torso al frente para cargar el pecho.',m:'Pecho bajo y tríceps',p:['Sube a las paralelas con brazos estirados.','Inclina el torso un poco al frente.','Baja doblando codos hasta 90°.','Empuja hasta estirar.'],e:'Bajar demasiado y forzar el hombro.',f:'Haz solo la bajada lenta, o fondos en banca.'},
+ 'Flexiones en barra baja':{q:'Lagartija con las manos en una barra baja, a la altura de la rodilla.',m:'Pecho, hombros y tríceps',p:['Agarra la barra a lo ancho de los hombros.','Cuerpo recto, pies atrás.','Lleva el pecho a la barra.','Empuja.'],e:'Cadera caída.',f:'Usa una barra más alta.'},
+ 'Flexiones diamante':{q:'Lagartija con las manos juntas formando un diamante. Pone el trabajo en el tríceps.',m:'Tríceps y pecho',p:['Pulgares e índices juntos bajo el pecho.','Cuerpo recto sobre las puntas de los pies.','Baja con codos pegados.','Empuja.'],e:'Abrir codos.',f:'Apoya las rodillas.'},
+ 'Dominadas agarre prono':{q:'La dominada clásica: colgado, subes hasta que la barbilla pase la barra, con palmas al frente.',m:'Espalda (dorsales) y bíceps',p:['Agarra con palmas al frente, un poco más abierto que los hombros.','Baja los hombros lejos de las orejas.','Jala llevando el pecho a la barra.','Baja lento hasta estirar.'],e:'Balancearte o hacer medias repeticiones.',f:'Haz dominadas negativas.'},
+ 'Remo australiano en barra baja':{q:'Colgado debajo de una barra baja con el cuerpo casi horizontal, jalas el pecho a la barra.',m:'Espalda y bíceps',p:['Barra a la altura de la cadera. Acuéstate debajo y agárrala.','Talones en el piso, cuerpo recto.','Jala el pecho a la barra juntando omóplatos.','Baja lento.'],e:'Doblar la cadera.',f:'Usa una barra más alta.'},
+ 'Dominadas supinas (chin-ups)':{q:'Dominada con las palmas hacia ti. Es un poco más fácil y trabaja más el bíceps.',m:'Bíceps y espalda',p:['Palmas hacia ti, a lo ancho de los hombros.','Despega los pies.','Sube hasta pasar la barbilla.','Baja lento.'],e:'Usar impulso con las piernas.',f:'Haz chin-ups negativas.'},
+ 'Colgado activo en barra (scapular pull)':{q:'Colgado con brazos estirados, solo bajas los hombros (te "haces más alto" y luego más bajo) sin doblar codos.',m:'Espalda alta y hombros',p:['Cuélgate con brazos estirados.','Sin doblar codos, baja los hombros lejos de las orejas.','Tu cuerpo sube unos centímetros.','Relaja y repite.'],e:'Doblar los codos.',f:'Hazlo con los pies apoyados.'},
+ 'Pike push-ups (flexión en pica)':{q:'Lagartija con la cadera arriba en V invertida: carga los hombros.',m:'Hombros y tríceps',p:['Manos en el piso, sube la cadera en V.','Camina los pies hacia las manos.','Baja la cabeza al piso entre las manos.','Empuja.'],e:'Bajar el pecho en lugar de la cabeza.',f:'Haz flexión en pica con manos en banca.'},
+ 'Plancha con toque de hombro':{q:'En plancha alta, tocas el hombro contrario alternando, sin mover la cadera.',m:'Hombros y abdomen',p:['Plancha alta, pies un poco abiertos.','Toca el hombro izquierdo con la mano derecha.','Regresa y cambia.','Cada toque cuenta 1.'],e:'Balancear la cadera.',f:'Apoya las rodillas.'},
+ 'Pájaros en barra baja (deltoide posterior)':{q:'Colgado de una barra baja, abres los brazos hacia los lados para trabajar la parte de atrás del hombro.',m:'Hombro posterior y espalda alta',p:['Agarra la barra con palmas abajo, cuerpo inclinado.','Codos apenas doblados.','Abre los brazos y sube el pecho.','Regresa lento.'],e:'Jalar con bíceps.',f:'Usa una barra más alta.'},
+ 'Fondos en paralelas (torso vertical)':{q:'Fondos en paralelas con el torso derecho: carga hombros y tríceps.',m:'Tríceps y hombros',p:['Sube a las paralelas, brazos estirados.','Torso vertical, piernas abajo.','Baja hasta 90° de codo.','Empuja.'],e:'Bajar demasiado.',f:'Haz fondos en banca.'},
+ 'Flexiones lentas (tempo 3 seg)':{q:'Lagartijas bajando en 3 segundos. La lentitud las hace mucho más difíciles.',m:'Pecho, hombros y tríceps',p:['Posición de lagartija.','Baja contando 3 segundos.','Pausa 1 segundo abajo.','Empuja normal.'],e:'Acelerar al final de la serie.',f:'Apoya las rodillas.'},
+ 'Chin-ups agarre cerrado (bíceps)':{q:'Dominada con palmas hacia ti y manos juntas. Golpea directo al bíceps.',m:'Bíceps',p:['Manos juntas, palmas hacia ti.','Despega los pies.','Sube hasta pasar la barbilla.','Baja lento.'],e:'Medias repeticiones.',f:'Haz chin-ups negativas.'},
+ 'Fondos en banca (tríceps)':{q:'Fondos con manos atrás en una banca y piernas estiradas.',m:'Tríceps',p:['Manos en la orilla de la banca.','Piernas estiradas, talones en el piso.','Baja hasta 90° de codo.','Empuja.'],e:'Codos abiertos.',f:'Dobla las rodillas.'},
+ 'Curl de bíceps en barra baja (australiano)':{q:'Colgado debajo de una barra baja, jalas tu cuerpo solo doblando codos.',m:'Bíceps',p:['Palmas hacia ti.','Cuerpo recto inclinado.','Lleva la frente a la barra con codos fijos.','Baja lento.'],e:'Usar la espalda.',f:'Usa una barra más alta.'},
+ 'Fondos en paralelas (tríceps)':{q:'Fondos en paralelas con el torso derecho y codos pegados: carga el tríceps.',m:'Tríceps',p:['Sube a las paralelas.','Torso derecho, codos pegados.','Baja hasta 90°.','Empuja hasta estirar.'],e:'Abrir codos.',f:'Haz fondos en banca.'},
+ 'Sentadilla libre':{q:'La sentadilla con tu peso: bajas como si te sentaras y subes.',m:'Piernas y glúteos',p:['Pies al ancho de hombros, puntas un poco afuera.','Cadera atrás y abajo.','Baja hasta que los muslos queden paralelos al piso.','Sube empujando con los talones.'],e:'Rodillas hacia adentro o talones despegados.',f:'Haz sentadilla a la banca.'},
+ 'Zancadas caminando':{q:'Avanzas dando pasos largos y bajando la rodilla de atrás en cada paso.',m:'Piernas y glúteos',p:['Paso largo al frente.','Baja la rodilla de atrás casi al piso.','Empuja con la pierna de adelante.','Avanza con la otra pierna.'],e:'Pasos muy cortos.',f:'Haz zancada atrás agarrado de la barra.'},
+ 'Step-ups en banca':{q:'Subes a una banca con una pierna y bajas.',m:'Piernas y glúteos',p:['Todo el pie en la banca.','Sube empujando con esa pierna.','Baja controlado.','Termina un lado y cambia.'],e:'Impulsarte con la pierna de abajo.',f:'Usa un escalón más bajo.'},
+ 'Sentadilla búlgara en banca':{q:'Zancada con el pie de atrás arriba de una banca. Es de las mejores para pierna sin pesas.',m:'Piernas y glúteos',p:['Empeine del pie de atrás en la banca.','Pie de adelante a un paso largo.','Baja la rodilla de atrás.','Sube empujando con el pie de adelante.'],e:'Pie de adelante muy cerca de la banca.',f:'Haz zancadas normales.'},
+ 'Rodillas al pecho colgado':{q:'Colgado de la barra, subes las rodillas al pecho.',m:'Abdomen bajo',p:['Cuélgate con brazos estirados.','Sube las rodillas al pecho.','Baja lento sin balancearte.','Repite.'],e:'Columpiarte.',f:'Hazlo sentado en banca.'},
+ 'Plancha (plank)':{q:'Te quedas recto apoyado en antebrazos y puntas de los pies.',m:'Abdomen',p:['Codos bajo los hombros.','Cuerpo recto.','Aprieta abdomen y glúteos.','Aguanta.'],e:'Cadera caída.',f:'Apoya rodillas.'},
+ 'Mountain climbers':{q:'En plancha alta, llevas las rodillas al pecho alternando rápido, como si escalaras.',m:'Abdomen y cardio',p:['Plancha alta.','Lleva una rodilla al pecho.','Cambia de pierna rápido.','Mantén la cadera baja.'],e:'Subir la cadera.',f:'Hazlo lento.'},
+ 'Hollow body con piernas dobladas':{q:'Boca arriba, despegas hombros y piernas dobladas del piso formando una "banana".',m:'Abdomen',p:['Boca arriba, espalda baja pegada al piso.','Rodillas dobladas en el aire.','Despega hombros, brazos al frente.','Aguanta.'],e:'Despegar la espalda baja.',f:'Rodillas más cerca del pecho.'},
+ 'Plancha lateral':{q:'De lado, apoyado en un antebrazo y el pie, mantienes la cadera arriba.',m:'Oblicuos',p:['Codo bajo el hombro.','Pies uno sobre otro.','Sube la cadera en línea recta.','Aguanta y cambia.'],e:'Cadera caída.',f:'Apoya la rodilla.'},
+ 'Fondos en paralelas profundos (tempo 3 seg)':{q:'Fondos en paralelas bajando en 3 segundos y un poco más profundo.',m:'Pecho y tríceps',p:['Sube a las paralelas.','Baja en 3 segundos un poco más abajo de 90°.','Pausa.','Empuja fuerte.'],e:'Perder el control abajo.',f:'Haz fondos normales.'},
+ 'Flexiones arqueras':{q:'Lagartija con brazos muy abiertos: bajas hacia un lado mientras el otro brazo queda estirado. Paso hacia la flexión a una mano.',m:'Pecho, hombros y tríceps',p:['Manos muy abiertas.','Baja hacia la mano derecha; el brazo izquierdo queda estirado.','Empuja y regresa al centro.','Alterna lados.'],e:'Doblar los dos brazos igual.',f:'Haz flexiones clásicas con manos abiertas.'},
+ 'Flexiones pseudo planche (manos a la cadera)':{q:'Lagartija con las manos a la altura de la cadera y el cuerpo inclinado al frente.',m:'Hombros y pecho',p:['Manos a la altura de la cintura, dedos hacia afuera.','Inclina el cuerpo al frente.','Baja manteniendo la inclinación.','Empuja.'],e:'Perder la inclinación.',f:'Acerca las manos al pecho.'},
+ 'Flexiones explosivas (con palmada)':{q:'Lagartija empujando tan fuerte que las manos despegan y aplaudes.',m:'Pecho y potencia',p:['Posición de lagartija.','Baja.','Empuja explosivo y aplaude.','Cae con codos suaves.'],e:'Caer con brazos rígidos.',f:'Solo despega las manos sin aplaudir.'},
+ 'Dominadas agarre ancho':{q:'Dominada con manos muy abiertas. Ensancha la espalda.',m:'Dorsales',p:['Manos muy abiertas.','Baja los hombros.','Sube el pecho a la barra.','Baja lento.'],e:'Medias repeticiones.',f:'Haz dominadas normales.'},
+ 'Dominadas arqueras':{q:'Subes hacia una mano mientras el otro brazo queda casi estirado. Paso hacia la dominada a una mano.',m:'Espalda y bíceps',p:['Agarre muy abierto.','Sube hacia la mano derecha.','El brazo izquierdo se estira.','Alterna.'],e:'Doblar los dos brazos igual.',f:'Haz dominadas anchas.'},
+ 'Dominadas en L (L-sit pull-up)':{q:'Dominada con las piernas estiradas al frente en forma de L.',m:'Espalda y abdomen',p:['Cuélgate y sube las piernas en L.','Mantén la L.','Haz la dominada.','Baja lento.'],e:'Bajar las piernas.',f:'Dobla las rodillas.'},
+ 'Remo australiano con pies en banca':{q:'Remo australiano con los pies arriba de una banca: el cuerpo queda horizontal y cuesta más.',m:'Espalda y bíceps',p:['Pies en la banca.','Cuerpo horizontal.','Jala el pecho a la barra.','Baja lento.'],e:'Cadera caída.',f:'Talones en el piso.'},
+ 'Front lever recogido (tuck hold)':{q:'Colgado, subes el cuerpo horizontal con rodillas al pecho y te quedas quieto.',m:'Espalda y abdomen',p:['Cuélgate con brazos estirados.','Sube las rodillas al pecho.','Inclina el cuerpo hasta que la espalda quede horizontal.','Aguanta.'],e:'Doblar los brazos.',f:'Mantén la posición menos tiempo.'},
+ 'Flexión en pica con pies en banca':{q:'Pike push-up con los pies en la banca: más peso sobre los hombros.',m:'Hombros y tríceps',p:['Pies en la banca, cadera arriba.','Manos en el piso.','Baja la cabeza.','Empuja.'],e:'Perder la V.',f:'Haz pike push-ups normales.'},
+ 'Flexión en parada de manos contra pared (negativa)':{q:'En parada de manos con la pared en la espalda, bajas la cabeza al piso muy lento.',m:'Hombros y tríceps',p:['Sube a parada de manos contra la pared.','Baja la cabeza en 4 segundos.','Al tocar, baja los pies.','Repite.'],e:'Caer de cabeza. Pon algo suave.',f:'Haz pica con pies en banca.'},
+ 'Parada de manos contra pared (hold)':{q:'Te quedas de manos con los pies apoyados en la pared.',m:'Hombros y abdomen',p:['Manos a un palmo de la pared.','Sube los pies.','Brazos estirados, abdomen firme.','Aguanta.'],e:'Doblar los codos.',f:'Camina los pies por la pared hasta la mitad.'},
+ 'Pseudo planche lean (hold)':{q:'En plancha alta con manos a la cintura, te inclinas al frente y aguantas.',m:'Hombros y abdomen',p:['Plancha alta, manos a la cintura.','Inclina el cuerpo al frente.','Hombros por delante de las manos.','Aguanta.'],e:'Doblar codos.',f:'Inclínate menos.'},
+ 'Extensión de tríceps en barra baja':{q:'Inclinado sobre una barra baja, bajas la frente doblando codos y empujas solo con el tríceps.',m:'Tríceps',p:['Manos en la barra, cuerpo inclinado.','Dobla codos y lleva la frente a la barra.','Empuja estirando.','Codos fijos.'],e:'Usar el pecho.',f:'Usa una barra más alta.'},
+ 'Pistol squat asistida (barra)':{q:'Sentadilla con una sola pierna agarrado de la barra.',m:'Piernas y equilibrio',p:['Agárrate de la barra.','Estira una pierna al frente.','Baja con la otra lo más que puedas.','Sube.'],e:'Talón despegado.',f:'Baja a una banca.'},
+ 'Sentadilla con salto':{q:'Sentadilla terminando en salto.',m:'Piernas y potencia',p:['Baja en sentadilla.','Salta explosivo.','Cae suave.','Repite.'],e:'Caer rígido.',f:'Sin salto.'},
+ 'Shrimp squat asistida':{q:'Sentadilla a una pierna con la otra doblada atrás, agarrado de algo.',m:'Piernas',p:['Agárrate de la barra.','Dobla una pierna atrás.','Baja hasta que la rodilla de atrás casi toque el piso.','Sube.'],e:'Inclinarte mucho.',f:'Baja menos.'},
+ 'Elevación de pantorrilla en escalón (1 pierna)':{q:'Elevación de pantorrilla con una sola pierna.',m:'Pantorrillas',p:['Un pie en la orilla del escalón.','Sube en puntas.','Baja lento.','Cambia.'],e:'Rebotar.',f:'Con dos piernas.'},
+ 'Elevación de piernas colgado':{q:'Colgado, subes las piernas estiradas al frente.',m:'Abdomen',p:['Cuélgate.','Sube las piernas estiradas.','Baja lento.','Sin columpiarte.'],e:'Columpiarte.',f:'Rodillas al pecho.'},
+ 'L-sit en paralelas':{q:'En paralelas con brazos estirados, levantas las piernas al frente en forma de L.',m:'Abdomen',p:['Sube a las paralelas.','Sube las piernas estiradas.','Forma una L.','Aguanta.'],e:'Doblar codos.',f:'Dobla rodillas.'},
+ 'Windshield wipers colgado (oblicuos)':{q:'Colgado con las piernas arriba, las mueves de lado a lado como limpiaparabrisas.',m:'Oblicuos',p:['Cuélgate y sube las piernas.','Muévelas a un lado.','Regresa al centro.','Cambia.'],e:'Usar impulso.',f:'Rodillas dobladas.'},
+ 'Dragon flag en banca (negativas)':{q:'Acostado en banca agarrado atrás de la cabeza, bajas el cuerpo recto muy lento.',m:'Abdomen',p:['Agárrate atrás de la cabeza.','Sube el cuerpo recto.','Baja lento.','Repite.'],e:'Doblar la cadera.',f:'Rodillas dobladas.'},
+ 'Hollow body hold':{q:'Boca arriba, despegas hombros y piernas estiradas formando una "banana".',m:'Abdomen',p:['Espalda baja pegada.','Brazos y piernas estirados.','Despega del piso.','Aguanta.'],e:'Despegar la espalda baja.',f:'Dobla las rodillas.'}
+};
+CALI_INFO['Burpees (finisher)']={q:'Bajas al piso, haces una lagartija, regresas los pies y saltas. Es el ejercicio para cerrar quemando.',m:'Todo el cuerpo y cardio',p:['De pie, baja y pon las manos en el piso.','Lanza los pies atrás a plancha y haz una lagartija.','Regresa los pies a las manos.','Salta con los brazos arriba.'],e:'Hundir la cadera en la plancha.',f:'Sin lagartija y sin salto: solo baja, plancha y sube.'};
+CALI_INFO['Sentadilla isométrica en pared']={q:'Recargado en la pared, te quedas como sentado en una silla invisible.',m:'Piernas',p:['Espalda pegada a la pared.','Baja hasta que las rodillas queden a 90°.','Rodillas encima de los tobillos.','Aguanta.'],e:'Apoyar las manos en las piernas.',f:'Sube un poco la cadera.'};
+function caliInfo(n){ return CALI_INFO[n]||null; }
+
 /* ===================== RUTINAS ENFOCADAS (SOLO PRO) ===================== */
 /* GYM — VOLUMEN (fuerza/masa: cargas altas, pocas reps, descansos largos) */
 const GYM_VOL = {
@@ -2833,11 +3068,11 @@ const PARK_DEF = {
 
 function getRoutines(){
   if(plan==='pro' && goal){
-    if(mode==='park') return goal==='volumen'?PARK_VOL:PARK_DEF;
+    if(mode==='park') return nivelCali()==='intermedio' ? (goal==='volumen'?PARK_VOL:PARK_DEF) : parkPorNivel();
     if(mode==='home') return goal==='volumen'?HOME_VOL:HOME_DEF;
     return goal==='volumen'?GYM_VOL:GYM_DEF;
   }
-  if(mode==='park') return PARK_ROUTINES;
+  if(mode==='park') return parkPorNivel();
   return mode==='home' ? HOME_ROUTINES : ROUTINES;
 }
 
@@ -3161,7 +3396,20 @@ function abrirTecnica(nombre,k){
     av.muted=true; av.setAttribute('muted',''); av.setAttribute('webkit-playsinline','');
     av.src='aparato-'+ap.id+'.mp4';
   } else { apEl.style.display='none'; apEl.innerHTML=''; }
-  bg.querySelector('.tec-tips').innerHTML=d.t.map((x,i)=>'<li><b>'+(i+1)+'</b><span>'+x+'</span></li>').join('');
+  const ci=caliInfo(nombre);
+  let tcEl=bg.querySelector('.tec-cali');
+  if(!tcEl){ tcEl=document.createElement('div'); tcEl.className='tec-cali'; bg.querySelector('.tec-card > .tec-tec-k').before(tcEl); }
+  if(ci){
+    tcEl.style.display='';
+    tcEl.innerHTML='<div class="tec-tec-k" style="margin:4px 0 -4px">¿Qué es?</div><div class="tc-q">'+ci.q+'</div><div class="tc-m"><b>Trabaja:</b> '+ci.m+'</div>';
+    bg.querySelector('.tec-card > .tec-tec-k').style.display='';
+    bg.querySelector('.tec-card > .tec-tec-k').textContent='Paso a paso';
+  } else { tcEl.style.display='none'; tcEl.innerHTML=''; const k0=bg.querySelector('.tec-card > .tec-tec-k'); k0.textContent='Cómo hacer el ejercicio'; }
+  bg.querySelector('.tec-tips').innerHTML=(ci?ci.p:d.t).map((x,i)=>'<li><b>'+(i+1)+'</b><span>'+x+'</span></li>').join('');
+  let tcExtra=bg.querySelector('.tec-cali-x');
+  if(!tcExtra){ tcExtra=document.createElement('div'); tcExtra.className='tec-cali tec-cali-x'; bg.querySelector('.tec-tips').after(tcExtra); }
+  tcExtra.innerHTML=ci?'<div class="tc-box tc-err"><b>⚠️ Error común</b>'+ci.e+'</div><div class="tc-box tc-fac"><b>¿Todavía no te sale?</b>'+ci.f+'</div>':'';
+  tcExtra.style.display=ci?'':'none';
   const fase=bg.querySelector('.tec-fase');
   const keys=new Set(Object.keys(A).concat(Object.keys(B)));
   const dur=d.slow?4200:3000, ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
@@ -3630,6 +3878,23 @@ function sincronizarSeleccion(){
 }
 function renderModeToggle(){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  renderNivelCali();
+}
+function renderNivelCali(){
+  const box=document.getElementById('nivelCali'); if(!box) return;
+  if(mode!=='park'){ box.style.display='none'; return; }
+  const v=nivelCali();
+  box.style.display='';
+  box.innerHTML='<div class="nc-k">Tu nivel de calistenia</div><div class="nc-bts">'+
+    Object.keys(PARK_NIVELES).map(k=>'<button type="button" data-nivel="'+k+'" class="'+(k===v?'on':'')+'">'+PARK_NIVELES[k].ic+' '+PARK_NIVELES[k].label+'</button>').join('')+
+    '</div><div class="nc-d">'+PARK_NIVELES[v].d+(v==='facil'?' Toca <b>Cómo se hace</b> en cada ejercicio: te explica qué es, paso a paso y qué hacer si no te sale.':'')+'</div>';
+  box.querySelectorAll('[data-nivel]').forEach(b=>b.onclick=()=>{
+    save('forja_cali_nivel',b.dataset.nivel);
+    const R=getRoutines();
+    musculosSel=musculosSel.filter(k=>R[k]); if(!musculosSel.length) musculosSel=[Object.keys(R)[0]];
+    if(!R[currentMuscle]) currentMuscle=musculosSel[0];
+    renderNivelCali(); renderMuscleTabs(); renderExercises(); try{ fillProgSelects(); }catch(e){}
+  });
 }
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>{
   mode=b.dataset.mode; save('forja_mode',mode);
@@ -4325,7 +4590,7 @@ function renderExercises(){
     const c=document.createElement('div');c.className='ex-card'+(isDone?' is-hecho':'')+(i===idxSiguiente?' es-siguiente':'');
     c.innerHTML=`
       <div class="ex-top">
-        <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}${(a=>a?'<div class="ex-apa">Aparato: <b>'+a.n+'</b> · en “Cómo se hace” ves dónde está y cómo usarlo</div>':'')(aparatoDe(e.n))}</div>
+        <div class="ex-name"><span class="ex-n">${i+1}.</span>${e.n}${varios?'<span class="ex-grp">'+e._g+'</span>':''}${(a=>a?'<div class="ex-apa">Aparato: <b>'+a.n+'</b> · en “Cómo se hace” ves dónde está y cómo usarlo</div>':'')(aparatoDe(e.n))}${(ci=>ci?'<div class="ex-que">'+ci.q+' <b>Trabaja:</b> '+ci.m+'.</div>':'')(mode==='park'?caliInfo(e.n):null)}</div>
         ${exAvatarHTML(e.n,e._k,isDone||seriesHoy(e.n).length>0)}
       </div>
       <div class="serie-box">
