@@ -280,6 +280,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
 .serie-in{flex:1 1 auto;min-width:0;background:transparent;border:0;border-radius:0;
           padding:9px 2px;color:var(--text);font-family:'Anton',sans-serif;font-size:18px;text-align:center}
 .serie-in:focus{outline:none}
+.serie-ok{display:block;width:100%;margin:8px 0 2px;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;color:#fff;background:var(--molten)}
+.serie-ok:active{transform:scale(.98)}
+.serie-ok-sub{font-size:11.5px;color:var(--muted-2);text-align:center;margin:0 0 6px;line-height:1.4}
 .serie-btn{flex:0 0 auto;white-space:nowrap;border:0;border-radius:10px;padding:9px 15px;cursor:pointer;font-size:13px;
            font-weight:700;color:#EAF6FB;background:linear-gradient(90deg,var(--orange),var(--magenta));
            display:flex;align-items:center;gap:6px}
@@ -1957,8 +1960,9 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;line
   <div class="pro-modal" style="text-align:center">
     <div style="font-size:44px;line-height:1;margin:4px 0 8px">🔥</div>
     <div class="pro-tagline" id="notiTit">¡Primer ejercicio hecho!</div>
-    <p style="color:var(--muted);font-size:14px;margin:8px 0 18px;line-height:1.5">¿Te aviso cuando toque tu siguiente entreno? Así no pierdes la racha. Solo te escribo cuando haga falta.</p>
-    <button class="onb-go" id="notiSi" type="button">🔔 Sí, avísame</button>
+    <div id="notiLogro" style="font-weight:800;color:var(--amber);margin:2px 0 4px"></div>
+    <p id="notiTx" style="color:var(--muted);font-size:14px;margin:8px 0 18px;line-height:1.5">¿Te aviso mañana cuando toque tu siguiente entreno? Así no pierdes la racha. Solo te escribo cuando haga falta.</p>
+    <button class="onb-go" id="notiSi" type="button">🔔 Sí, avísame mañana</button>
     <button class="onb-skip" id="notiNo" type="button">Ahora no</button>
   </div>
 </div>
@@ -3975,7 +3979,8 @@ function pintarBienvenida(){
       '<div class="onb-res"><span>'+(onb.lugar==='home'?'🏠 En casa':onb.lugar==='park'?'🤸 Calistenia':'🏋️ Gimnasio')+' · '+ONB_META[onb.meta].t+'</span>'+
       '<b>'+(gr||'Rutina del día')+'</b><span>'+(document.getElementById('exCountPill')||{}).textContent.split(' · ').slice(0,2).join(' · ')+'</span></div>'+
       '<p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.5">Registra tus series con <b>⊕ Serie</b> y usa el ⏱️ Descanso entre ellas. ¡Tú puedes!</p>'+
-      '<button class="onb-go" type="button" id="onbGo">¡Empezar ahora!</button>';
+      '<button class="onb-go" type="button" id="onbGo">🔥 Calentar 3 min y empezar</button>'+
+      '<button class="onb-skip" type="button" id="onbSinCal">Saltar el calentamiento</button>';
   }
   if(onb.paso<4) h+='<button class="onb-skip" type="button" id="onbSkip">Prefiero explorar solo</button>';
   c.innerHTML=h;
@@ -3997,18 +4002,34 @@ function pintarBienvenida(){
     onb.paso=4; pintarBienvenida();
   });
   const btnGo=c.querySelector('#onbGo');
-  if(btnGo) btnGo.onclick=()=>{ cerrarBienvenida(); try{ go('rutinas'); }catch(e){} setTimeout(()=>{ try{ subirAlSiguiente(); }catch(e){} },300); };
+  if(btnGo) btnGo.onclick=()=>{ cerrarBienvenida(); try{ go('rutinas'); }catch(e){}
+    /* Primer uso guiado: dónde entrenas -> calentamiento -> primer ejercicio (al terminar, calentFin baja a la rutina) */
+    setTimeout(()=>{ try{ calentIniciar(calentLista()); }catch(e){ try{ subirAlSiguiente(); }catch(x){} } },350); };
+  const btnSin=c.querySelector('#onbSinCal');
+  if(btnSin) btnSin.onclick=()=>{ cerrarBienvenida(); try{ go('rutinas'); }catch(e){} setTimeout(()=>{ try{ subirAlSiguiente(); }catch(e){} },300); };
   const sk=c.querySelector('#onbSkip');
   if(sk) sk.onclick=cerrarBienvenida;
 }
 /* Pide los avisos justo después del primer logro (máximo 2 veces, en días distintos) */
 function trasEjercicioHecho(){
   try{
-    if(!('Notification' in window) || Notification.permission!=='default') return;
+    const primera=!load('forja_logro1',false);
+    const puede=('Notification' in window) && Notification.permission==='default';
     const n=load('forja_noti_pedida',{v:0,f:''});
-    if(n.v>=2 || n.f===hoyKey()) return;
-    save('forja_noti_pedida',{v:n.v+1,f:hoyKey()});
-    document.getElementById('notiTit').textContent = n.v ? '¡Otro ejercicio hecho! 💪' : '¡Primer ejercicio hecho!';
+    const pedir=puede && n.v<2 && n.f!==hoyKey();
+    if(!primera && !pedir) return;
+    if(primera) save('forja_logro1',true);
+    if(pedir) save('forja_noti_pedida',{v:n.v+1,f:hoyKey()});
+    const hoyS=series[hoyKey()]||{};
+    const nSer=Object.keys(hoyS).reduce((a,k)=>a+(hoyS[k]||[]).length,0);
+    const nEj=Object.keys(doneToday||{}).filter(k=>doneToday[k]).length;
+    document.getElementById('notiTit').textContent = primera ? '¡Lo lograste! Primer ejercicio hecho' : '¡Otro ejercicio hecho! 💪';
+    document.getElementById('notiLogro').textContent = (nEj||1)+' ejercicio'+((nEj||1)>1?'s':'')+' · '+nSer+' serie'+(nSer===1?'':'s')+' hoy';
+    document.getElementById('notiTx').textContent = pedir
+      ? '¿Te aviso mañana cuando toque tu siguiente entreno? Así no pierdes la racha. Solo te escribo cuando haga falta.'
+      : 'Cada serie cuenta. Sigue con el siguiente ejercicio cuando estés listo.';
+    document.getElementById('notiSi').style.display = pedir ? '' : 'none';
+    document.getElementById('notiNo').textContent = pedir ? 'Ahora no' : 'Seguir entrenando';
     setTimeout(()=>document.getElementById('notiModal').classList.add('open'),600);
   }catch(e){}
 }
@@ -4614,6 +4635,7 @@ function renderExercises(){
         ${smartHTML(e.n)}
         <div class="serie-rows">${chipsHTML(e.n)}</div>
         ${proxHTML(e.n)}
+        ${isDone?'':'<button class="serie-ok" type="button" data-shice="'+e.n+'">✓ Hice esta serie</button><div class="serie-ok-sub">Se guarda con lo que ves abajo. ¿Hiciste otras repeticiones? Cámbialas y toca ⊕ Serie.</div>'}
         <div class="serie-add">
           <label class="sm-pr"><span>PR</span>
             <input class="sm-prin" data-prin="${e.n}" inputmode="decimal" placeholder="—" value="${prs[e.n]||''}" aria-label="Tu récord personal (PR) en kg" title="Tu récord personal en kg">
@@ -4682,6 +4704,16 @@ function renderExercises(){
     const v=parseFloat(String(inp.value).replace(',','.'));
     if(v>0 && v<=40){ cargaPeso[inp.dataset.cargak]=v; save('forja_cargas',cargaPeso); }
     renderExercises();
+  });
+  g.querySelectorAll('[data-shice]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.shice;
+    const cr=g.querySelector('[data-sr="'+CSS.escape(k)+'"]');
+    if(cr && !parseInt(cr.value,10)){
+      const m=String((metaEj[k]&&metaEj[k].r)||'').match(/\d+/);
+      cr.value = m ? m[0] : 10;
+    }
+    const add=g.querySelector('[data-sadd="'+CSS.escape(k)+'"]');
+    if(add) add.click();
   });
   g.querySelectorAll('[data-sadd]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.sadd;
