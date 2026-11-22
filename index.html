@@ -3112,7 +3112,7 @@ const COACHES = [
 /* ----------- Navegación ----------- */
 const views = document.querySelectorAll('.view');
 function go(id){
-  views.forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
   document.querySelectorAll('[data-go]').forEach(b=>{
     if(b.classList.contains('nav-btn')||b.classList.contains('bn-btn'))
       b.classList.toggle('active', b.dataset.go===id);
@@ -6820,6 +6820,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <script src="forja-coach.js"></script>
 <script src="forja-recetas.js"></script>
 <script src="forja-diario.js"></script>
+<script src="forja-retos.js"></script>
 <script src="forja-rosa.js"></script>
 <link rel="stylesheet" href="forja-tema.css?v=143">
 <div class="calent-ov" id="calentOv" role="dialog" aria-modal="true" aria-label="Calentamiento guiado">
