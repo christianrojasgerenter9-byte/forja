@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FORJA Retos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: tarjeta de nivel arriba (XP, racha, semana), pestañas, y una columna de tarjetas. Estética FORJA: obsidiana con degradado naranja a magenta. */
+:root{
+  color-scheme:dark;
+  --bg:#0e0d0f; --surface:#171518; --raise:#221f24; --fg:#f3eeea; --muted:#a79fa6; --line:#302b32;
+  --fire:#ff6a1a; --mag:#e0245e; --gold:#ffc247; --good:#3ecf8e; --grad:linear-gradient(90deg,#ff6a1a,#e0245e);
+  --font-d:"Anton","Impact",sans-serif; --font-b:"Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--font-b);margin:0;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--font-d);font-weight:400;letter-spacing:.03em;margin:0;text-transform:uppercase;text-wrap:balance}
+h1{font-size:1.9rem}h2{font-size:1.25rem}h3{font-size:1.05rem}
+.sub{color:var(--muted);font-size:.85rem;margin:0}
+.demo{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;color:var(--muted);font-size:.8rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.hero{background:linear-gradient(135deg,#2a1410,#1d1019 60%,#171518);border-color:#4a2a22}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.lvl{display:flex;gap:14px;align-items:center}
+.badge{width:62px;height:62px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font:400 1.9rem var(--font-d);color:#fff;flex:none}
+.bar{height:10px;border-radius:99px;background:var(--raise);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--grad);border-radius:99px;transition:width .4s}
+@media(prefers-reduced-motion:reduce){.bar>i{transition:none}}
+.grow{flex:1;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.stat{background:var(--raise);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font:400 1.5rem var(--font-d);font-variant-numeric:tabular-nums}
+.stat span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:14px}
+.day{text-align:center;font-size:.7rem;color:var(--muted)}
+.dot{margin:4px auto 0;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.dot.on{background:var(--grad);border-color:transparent;color:#fff}
+.dot.rest{border-style:dashed}
+.dot.today{border-color:var(--fire)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+button,select,input{font:inherit}
+nav button,.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem}
+nav button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.pri{background:var(--grad);border-color:transparent;color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--fire);outline-offset:2px}
+label{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--muted);min-width:0}
+select,input[type=number]{background:var(--raise);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;max-width:100%}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;align-items:end}
+.msg{min-height:1.3em;font-size:.88rem;margin:8px 0 0}
+.msg.ok{color:var(--good)}.msg.pr{color:var(--gold);font-weight:700}.msg.err{color:#ff7b7b}
+.reto{display:flex;flex-direction:column;gap:8px}
+.pill{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.pill.pro{color:var(--gold);border-color:var(--gold)}
+.pill.done{color:var(--good);border-color:var(--good)}
+.num{font-variant-numeric:tabular-nums}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:11px var(--font-b)}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border-bottom:0}
+.rank{font:400 1.2rem var(--font-d);width:24px;color:var(--muted)}
+.me{background:rgba(255,106,26,.08);border-radius:8px;padding-inline:8px!important}
+.medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.medal{background:var(--raise);border:1px solid var(--line);border-radius:14px;padding:14px 8px 12px;text-align:center;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.medal .mbox{width:92px;max-width:100%}
+.medal svg{width:100%;height:auto;display:block}
+.medal.on .mbox{filter:drop-shadow(0 6px 10px rgba(255,106,26,.28))}
+.medal.on.t-oro{border-color:#6a4a12}.medal.on.t-plata{border-color:#4b5262}.medal.on.t-bronce{border-color:#6a3a1c}.medal.on.t-obsidiana{border-color:#6a4a12;background:linear-gradient(160deg,#2a2230,#171518)}
+.medal b{display:block;font:400 .98rem var(--font-d);letter-spacing:.04em;text-transform:uppercase;margin-top:6px}
+.medal span{font-size:.74rem;color:var(--muted)}
+.medal.off b{color:var(--muted)}
+.check{flex-direction:row;align-items:center;gap:8px;color:var(--fg);font-size:.88rem}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header>
+    <h1>Retos FORJA</h1>
+    <p class="sub">Tu progreso en series, peso y repeticiones, convertido en niveles y metas.</p>
+  </header>
+  <p class="demo">Prototipo con datos de ejemplo. Los números, amigos y nombres son inventados; registrar una serie aquí no guarda nada en la app real.</p>
+  <section class="card hero" id="hero" aria-label="Tu nivel"></section>
+  <nav id="tabs" aria-label="Secciones"></nav>
+  <main id="main" class="wrap" style="padding:0"></main>
+</div>
+
+<script>
+(function(){
+"use strict";
+var NIVELES=[[0,"Hierro"],[300,"Bronce"],[700,"Acero"],[1200,"Titanio"],[1800,"Obsidiana"],[2600,"Espartano"],[3600,"Titán"]];
+var EJ=[["press","Press militar con mochila"],["flex","Flexiones lastradas"],["remo","Remo con mochila"],["hom","Laterales con botellas"],["curl","Curl martillo con mochila"],["sent","Sentadilla con mochila"],["abs","Crunch lastrado"]];
+var GRUPO={press:"pecho",flex:"pecho",remo:"espalda",hom:"hombro",curl:"brazo",sent:"pierna",abs:"abs"};
+var GNOM={pecho:"Pecho",espalda:"Espalda",hombro:"Hombro",brazo:"Brazo",pierna:"Pierna",abs:"Abdomen"};
+var UMBRAL=[[30,"oro"],[15,"plata"],[5,"bronce"]];
+var hoy=new Date();hoy.setHours(12,0,0,0);
+function key(off){var d=new Date(hoy);d.setDate(d.getDate()+off);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dow(off){var d=new Date(hoy);d.setDate(d.getDate()+off);return d.getDay()} // 0 dom
+function esFin(off){var w=dow(off);return w===0||w===6}
+
+/* ---------- datos de ejemplo ---------- */
+var S={tab:"retos",xp:1180,sesiones:{},entreno:{},reclamados:{},series:0,prs:0,visible:true,ej:"press",msg:null};
+S.sesiones={
+  press:[[-33,10,12],[-29,10,14],[-26,12,10],[-22,12,12],[-19,12,14],[-15,14,10],[-12,14,12],[-8,16,10],[-5,16,12],[-2,18,10]],
+  flex:[[-32,5,15],[-28,5,18],[-25,5,20],[-21,7,15],[-18,7,17],[-14,7,20],[-11,10,12],[-7,10,14],[-4,10,16],[-1,10,18]],
+  sent:[[-31,15,15],[-27,15,18],[-24,18,15],[-20,18,18],[-17,20,15],[-13,20,17],[-10,22,15],[-6,22,17],[-3,25,12],[-1,25,14]],
+  remo:[[-30,8,12],[-26,8,14],[-22,10,12],[-18,10,14],[-14,12,12],[-10,12,14],[-6,14,10],[-2,14,12]],
+  hom:[[-29,2,15],[-25,2,18],[-21,3,15],[-17,3,18],[-13,4,15],[-9,4,17],[-5,5,15],[-1,5,16]],
+  abs:[[-28,0,20],[-23,0,25],[-18,3,15],[-13,3,18],[-8,5,15],[-3,5,18]],
+  curl:[[-30,6,12],[-26,6,14],[-23,8,10],[-19,8,12],[-16,8,14],[-12,10,10],[-9,10,12],[-5,10,14],[-2,12,10],[-1,12,11]]
+};
+var hueco=-13;while(esFin(hueco))hueco--;
+for(var i=-34;i<=-1;i++){if(!esFin(i)&&i!==hueco)S.entreno[key(i)]=true}
+S.grupos={pecho:14,espalda:11,hombro:8,brazo:12,pierna:17,abs:4};S.hoyG={};
+var AMIGOS=[["Amigo de ejemplo 1",1640,11,5],["Amigo de ejemplo 2",1390,6,4],["Amigo de ejemplo 3",980,3,3],["Amigo de ejemplo 4",610,2,2]];
+
+/* ---------- cálculos ---------- */
+function nivel(){var n=0;for(var i=0;i<NIVELES.length;i++)if(S.xp>=NIVELES[i][0])n=i;var sig=NIVELES[n+1];return {n:n,nombre:NIVELES[n][1],desde:NIVELES[n][0],hasta:sig?sig[0]:null,sigNombre:sig?sig[1]:null}}
+function racha(){var c=0;for(var o=0;o>-60;o--){var k=key(o);if(esFin(o))continue;if(S.entreno[k]){c++}else if(o===0){continue}else break}return c}
+function mejor(id){var m=0;S.sesiones[id].forEach(function(s){if(s[1]>m)m=s[1]});return m}
+function dias30(){var c=0;for(var o=0;o>-30;o--)if(S.entreno[key(o)])c++;return c}
+function reps30(){var t=0;EJ.forEach(function(e){S.sesiones[e[0]].forEach(function(s){if(s[0]>-30)t+=s[2]*3})});return t}
+function retos(){
+  var press0=S.sesiones.press[0][1],mp=mejor("press");
+  return [
+    {id:"const",t:"Constancia de 30 días",d:"Entrena 18 días en los últimos 30.",v:dias30(),m:18,u:"días",xp:150},
+    {id:"racha",t:"Racha de 10",d:"Entrena 10 días hábiles seguidos.",v:racha(),m:10,u:"días",xp:200},
+    {id:"press",t:"Press con mochila +10 kg",d:"Sube 10 kg desde tu primer registro ("+press0+" kg).",v:mp-press0,m:10,u:"kg",xp:250},
+    {id:"reps",t:"1,500 repeticiones",d:"Suma repeticiones de todos tus ejercicios en 30 días.",v:reps30(),m:1500,u:"reps",xp:200},
+    {id:"esp",t:"Retos espartanos",d:"Golden Six: 3 días de cuerpo completo por semana, 4 semanas.",v:0,m:12,u:"sesiones",xp:500,pro:true}
+  ];
+}
+
+/* ---------- utilidades DOM ---------- */
+function h(tag,p,kids){var e=document.createElement(tag);for(var k in p||{}){if(k==="text")e.textContent=p[k];else if(k==="class")e.className=p[k];else if(k.slice(0,2)==="on")e.addEventListener(k.slice(2),p[k]);else if(p[k]!==false&&p[k]!=null)e.setAttribute(k,p[k]===true?"":p[k])}(kids||[]).forEach(function(c){if(c==null)return;e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+var NS="http://www.w3.org/2000/svg";
+function sv(tag,a,txt){var e=document.createElementNS(NS,tag);for(var k in a||{})e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e}
+function bar(v,m,label){var pct=Math.max(0,Math.min(100,m?v/m*100:0));var b=h("div",{class:"bar",role:"progressbar","aria-label":label,"aria-valuemin":"0","aria-valuemax":String(m),"aria-valuenow":String(Math.max(0,Math.min(v,m)))});var i=h("i");i.style.width=pct+"%";b.appendChild(i);return b}
+function fmt(n){return Number(n).toLocaleString("es-MX")}
+
+/* ---------- cabecera ---------- */
+function pintarHero(){
+  var L=nivel(),r=racha(),hero=document.getElementById("hero");hero.textContent="";
+  var falta=L.hasta?L.hasta-S.xp:0;
+  hero.appendChild(h("div",{class:"lvl"},[
+    h("div",{class:"badge","aria-hidden":"true",text:String(L.n+1)}),
+    h("div",{class:"grow"},[
+      h("div",{class:"row between"},[h("h2",{text:"Nivel "+(L.n+1)+" · "+L.nombre}),h("span",{class:"num sub",text:fmt(S.xp)+" XP"})]),
+      L.hasta?bar(S.xp-L.desde,L.hasta-L.desde,"Avance al siguiente nivel"):bar(1,1,"Nivel máximo"),
+      h("p",{class:"sub",text:L.hasta?"Te faltan "+fmt(falta)+" XP para "+L.sigNombre+".":"Llegaste al nivel máximo."})
+    ])
+  ]));
+  hero.appendChild(h("div",{class:"stats"},[
+    h("div",{class:"stat"},[h("b",{text:String(r)}),h("span",{text:"Racha (días)"})]),
+    h("div",{class:"stat"},[h("b",{text:String(dias30())}),h("span",{text:"Días en 30"})]),
+    h("div",{class:"stat"},[h("b",{text:String(S.prs)}),h("span",{text:"Récords hoy"})])
+  ]));
+  var ini=-((hoy.getDay()+6)%7),nom=["L","M","M","J","V","S","D"],w=h("div",{class:"week","aria-label":"Esta semana"});
+  for(var i=0;i<7;i++){
+    var o=ini+i,k=key(o),on=S.entreno[k],c="dot"+(on?" on":"")+(esFin(o)&&!on?" rest":"")+(o===0?" today":"");
+    w.appendChild(h("div",{class:"day"},[nom[i],h("div",{class:c,text:on?"✓":""})]));
+  }
+  hero.appendChild(w);
+  hero.appendChild(h("p",{class:"sub",style:"margin-top:10px",text:"Sábado y domingo son descanso y no rompen la racha."}));
+}
+
+/* ---------- registro de serie ---------- */
+function registrar(){
+  var id=document.getElementById("f-ej").value,w=Number(document.getElementById("f-w").value),r=Number(document.getElementById("f-r").value);
+  if(!(w>=0&&w<=300)||!(r>=1&&r<=100)||!Number.isFinite(w)||!Number.isFinite(r)){S.msg=["err","Peso entre 0 y 300 kg y repeticiones entre 1 y 100."];return pintar()}
+  S.ej=id;var prev=mejor(id),pr=w>prev,ganado=10,L0=nivel().n;
+  var ses=S.sesiones[id],ult=ses[ses.length-1];
+  if(ult&&ult[0]===0){if(w>ult[1]||(w===ult[1]&&r>ult[2])){ult[1]=w;ult[2]=r}}else ses.push([0,w,r]);
+  if(!S.entreno[key(0)]){S.entreno[key(0)]=true;ganado+=100}
+  S.series++;
+  var g=GRUPO[id],tg0=tierG(g),tgTxt="";
+  if(!S.hoyG[g]){S.hoyG[g]=true;S.grupos[g]++;var tg1=tierG(g);if(tg1&&tg1!==tg0)tgTxt=" Medalla de "+GNOM[g]+": "+TIER[tg1][3]+"."}
+  if(pr){ganado+=50;S.prs++}
+  S.xp+=ganado;
+  var L1=nivel();
+  var t="Serie registrada: "+w+" kg × "+r+". +"+ganado+" XP.";
+  if(pr)t="¡Récord personal en "+nombreEj(id)+": "+w+" kg! +"+ganado+" XP.";
+  if(L1.n>L0)t+=" Subiste a "+L1.nombre+".";
+  S.msg=[pr?"pr":"ok",t+tgTxt];pintar();
+}
+function tierG(g){var n=S.grupos[g];for(var i=0;i<UMBRAL.length;i++)if(n>=UMBRAL[i][0])return UMBRAL[i][1];return null}
+function nombreEj(id){return EJ.filter(function(e){return e[0]===id})[0][1]}
+
+/* ---------- vistas ---------- */
+function vistaRetos(){
+  var form=h("section",{class:"card"},[
+    h("h3",{text:"Registrar una serie"}),
+    h("div",{class:"form",style:"margin-top:12px"},[
+      h("label",null,["Ejercicio",h("select",{id:"f-ej"},EJ.map(function(e){var o=h("option",{value:e[0],text:e[1]});if(e[0]===S.ej)o.selected=true;return o}))]),
+      h("label",null,["Peso (kg)",h("input",{id:"f-w",type:"number",min:"0",max:"300",step:"0.5",inputmode:"decimal",value:"20"})]),
+      h("label",null,["Repeticiones",h("input",{id:"f-r",type:"number",min:"1",max:"100",inputmode:"numeric",value:"10"})]),
+      h("button",{class:"btn pri",text:"Registrar",onclick:registrar})
+    ]),
+    h("p",{class:"msg "+(S.msg?S.msg[0]:""),role:"status",text:S.msg?S.msg[1]:"Cada serie da 10 XP. Un récord de peso da 50 XP más."})
+  ]);
+  var lista=retos().map(function(r){
+    var hecho=r.v>=r.m,rec=S.reclamados[r.id];
+    var acc=null;
+    if(r.pro)acc=h("button",{class:"btn",text:"Disponible en PRO",disabled:true});
+    else if(hecho&&!rec)acc=h("button",{class:"btn pri",text:"Reclamar +"+r.xp+" XP",onclick:function(){S.reclamados[r.id]=true;S.xp+=r.xp;S.msg=["ok","Reto cumplido: "+r.t+". +"+r.xp+" XP."];pintar()}});
+    return h("article",{class:"card reto"},[
+      h("div",{class:"row between"},[h("h3",{text:r.t}),r.pro?h("span",{class:"pill pro",text:"PRO"}):(rec?h("span",{class:"pill done",text:"Cumplido"}):h("span",{class:"pill num",text:"+"+r.xp+" XP"}))]),
+      h("p",{class:"sub",text:r.d}),
+      bar(r.v,r.m,r.t),
+      h("div",{class:"row between"},[h("span",{class:"num sub",text:fmt(Math.max(0,Math.min(r.v,r.m)))+" de "+fmt(r.m)+" "+r.u}),acc])
+    ]);
+  });
+  return h("div",{class:"wrap",style:"padding:0"},[form].concat(lista));
+}
+
+function grafica(id){
+  var d=S.sesiones[id],W=320,H=190,pl=34,pr=10,pt=26,pb=56;
+  var ws=d.map(function(s){return s[1]}),mn=Math.min.apply(null,ws),mx=Math.max.apply(null,ws);
+  var lo=Math.max(0,Math.floor(mn*0.85)),hi=Math.ceil(mx*1.1);if(hi===lo)hi=lo+1;
+  var mr=Math.max.apply(null,d.map(function(s){return s[2]}));
+  var x=function(i){return pl+(d.length===1?(W-pl-pr)/2:i*(W-pl-pr)/(d.length-1))};
+  var y=function(v){return pt+(hi-v)/(hi-lo)*(H-pt-pb)};
+  var s=sv("svg",{viewBox:"0 0 "+W+" "+H,class:"chart",role:"img","aria-label":"Peso por sesión de "+nombreEj(id)});
+  [0,.5,1].forEach(function(f){var v=lo+(hi-lo)*f,yy=y(v);s.appendChild(sv("line",{x1:pl,x2:W-pr,y1:yy,y2:yy,stroke:"#302b32","stroke-width":1}));s.appendChild(sv("text",{x:pl-6,y:yy+4,"text-anchor":"end"},String(Math.round(v))))});
+  s.appendChild(sv("text",{x:pl-6,y:10,"text-anchor":"end"},"kg"));
+  var pts=d.map(function(q,i){return x(i)+","+y(q[1])}).join(" ");
+  s.appendChild(sv("polyline",{points:pts,fill:"none",stroke:"#ff6a1a","stroke-width":2.5,"stroke-linejoin":"round"}));
+  var rec=0;
+  d.forEach(function(q,i){
+    var esPR=q[1]>rec;if(esPR)rec=q[1];
+    s.appendChild(sv("circle",{cx:x(i),cy:y(q[1]),r:esPR?5:3.5,fill:esPR?"#ffc247":"#ff6a1a",stroke:"#0e0d0f","stroke-width":1.5}));
+    var bh=q[2]/mr*28;
+    s.appendChild(sv("rect",{x:x(i)-4,y:H-pb+22+(28-bh),width:8,height:bh,rx:2,fill:"#e0245e",opacity:.85}));
+  });
+  s.appendChild(sv("text",{x:pl-6,y:H-pb+40,"text-anchor":"end"},"reps"));
+  s.appendChild(sv("text",{x:x(0),y:H-pb+14,"text-anchor":"start"},"hace "+Math.abs(d[0][0])+" días"));
+  s.appendChild(sv("text",{x:x(d.length-1),y:H-pb+14,"text-anchor":"end"},d[d.length-1][0]===0?"hoy":"hace "+Math.abs(d[d.length-1][0])+" d"));
+  return s;
+}
+function vistaProgreso(){
+  var sel=h("select",{id:"p-ej","aria-label":"Ejercicio",onchange:function(e){S.ej=e.target.value;pintar()}},EJ.map(function(e){var o=h("option",{value:e[0],text:e[1]});if(e[0]===S.ej)o.selected=true;return o}));
+  var d=S.sesiones[S.ej],u=d[d.length-1],p=d[0];
+  var cambio=u[1]-p[1];
+  var tabla=d.slice().reverse().slice(0,6).map(function(q){return h("li",null,[h("span",{class:"grow num",text:q[0]===0?"Hoy":"Hace "+Math.abs(q[0])+" días"}),h("b",{class:"num",text:q[1]+" kg × "+q[2]})])});
+  return h("div",{class:"wrap",style:"padding:0"},[
+    h("section",{class:"card"},[h("div",{class:"row between"},[h("h3",{text:"Mi progreso"}),sel]),
+      h("div",{class:"stats"},[
+        h("div",{class:"stat"},[h("b",{text:mejor(S.ej)+" kg"}),h("span",{text:"Mejor peso"})]),
+        h("div",{class:"stat"},[h("b",{text:(cambio>=0?"+":"")+cambio+" kg"}),h("span",{text:"Desde el inicio"})]),
+        h("div",{class:"stat"},[h("b",{text:String(d.length)}),h("span",{text:"Sesiones"})])]),
+      h("div",{style:"margin-top:14px"},[grafica(S.ej)]),
+      h("p",{class:"sub",text:"Línea naranja: peso máximo de cada sesión. Punto dorado: récord personal. Barras magenta: repeticiones."})]),
+    h("section",{class:"card"},[h("h3",{text:"Últimas sesiones"}),h("ul",{class:"list",style:"margin-top:8px"},tabla)])
+  ]);
+}
+
+function vistaAmigos(){
+  var yo=["Tú",S.xp,racha(),dias30()>0?Math.min(5,dias30()):0];
+  var todos=AMIGOS.map(function(a){return {n:a[0],xp:a[1],r:a[2],s:a[3],yo:false}}).concat([{n:S.visible?"Tú":"Tú (oculto para tus amigos)",xp:yo[1],r:yo[2],s:yo[3],yo:true}]).sort(function(a,b){return b.xp-a.xp});
+  var filas=todos.map(function(a,i){return h("li",{class:a.yo?"me":""},[h("span",{class:"rank",text:String(i+1)}),h("div",{class:"grow"},[h("b",{text:a.n}),h("div",{class:"sub",text:"Racha "+a.r+" días · "+a.s+" entrenamientos esta semana"})]),h("b",{class:"num",text:fmt(a.xp)+" XP"})])});
+  var msg=h("p",{class:"msg",role:"status"});
+  var url="https://christianrojasgerenter9-byte.github.io/forja/";
+  var cb=h("input",{type:"checkbox",id:"vis"});cb.checked=S.visible;cb.addEventListener("change",function(){S.visible=cb.checked;pintar()});
+  return h("div",{class:"wrap",style:"padding:0"},[
+    h("section",{class:"card"},[h("h3",{text:"Liga de amigos"}),h("ul",{class:"list",style:"margin-top:8px"},filas),
+      h("label",{class:"check",for:"vis",style:"margin-top:12px"},[cb,"Mostrar mi nivel y mi racha a mis amigos. Nunca se comparten fotos ni medidas corporales."])]),
+    h("section",{class:"card"},[h("h3",{text:"Invita y gana"}),h("p",{class:"sub",text:"Por cada amigo que entre con tu invitación ganas 10 días de PRO."}),
+      h("div",{class:"row",style:"margin-top:10px"},[h("button",{class:"btn pri",text:"Copiar invitación",onclick:function(){
+        var t="Entrena conmigo en FORJA: "+url;
+        var ok=function(){msg.className="msg ok";msg.textContent="Invitación copiada."};
+        var no=function(){msg.className="msg";msg.textContent="Copia este texto: "+t};
+        if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,no);else no();
+      }})]),msg])
+  ]);
+}
+
+var TIER={
+  bronce:["#ffbf8a","#c8662d","#6e2f0e","Bronce","#2b1105"],
+  plata:["#f4f6fa","#a9b3c2","#566073","Plata","#1b2230"],
+  oro:["#ffe69a","#ffc247","#a8680c","Oro","#2e1c02"],
+  obsidiana:["#6b5a72","#2c2432","#0e0d0f","Obsidiana","#ffc247"]
+};
+var GLIFO={
+  yunque:'<path d="M30 58h34c8 0 8 6 6 8-3 3-8 3-12 3l-3 4v5h8v4H35v-4h8v-5l-3-4c-6 0-9-3-10-7z"/>',
+  llama:'<path d="M50 47c3 9 13 13 13 25a13 13 0 0 1-26 0c0-7 4-10 7-16 2 4 5 5 7 2 0-4-3-7-1-11z"/><path d="M50 70c2 4 6 6 6 10a6 6 0 0 1-12 0c0-3 3-5 6-10z" fill-opacity=".45" style="fill:#fff"/>',
+  rayo:'<path d="M56 48L36 72h12l-5 18 22-26H52z"/>',
+  grados:'<path d="M34 64l16-11 16 11v7L50 60 34 71z"/><path d="M34 77l16-11 16 11v7L50 73 34 84z"/>',
+  escudo:'<path d="M50 50l17 6v12c0 11-7 17-17 21-10-4-17-10-17-21V56z"/><path d="M41 69l7 7 12-14" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:#fff;stroke-opacity:.9"/>',
+  pesa:'<rect x="29" y="55" width="7" height="22" rx="2"/><rect x="38" y="59" width="5" height="14" rx="1.5"/><rect x="43" y="64" width="14" height="4" rx="1.5"/><rect x="57" y="59" width="5" height="14" rx="1.5"/><rect x="64" y="55" width="7" height="22" rx="2"/><path d="M50 50l-6 7h12z"/>',
+  pecho:'<path d="M31 58c0-5 9-7 18-3v24c-9 4-18 2-18-4z"/><path d="M69 58c0-5-9-7-18-3v24c9 4 18 2 18-4z"/>',
+  espalda:'<path d="M29 54l21 7 21-7-4 24-17 9-17-9z"/><path d="M50 61v26" stroke-width="2.5" style="stroke:#0e0d0f;stroke-opacity:.45"/>',
+  hombro:'<path d="M27 84c0-19 10-31 23-31s23 12 23 31z"/><path d="M36 76c2-9 7-14 14-14" fill="none" stroke-width="3" stroke-linecap="round" style="stroke:#fff;stroke-opacity:.5"/>',
+  brazo:'<rect x="32" y="53" width="36" height="29" rx="9"/><rect x="38" y="82" width="24" height="8" rx="2"/><path d="M41 54v13M50 54v13M59 54v13" fill="none" stroke-width="2.2" stroke-linecap="round" style="stroke:#0e0d0f;stroke-opacity:.45"/><path d="M36 74c4 3 10 4 16 3" fill="none" stroke-width="2.5" stroke-linecap="round" style="stroke:#fff;stroke-opacity:.4"/>',
+  pierna:'<path d="M37 50h26l-3 25 3 15H55l-5-13-5 13h-8l3-15z"/><path d="M50 52v18" stroke-width="2" style="stroke:#0e0d0f;stroke-opacity:.4"/>',
+  abs:'<rect x="36" y="52" width="12" height="10" rx="3"/><rect x="52" y="52" width="12" height="10" rx="3"/><rect x="36" y="65" width="12" height="10" rx="3"/><rect x="52" y="65" width="12" height="10" rx="3"/><rect x="37" y="78" width="11" height="10" rx="3"/><rect x="52" y="78" width="11" height="10" rx="3"/>',
+  casco:'<path d="M34 80V68c0-9 7-16 16-16s16 7 16 16v12h-8l-2-8h-12l-2 8z"/><path d="M40 51c3-9 17-9 20 0-6-3-14-3-20 0z" style="fill:#e0245e"/><rect x="41" y="64" width="18" height="3.5" rx="1" style="fill:#0e0d0f"/>'
+};
+var MEDALLAS=[
+  {id:"serie",t:"Primera serie",d:"Registra una serie",g:"yunque",tier:"bronce",forma:"circ",ok:function(){return S.series>0}},
+  {id:"r3",t:"Racha de 3",d:"3 días hábiles seguidos",g:"llama",tier:"bronce",forma:"hex",ok:function(){return racha()>=3}},
+  {id:"r7",t:"Racha de 7",d:"7 días hábiles seguidos",g:"llama",tier:"plata",forma:"hex",ok:function(){return racha()>=7}},
+  {id:"pr",t:"Primer récord",d:"Rompe tu mejor peso",g:"rayo",tier:"oro",forma:"circ",ok:function(){return S.prs>0}},
+  {id:"ti",t:"Titanio",d:"Llega al nivel 4",g:"grados",tier:"plata",forma:"escu",ok:function(){return nivel().n>=3}},
+  {id:"con",t:"Constante",d:"18 días en 30",g:"escudo",tier:"plata",forma:"escu",ok:function(){return dias30()>=18}},
+  {id:"p10",t:"Press +10",d:"Sube 10 kg en press",g:"pesa",tier:"oro",forma:"hex",ok:function(){return mejor("press")-S.sesiones.press[0][1]>=10}},
+  {id:"esp",t:"Espartano",d:"Llega al nivel 6",g:"casco",tier:"obsidiana",forma:"escu",ok:function(){return nivel().n>=5}}
+];
+var mid=0;
+function medalla(m){
+  var tr=m.dyn?m.dyn():m.tier,on=m.dyn?tr!==null:m.ok(),T=TIER[tr||"bronce"],id="m"+(++mid);
+  var forma={circ:'<circle cx="50" cy="66" r="35"/>',hex:'<path d="M50 29l31 18v38L50 103 19 85V47z"/>',escu:'<path d="M50 29l33 11v26c0 20-14 33-33 40-19-7-33-20-33-40V40z"/>'}[m.forma];
+  var inner={circ:'<circle cx="50" cy="66" r="29"/>',hex:'<path d="M50 36l25 14.5v31L50 96 25 81.5v-31z"/>',escu:'<path d="M50 36l27 9v21c0 16-11 27-27 33-16-6-27-17-27-33V45z"/>'}[m.forma];
+  var c1=on?T[0]:"#3a343d",c2=on?T[1]:"#2a252d",c3=on?T[2]:"#1f1b22",gl=on?T[4]:"#5a535c";
+  var rib=on?"#e0245e":"#3a343d";
+  var svg='<svg viewBox="0 0 100 112" aria-hidden="true">'+
+   '<defs><linearGradient id="'+id+'a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+c1+'"/><stop offset=".55" stop-color="'+c2+'"/><stop offset="1" stop-color="'+c3+'"/></linearGradient>'+
+   '<linearGradient id="'+id+'b" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c3+'"/><stop offset="1" stop-color="'+c2+'"/></linearGradient>'+
+   '<linearGradient id="'+id+'r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+(on?"#ff6a1a":"#4a444c")+'"/><stop offset="1" stop-color="'+rib+'"/></linearGradient>'+
+   '<linearGradient id="'+id+'s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'+
+   '<path d="M27 2h19l13 40H40z" fill="url(#'+id+'r)"/><path d="M73 2H54L41 42h19z" fill="url(#'+id+'r)" opacity=".85"/>'+
+   '<g fill="url(#'+id+'a)" stroke="'+(on?T[0]:"#4a444c")+'" stroke-width="2" stroke-linejoin="round">'+forma+'</g>'+
+   '<g fill="url(#'+id+'b)" stroke="'+(on?T[2]:"#2a252d")+'" stroke-width="1.5" stroke-linejoin="round">'+inner+'</g>'+
+   '<g fill="'+gl+'" stroke="none">'+GLIFO[m.g]+'</g>'+
+   (on?'<g fill="url(#'+id+'s)">'+forma+'</g>':'')+
+   (on?'':'<g transform="translate(62 82)"><circle cx="11" cy="11" r="11" fill="#171518" stroke="#3a343d"/><rect x="6" y="10" width="10" height="8" rx="1.5" fill="#a79fa6"/><path d="M8 10V8a3 3 0 0 1 6 0v2" fill="none" stroke="#a79fa6" stroke-width="1.8"/></g>')+
+   '</svg>';
+  var el=h("div",{class:"medal"+(on?" on t-"+tr:" off")});
+  var box=h("div",{class:"mbox"});box.innerHTML=svg; // SVG armado solo con constantes del código
+  el.appendChild(box);
+  el.appendChild(h("b",{text:m.t}));
+  el.appendChild(h("span",{text:m.sub?m.sub():(on?T[3]+" · conseguida":m.d)}));
+  return el;
+}
+var FORMAS={pecho:"circ",espalda:"hex",hombro:"circ",brazo:"escu",pierna:"hex",abs:"escu"};
+var MEDALLAS_G=Object.keys(GNOM).map(function(g){
+  return {id:"g-"+g,t:GNOM[g],g:g,forma:FORMAS[g],
+    dyn:function(){return tierG(g)},
+    sub:function(){
+      var n=S.grupos[g],t=tierG(g),sig=null;
+      for(var i=UMBRAL.length-1;i>=0;i--)if(n<UMBRAL[i][0]){sig=UMBRAL[i];break}
+      var nom=t?TIER[t][3]+" · "+n+" sesiones":n+" de 5 sesiones";
+      return sig&&t?nom+" · "+(sig[0]-n)+" para "+TIER[sig[1]][3]:(t?nom:nom)
+    }};
+});
+function vistaLogros(){
+  var todas=MEDALLAS.concat(MEDALLAS_G);
+  var n=todas.filter(function(m){return m.dyn?m.dyn()!==null:m.ok()}).length;
+  return h("div",{class:"wrap",style:"padding:0"},[
+    h("section",{class:"card"},[
+      h("div",{class:"row between"},[h("h3",{text:"Constancia y récords"}),h("span",{class:"pill num",text:n+" de "+todas.length+" en total"})]),
+      h("p",{class:"sub",text:"Se ganan solas al entrenar y registrar. Las bloqueadas muestran qué falta."}),
+      h("div",{class:"medals",style:"margin-top:14px"},MEDALLAS.map(medalla))
+    ]),
+    h("section",{class:"card"},[
+      h("h3",{text:"Grupos musculares"}),
+      h("p",{class:"sub",text:"Cada grupo sube de metal: bronce a 5 sesiones, plata a 15 y oro a 30."}),
+      h("div",{class:"medals",style:"margin-top:14px"},MEDALLAS_G.map(medalla))
+    ])
+  ]);
+}
+
+/* ---------- render ---------- */
+function pintar(){
+  pintarHero();
+  var tabs=[["retos","Retos"],["progreso","Progreso"],["amigos","Amigos"],["logros","Medallas"]];
+  var nav=document.getElementById("tabs");nav.textContent="";
+  tabs.forEach(function(t){nav.appendChild(h("button",{text:t[1],"aria-pressed":S.tab===t[0]?"true":"false",onclick:function(){S.tab=t[0];S.msg=null;pintar()}}))});
+  var main=document.getElementById("main");main.textContent="";
+  main.appendChild({retos:vistaRetos,progreso:vistaProgreso,amigos:vistaAmigos,logros:vistaLogros}[S.tab]());
+}
+pintar();
+})();
+</script>
+
+</body></html>
