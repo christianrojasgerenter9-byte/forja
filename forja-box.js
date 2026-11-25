@@ -305,7 +305,7 @@ function vistaFin(){
   return [h("div",{"class":"bx-card bx-lock"},[h("div",{"class":"bx-big",text:"🥊"}),h("h3",{text:"¡Sesión terminada!"}),h("p",{"class":"muted",text:"Buen trabajo. Hidrátate, estira hombros y muñecas y descansa."}),h("div",{"class":"bx-row"},[h("button",{"class":"btn btn-molten",type:"button",text:"Volver",onclick:function(){E.fin=false;pintar()}}),h("button",{"class":"btn btn-ghost",type:"button",text:"Hablar con el coach",onclick:function(){E.fin=false;tab="coach";pintar()}})])])];
 }
 /* Videos demostrativos por movimiento (archivo junto al index). Se pueden sustituir con window.FORJA_BOX_VIDEOS */
-var VIDEOS={"Jab":"forja-box-jab.mp4","Cruzado (recto trasero)":"forja-box-cruzado.mp4","Gancho adelantado":"forja-box-gancho-adelantado.mp4","Gancho trasero":"forja-box-gancho-trasero.mp4","Uppercut adelantado":"forja-box-uppercut-adelantado.mp4","Uppercut trasero":"forja-box-uppercut-trasero.mp4","Guardia":"forja-box-guardia.mp4"};
+var VIDEOS={"Jab":"forja-box-jab.mp4","Cruzado (recto trasero)":"forja-box-cruzado.mp4","Gancho adelantado":"forja-box-gancho-adelantado.mp4","Gancho trasero":"forja-box-gancho-trasero.mp4","Uppercut adelantado":"forja-box-uppercut-adelantado.mp4","Uppercut trasero":"forja-box-uppercut-trasero.mp4","Guardia":"forja-box-guardia.mp4","Esquiva lateral (slip)":"forja-box-esquiva-lateral.mp4"};
 try{var _vo=window.FORJA_BOX_VIDEOS||{};for(var _k in _vo)VIDEOS[_k]=_vo[_k]}catch(e){}
 function aBlob(u){try{if(u.indexOf("data:")!==0)return u;var i=u.indexOf(","),m=/^data:([^;,]+)/.exec(u)[1],bin=atob(u.slice(i+1)),a=new Uint8Array(bin.length);for(var k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return URL.createObjectURL(new Blob([a],{type:m}))}catch(e){return u}}
 function videoDe(t){
