@@ -2020,7 +2020,7 @@ const CONFIG = {
     { hash: "c819f205f0d434a83175a72832cb0d081227dea24e648a016f9b4c6d515898cc", vence: "2026-09-30" },  // SEPTIEMBRE — SHAZAM!
     { hash: "419a485fb72cab6d23a2a8437fe3672e5c50a774f6e19c306e22e6d74e5a9734", vence: "2026-10-31" },  // OCTUBRE
     { hash: "1cf23940d1e5884339a36e0eebee52450eb2958cf7a5b3132be25d36adf29d27", vence: "2026-11-30" },  // NOVIEMBRE
-    { hash: "670f9e93f5841cce7f6844aac396fd186e2c88de19b9bc8faf9817a06b7a8d5c", vence: "2026-12-31" },  // DICIEMBRE — DOOMSDAY
+    { hash: "670f9e93f5841cce7f6844aac396fd186e2c88de19b9bc8faf9817a06b7a8d5c", desde: "2026-12-01", vence: "2026-12-31" },  // DICIEMBRE — DOOMSDAY
   ],
   PRECIO_PRO: 199 // MXN / mes
 };
@@ -5623,7 +5623,7 @@ document.getElementById('codeActivate').onclick=async ()=>{
   const hoy=hoyKey();
   const lista=(CONFIG.CODIGOS_PRO||[])
     .map(c=> typeof c==='string' ? {code:c, vence:null} : c)
-    .filter(c=> c && (c.hash || c.code) && (!c.vence || String(c.vence) >= hoy));
+    .filter(c=> c && (c.hash || c.code) && (!c.vence || String(c.vence) >= hoy) && (!c.desde || String(c.desde) <= hoy));
 
   let hashVal='';
   try{ hashVal = await forjaHash(val); }catch(e){}
