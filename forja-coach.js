@@ -162,7 +162,7 @@ function pedirVideo(cb, actual){
 }
 
 /* ---------- Rutina activa → reemplaza las rutinas de la app ---------- */
-const rutActiva=()=>activa?RUTS.find(r=>r.id===activa):null;
+const rutActiva=()=>(activa && esCoachCuenta())?RUTS.find(r=>r.id===activa):null;
 function gruposDe(r){
   const G={};
   (r.ex||[]).forEach(e=>{ const k=GRUPOS[e.g]?e.g:'brazo'; (G[k]=G[k]||{label:GRUPOS[k],ex:[]}).ex.push({n:e.n,s:+e.s||3,r:e.r||'10',max:e.max||'',_v:e.v||''}); });
@@ -181,6 +181,7 @@ function pintarCaja(){
   const mt=document.getElementById('modeToggle'); if(!mt) return;
   let box=document.getElementById('coachRutBox');
   if(!box){ box=document.createElement('div'); box.id='coachRutBox'; mt.insertAdjacentElement('afterend',box); }
+  if(!esCoachCuenta()){ box.innerHTML=''; box.className=''; mt.style.display=''; return; } /* solo coaches */
   const c=miCoach(), r=rutActiva();
   mt.style.display=r?'none':'';
   if(!RUTS.length && !c){ box.innerHTML=''; box.className=''; return; }
