@@ -241,6 +241,10 @@ function vistaAmigos(){
     h("h3",{text:"Liga de amigos"}),
     h("p",{"class":"sub",style:"margin-top:8px",text:"Próximamente: compara nivel y racha con tus amigos y reta a quien quieras. Nunca se compartirán fotos ni medidas corporales."})])]);
 }
+function vistaMundo(){
+  if(window.FORJAMundo)return window.FORJAMundo.vista();
+  return h("div",{"class":"rt-wrap"},[h("section",{"class":"rt-card"},[h("h3",{text:"Mundo"}),h("p",{"class":"sub",style:"margin-top:8px",text:"Cargando…"})])]);
+}
 function vistaLogros(){
   var todas=MEDALLAS.concat(MEDALLAS_G);
   var n=todas.filter(function(m){return m.dyn?m.dyn()!==null:m.ok()}).length;
@@ -264,11 +268,11 @@ function pintar(){
   var wrap=h("div",{"class":"rt-wrap"});
   wrap.appendChild(hero(C0));
   var nav=h("div",{"class":"rt-tabs",role:"group","aria-label":"Secciones de Retos"});
-  [["retos","Retos"],["progreso","Progreso"],["amigos","Amigos"],["logros","Medallas"]].forEach(function(t){
+  [["retos","Retos"],["progreso","Progreso"],["mundo","Mundo"],["amigos","Amigos"],["logros","Medallas"]].forEach(function(t){
     nav.appendChild(h("button",{type:"button",text:t[1],"aria-pressed":tab===t[0]?"true":"false",onclick:function(){tab=t[0];msg=null;pintar()}}));
   });
   wrap.appendChild(nav);
-  wrap.appendChild({retos:vistaRetos,progreso:vistaProgreso,amigos:vistaAmigos,logros:vistaLogros}[tab](C0));
+  wrap.appendChild({retos:vistaRetos,progreso:vistaProgreso,mundo:vistaMundo,amigos:vistaAmigos,logros:vistaLogros}[tab](C0));
   sec.appendChild(wrap);
 }
 
@@ -285,5 +289,7 @@ if(navM){var b2=document.createElement("button");b2.className="bn-btn";b2.setAtt
 window.addEventListener("hashchange",function(){if(location.hash==="#retos")pintar()});
 document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest('[data-go="retos"]');if(t)setTimeout(pintar,0)});
 window.FORJARetos={pintar:pintar,calc:function(){return calc()}};
+/* Carga el módulo Mundo (ranking opcional) sin tocar index.html */
+(function(){try{if(window.FORJAMundo)return;var sm=document.createElement("script");sm.src="forja-mundo.js?v=1";sm.async=true;sm.onload=function(){if(tab==="mundo")pintar()};document.body.appendChild(sm)}catch(e){}})();
 if(location.hash==="#retos"){pintar();try{go("retos")}catch(e){}}
 })();
