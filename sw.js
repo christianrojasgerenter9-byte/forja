@@ -7,7 +7,7 @@
    Nada de Firestore ni de contenido PRO pasa por el caché.
    ============================================================ */
 
-const VERSION = 'forja-v203';
+const VERSION = 'forja-v202';
 const CACHE_SHELL = `${VERSION}-shell`;
 const CACHE_EXTERNO = `${VERSION}-externo`;
 
@@ -16,7 +16,7 @@ const CASCARA = [
   './index.html',
   './forja-racha.js',
   './forja-coach.js',
-  './forja-recetas.js','./forja-diario.js','./forja-rosa.js','./forja-box.js','./forja-tema.css','./forja-aro.png','./forja-marco.png','./forja-boton.png','./forja-icono-caja.png','./forja-fondo.jpg',
+  './forja-recetas.js', './forja-diario.js', './forja-rosa.js', './forja-box.js', './forja-tema.css', './forja-aro.png', './forja-marco.png', './forja-boton.png', './forja-icono-caja.png', './forja-fondo.jpg',
   './manifest.json',
   './forja-icono-192.png',
   './forja-icono-512.png',
@@ -132,10 +132,10 @@ async function redPrimero(peticion) {
     return respuesta;
   } catch (e) {
     return (await cache.match('./index.html')) ||
-           (await cache.match('./')) ||
-           new Response('Sin conexión y sin copia local.', {
-             status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-           });
+      (await cache.match('./')) ||
+      new Response('Sin conexión y sin copia local.', {
+        status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
   }
 }
 
