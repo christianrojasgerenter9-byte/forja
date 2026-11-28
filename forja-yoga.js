@@ -66,7 +66,8 @@
     }
     function montarModulo() {
       // Busca un contenedor existente o usa el body como respaldo seguro
-      const destino = document.getElementById("vista-yoga") || document.body; renderizarRutina(destino);
+      const destino = document.getElementById("vista-yoga") || document.body;
+      renderizarRutina(destino);
     }
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", montarModulo);
@@ -75,9 +76,8 @@
     }
 
 
-
-    window.FORJAYoga = {
-      montar: montarModulo,
-      posturas: POSTURAS_YOGA
-    };
-  }) ()
+  }
+  window.FORJAYoga = {
+    montar: renderizarRutina
+  };
+})();
