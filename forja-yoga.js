@@ -31,7 +31,7 @@
       .join("");
 
     contenedor.innerHTML =
-      "section id=\"forja-yoga-app\">" +
+      "<section id=\"forja-yoga-app\">" +
       tarjetas +
       "<div id=\"forja-yoga-timer\" style=\"margin-top:12px;padding:12px;border-radius:10px;background:#0b0e0c;color:#fff;display:none;\"><\div>" +
       "<\section>";
